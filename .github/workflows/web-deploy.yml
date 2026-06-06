@@ -3,35 +3,48 @@ name: web-deploy
 on:
   push:
     branches: [main]
-    paths: ['web/**', 'index.json', 'bundles/**', '.github/workflows/web-deploy.yml']
+    paths: ['web/**', 'server/**', 'Dockerfile', 'index.json', 'bundles/**', '.github/workflows/web-deploy.yml']
   workflow_dispatch: {}
 
 permissions:
   contents: read
-  id-token: write   # for keyless auth to the gated-static origin (OIDC)
+  id-token: write   # keyless WIF auth to deploy the IAP-gated Cloud Run origin
+
+# Deploy target — the IAP-gated static origin behind the shared platform LB
+# (marketplace.evinced.rocks). Provisioned in infra-ai-platform; see
+# docs/web-hosting.md. Repo-level vars carry the env-specific WIF identity.
+env:
+  GCP_PROJECT_ID: infra-ai-platform
+  GCP_REGION: us-east1
+  GAR_REPO: stark-marketplace
+  CR_SERVICE: stark-marketplace
+  RUNTIME_SA: marketplace-runtime@infra-ai-platform.iam.gserviceaccount.com
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: web
     steps:
       - uses: actions/checkout@v4
+
+      # ── Build the SPA + stage the engine output as one content-hashed unit ──
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: npm
           cache-dependency-path: web/package-lock.json
       - run: npm ci
+        working-directory: web
       - run: npm run lint
+        working-directory: web
       - run: npm run typecheck
+        working-directory: web
       - run: npm test
+        working-directory: web
       - run: npm run build   # tsc --noEmit && vite build → web/dist with hashed assets
+        working-directory: web
       # Stage the committed engine output INTO the same dist as the SPA so the
       # whole thing ships as one content-hashed unit (spec §10).
       - name: Stage index + per-bundle detail
-        working-directory: ${{ github.workspace }}
         run: |
           set -euo pipefail
           mkdir -p web/dist/bundles
@@ -43,14 +56,44 @@ jobs:
           name: web-dist
           path: web/dist
           if-no-files-found: error
-      # Publish step is environment-specific and runs against the Evinced-standard
-      # gated-static origin behind the identity-aware proxy. It is intentionally a
-      # single atomic sync of web/dist (assets + index.html + index.json + bundles/)
-      # — long-cache the hashed assets, no-cache index.html + index.json.
-      #   Example (DO NOT enable until the origin is provisioned per docs/web-hosting.md):
-      #   - run: |
-      #       gsutil -m -h "Cache-Control:public,max-age=31536000,immutable" \
-      #         rsync -r web/dist/assets gs://$BUCKET/assets
-      #       gsutil -h "Cache-Control:no-cache" cp web/dist/index.html gs://$BUCKET/index.html
-      #       gsutil -h "Cache-Control:no-cache" cp web/dist/index.json gs://$BUCKET/index.json
-      #       gsutil -m -h "Cache-Control:no-cache" rsync -r web/dist/bundles gs://$BUCKET/bundles
+
+      # ── Build the image (Go static server + web/dist) and deploy to Cloud Run ──
+      # Only on main / manual dispatch; requires the infra-ai-platform identity
+      # (CI SA + WIF + GAR + run.developer) to already be applied.
+      - name: Authenticate to Google Cloud (WIF)
+        if: github.ref == 'refs/heads/main'
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_DEPLOY_SA }}
+      - name: Set up gcloud
+        if: github.ref == 'refs/heads/main'
+        uses: google-github-actions/setup-gcloud@v2
+      - name: Build + push image to Artifact Registry
+        if: github.ref == 'refs/heads/main'
+        run: |
+          set -euo pipefail
+          IMAGE="${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT_ID}/${GAR_REPO}/${CR_SERVICE}"
+          gcloud auth configure-docker "${GCP_REGION}-docker.pkg.dev" --quiet
+          docker build -t "${IMAGE}:${GITHUB_SHA}" -t "${IMAGE}:latest" .
+          docker push "${IMAGE}:${GITHUB_SHA}"
+          docker push "${IMAGE}:latest"
+      - name: Deploy to Cloud Run (behind IAP LB)
+        if: github.ref == 'refs/heads/main'
+        run: |
+          set -euo pipefail
+          IMAGE="${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT_ID}/${GAR_REPO}/${CR_SERVICE}:${GITHUB_SHA}"
+          # No --allow-unauthenticated: the allUsers run.invoker binding is owned
+          # by Terraform (infra-ai-platform), so this run.developer SA never needs
+          # run.setIamPolicy. ingress=internal-and-cloud-load-balancing blocks the
+          # public *.run.app URL; IAP gates users at the LB edge.
+          gcloud run deploy "${CR_SERVICE}" \
+            --project "${GCP_PROJECT_ID}" \
+            --region "${GCP_REGION}" \
+            --image "${IMAGE}" \
+            --service-account "${RUNTIME_SA}" \
+            --ingress internal-and-cloud-load-balancing \
+            --port 8080 \
+            --cpu 1 --memory 256Mi \
+            --min-instances 0 --max-instances 4 --concurrency 80 \
+            --quiet
