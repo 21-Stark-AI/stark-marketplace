@@ -1,0 +1,50 @@
+name: sign-manifest
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  id-token: write        # REQUIRED for OIDC keyless signing (Fulcio)
+
+jobs:
+  sign:
+    name: build + cosign keyless sign
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: engine
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: engine/go.mod
+          cache: true
+
+      - name: produce build manifest (target versions + content digests)
+        run: go run ./cmd/stark build --manifest ../build-manifest.json ../catalog
+
+      - name: install cosign
+        uses: sigstore/cosign-installer@v3
+
+      - name: keyless sign the manifest (GitHub OIDC → Fulcio → Rekor)
+        working-directory: ${{ github.workspace }}
+        env:
+          COSIGN_EXPERIMENTAL: "1"
+        run: |
+          cosign sign-blob --yes \
+            --oidc-issuer https://token.actions.githubusercontent.com \
+            --output-signature build-manifest.json.sig \
+            --output-certificate build-manifest.json.pem \
+            build-manifest.json
+
+      - name: upload signed manifest bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-manifest
+          path: |
+            build-manifest.json
+            build-manifest.json.sig
+            build-manifest.json.pem
+          if-no-files-found: error

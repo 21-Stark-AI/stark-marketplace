@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os/exec"
+	"path/filepath"
 
 	"github.com/GetEvinced/stark-marketplace/engine/internal/bumps"
 	"github.com/GetEvinced/stark-marketplace/engine/internal/digest"
@@ -29,9 +30,14 @@ func prevIndexJSON(repoRoot string) []byte {
 }
 
 // leanPrev is the minimal shape we read from a previous index.json (CC-2 keys).
+// Type is carried so the bump key is per-artifact-identity (bundle/type/name): a bundle
+// may hold two same-named artifacts of different types (e.g. a skill and a command both
+// named "x") — keying by bundle/name alone would collide them and silently skip the
+// version-bump check on one of the two (CC-5 immutability bypass).
 type leanPrev struct {
 	Artifacts []struct {
 		Name    string `json:"name"`
+		Type    string `json:"type"`
 		Bundle  string `json:"bundle"`
 		Version string `json:"version"`
 		Digest  string `json:"digest"`
@@ -50,7 +56,7 @@ func runCheckBumps(catalogDir, repoRoot string) int {
 			return 1
 		}
 		for _, e := range lp.Artifacts {
-			prev[e.Bundle+"/"+e.Name] = bumps.Previous{Version: e.Version, Digest: e.Digest}
+			prev[e.Bundle+"/"+e.Type+"/"+e.Name] = bumps.Previous{Version: e.Version, Digest: e.Digest}
 		}
 	}
 
@@ -62,7 +68,7 @@ func runCheckBumps(catalogDir, repoRoot string) int {
 	cur := map[string]bumps.Current{}
 	for _, b := range cat.Bundles {
 		for _, a := range b.Artifacts {
-			cur[b.Name+"/"+a.Name] = bumps.Current{Version: a.Version, SourceDigest: digest.Source(a)}
+			cur[b.Name+"/"+string(a.Type)+"/"+a.Name] = bumps.Current{Version: a.Version, SourceDigest: digest.Source(a)}
 		}
 	}
 	_ = index.SchemaVersion // keep digest/index contract in one place (CC-2/CC-5)
@@ -82,11 +88,17 @@ func runCheckBumps(catalogDir, repoRoot string) int {
 
 func newCheckBumpsCmd() *cobra.Command {
 	return &cobra.Command{
-		Use:   "check-bumps",
+		Use:   "check-bumps [catalog-dir]",
 		Short: "Fail if an artifact's canonical source changed without a version bump (spec §11)",
-		Args:  cobra.NoArgs,
+		Args:  cobra.MaximumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if code := runCheckBumps("catalog", "."); code != 0 {
+			// repoRoot (for `git show origin/main:index.json`) is the catalog dir's
+			// parent, so `check-bumps [../catalog]` works from any CWD (e.g. engine/ in CI).
+			catalogDir := "catalog"
+			if len(args) == 1 {
+				catalogDir = args[0]
+			}
+			if code := runCheckBumps(catalogDir, filepath.Dir(filepath.Clean(catalogDir))); code != 0 {
 				return fmt.Errorf("version-bump gate failed")
 			}
 			return nil
