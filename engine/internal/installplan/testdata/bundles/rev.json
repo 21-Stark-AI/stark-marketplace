@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "bundle": { "name": "rev", "version": "1.0.0", "description": "review bundle",
+              "category": "dev", "tags": ["review"], "owner": "stark", "maturity": "beta" },
+  "artifacts": [
+    { "name": "review", "type": "command", "version": "1.0.0",
+      "runtimes": ["claude","codex","gemini"],
+      "support": { "claude": "native", "codex": "native", "gemini": "native" },
+      "requires": [{ "type": "skill", "ref": "session" }, { "type": "mcp", "ref": "bq" }],
+      "diverged": false,
+      "outputs": { "claude": [{ "path": "commands/review.md", "kind": "file" }],
+                   "codex": [{ "path": ".agents/skills/review/SKILL.md", "kind": "file" }],
+                   "gemini": [{ "path": ".gemini/commands/review.toml", "kind": "file" }] } },
+    { "name": "session", "type": "skill", "version": "1.0.0",
+      "runtimes": ["claude","codex"],
+      "support": { "claude": "native", "codex": "native", "gemini": "unsupported" },
+      "requires": [],
+      "diverged": false,
+      "outputs": { "claude": [{ "path": "skills/session/SKILL.md", "kind": "file" }],
+                   "codex": [{ "path": ".agents/skills/session/SKILL.md", "kind": "file" }] } },
+    { "name": "bq", "type": "mcp", "version": "1.0.0",
+      "runtimes": ["claude","codex","gemini"],
+      "support": { "claude": "native", "codex": "native", "gemini": "native" },
+      "requires": [],
+      "diverged": false,
+      "outputs": {
+        "claude": [{ "path": ".mcp.json", "kind": "mergeJSONKey", "key": "mcpServers.bq" }],
+        "codex":  [{ "path": "config.toml", "kind": "mergeTOMLKey", "key": "mcp_servers.bq" }],
+        "gemini": [{ "path": "settings.json", "kind": "mergeJSONKey", "key": "mcpServers.bq" }]
+      },
+      "mcp": { "transport": "stdio", "command": "node", "args": ["bq.js"] } }
+  ]
+}

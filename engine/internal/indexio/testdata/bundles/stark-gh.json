@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "bundle": {
+    "name": "stark-gh",
+    "version": "0.1.0",
+    "description": "GitHub workflow commands + MCP for stark.",
+    "category": "productivity",
+    "tags": ["github","pr"],
+    "owner": "stark",
+    "maturity": "beta",
+    "homepage": "https://github.com/GetEvinced/stark-marketplace"
+  },
+  "artifacts": [
+    { "name": "pr-open", "type": "command", "description": "Open a PR.", "version": "0.1.0",
+      "runtimes": ["claude","codex","gemini"],
+      "support": { "claude": "native", "codex": "native", "gemini": "native" },
+      "requires": [],
+      "diverged": false,
+      "outputs": {
+        "claude": [{ "path": "commands/pr-open.md", "kind": "file" }],
+        "codex":  [{ "path": ".agents/skills/pr-open/SKILL.md", "kind": "file", "emulated": true }],
+        "gemini": [{ "path": ".gemini/commands/pr-open.toml", "kind": "file" }]
+      },
+      "fidelityNotes": {} },
+    { "name": "gh", "type": "mcp", "description": "GitHub MCP server.", "version": "0.1.0",
+      "runtimes": ["claude","codex","gemini"],
+      "support": { "claude": "native", "codex": "native", "gemini": "native" },
+      "requires": [],
+      "diverged": false,
+      "outputs": {
+        "claude": [{ "path": ".mcp.json", "kind": "mergeJSONKey", "key": "mcpServers.gh" }],
+        "codex":  [{ "path": "config.toml", "kind": "mergeTOMLKey", "key": "mcp_servers.gh" }],
+        "gemini": [{ "path": "settings.json", "kind": "mergeJSONKey", "key": "mcpServers.gh" }]
+      },
+      "mcp": { "transport": "stdio", "command": "node", "args": ["gh-mcp-server.js"],
+               "env": { "GITHUB_TOKEN": { "secretRef": "stark-gh-token" } } },
+      "fidelityNotes": {} }
+  ]
+}
