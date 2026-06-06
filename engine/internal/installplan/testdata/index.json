@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "artifacts": [
+    { "name": "review", "type": "command", "bundle": "rev", "version": "1.0.0",
+      "support": { "claude": "native", "codex": "native", "gemini": "native" } },
+    { "name": "session", "type": "skill", "bundle": "rev", "version": "1.0.0",
+      "support": { "claude": "native", "codex": "native", "gemini": "unsupported" } },
+    { "name": "bq", "type": "mcp", "bundle": "rev", "version": "1.0.0",
+      "support": { "claude": "native", "codex": "native", "gemini": "native" } }
+  ]
+}
