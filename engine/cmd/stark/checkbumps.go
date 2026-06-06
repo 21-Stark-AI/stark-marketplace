@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os/exec"
+	"path/filepath"
 
 	"github.com/GetEvinced/stark-marketplace/engine/internal/bumps"
 	"github.com/GetEvinced/stark-marketplace/engine/internal/digest"
@@ -82,11 +83,17 @@ func runCheckBumps(catalogDir, repoRoot string) int {
 
 func newCheckBumpsCmd() *cobra.Command {
 	return &cobra.Command{
-		Use:   "check-bumps",
+		Use:   "check-bumps [catalog-dir]",
 		Short: "Fail if an artifact's canonical source changed without a version bump (spec §11)",
-		Args:  cobra.NoArgs,
+		Args:  cobra.MaximumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if code := runCheckBumps("catalog", "."); code != 0 {
+			// repoRoot (for `git show origin/main:index.json`) is the catalog dir's
+			// parent, so `check-bumps [../catalog]` works from any CWD (e.g. engine/ in CI).
+			catalogDir := "catalog"
+			if len(args) == 1 {
+				catalogDir = args[0]
+			}
+			if code := runCheckBumps(catalogDir, filepath.Dir(catalogDir)); code != 0 {
 				return fmt.Errorf("version-bump gate failed")
 			}
 			return nil

@@ -2,34 +2,36 @@
 # Extends the default ruleset (token/key detectors) and tunes it for the catalog:
 # the catalog legitimately references secrets BY NAME via {secretRef: <key>} and
 # never holds values, so secretRef keys must NOT trip the scanner, while any real
-# inline credential anywhere (esp. catalog/, mcp/) must fail CI (spec §7.4).
+# inline credential ANYWHERE in the repo must fail CI (spec §7.4).
 
 title = "stark-marketplace gitleaks"
 
 [extend]
 useDefault = true
 
-# ── Catalog-specific rule: catch inline creds in MCP args/url/command ──
+# ── Inline-credential rule: applies REPO-WIDE (no path filter), so a token/password/
+#    secret/api_key set to a literal value fails CI wherever it appears — not only in the
+#    catalog. Test fixtures / testdata are exempted via the global [allowlist].paths below;
+#    secretRef object form is the sanctioned way to NAME a secret and is never a finding.
 [[rules]]
-id = "stark-mcp-inline-credential"
-description = "Inline credential in an MCP arg/url/command (use secretRef instead)"
+id = "stark-inline-credential"
+description = "Inline credential (token/password/secret/api_key = literal value — use secretRef instead)"
 regex = '''(?i)(token|password|secret|api[_-]?key)\s*[=:]\s*['"]?[A-Za-z0-9_\-]{16,}'''
-path = '''catalog/.*\.(ya?ml|md)$'''
 [rules.allowlist]
-# secretRef object form is the SANCTIONED way to name a secret — never a finding.
 regexes = [
   '''secretRef:\s*[a-z0-9][a-z0-9-]*''',
 ]
 
 [allowlist]
-description = "Global allowlist — placeholders, fixtures, and the secretRef pattern"
+description = "Global allowlist — test fixtures and values that ARE a known placeholder"
 paths = [
   '''engine/.*_test\.go$''',          # test fixtures use fake tokens deliberately
   '''engine/internal/.*/testdata/.*''',
-  '''docs/.*\.md$''',                  # docs may show ${ENV} placeholders
 ]
 regexes = [
   '''\$\{[A-Z0-9_]+\}''',             # ${ENV_VAR} placeholders are not secrets
   '''secretRef:\s*[a-z0-9][a-z0-9-]*''',
-  '''(?i)example|placeholder|dummy|redacted|xxxxxxxx''',
+  # ANCHORED: the whole value must BE a placeholder (example…/placeholder…/x{8,}…),
+  # so a real secret that merely CONTAINS the word "example" is NOT excused.
+  '''(?i)^(example|placeholder|dummy|redacted|sample|x{8,})[a-z0-9_\-]*$''',
 ]

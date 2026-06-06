@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -75,12 +76,18 @@ func newBuildCmd() *cobra.Command {
 	var check, fix bool
 	var manifest string
 	cmd := &cobra.Command{
-		Use:   "build",
+		Use:   "build [catalog-dir]",
 		Short: "Build dist/claude + index.json + bundles/*.json (--check = drift gate)",
-		Args:  cobra.NoArgs,
+		Args:  cobra.MaximumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			_ = fix // --fix is the explicit alias for the default write behavior
-			code := runBuild("catalog", ".", manifest, check)
+			// repoRoot (where generated output lives) is the catalog dir's parent, so
+			// `build [../catalog]` works from any CWD — e.g. CI runs it from engine/.
+			catalogDir := "catalog"
+			if len(args) == 1 {
+				catalogDir = args[0]
+			}
+			code := runBuild(catalogDir, filepath.Dir(catalogDir), manifest, check)
 			switch code {
 			case 0:
 				return nil

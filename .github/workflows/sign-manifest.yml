@@ -23,7 +23,7 @@ jobs:
           cache: true
 
       - name: produce build manifest (target versions + content digests)
-        run: go run ./cmd/stark build --manifest ../build-manifest.json
+        run: go run ./cmd/stark build --manifest ../build-manifest.json ../catalog
 
       - name: install cosign
         uses: sigstore/cosign-installer@v3
