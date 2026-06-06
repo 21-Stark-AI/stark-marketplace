@@ -37,6 +37,14 @@ func TestBuildLeanIndex(t *testing.T) {
 	if e.Digest == "" {
 		t.Fatal("digest missing")
 	}
+	// CC-2: per-entry runtimes for runtime-filtered search without fetching detail.
+	if len(e.Runtimes) != 1 || e.Runtimes[0] != "claude" {
+		t.Fatalf("lean entry runtimes missing/wrong: %+v", e.Runtimes)
+	}
+	// CC-2: top-level provenance hook.
+	if idx.GeneratedBy.AdapterVersions["claude"] == "" {
+		t.Fatalf("generatedBy.adapterVersions[claude] missing: %+v", idx.GeneratedBy)
+	}
 	d, ok := details["demo"]
 	if !ok {
 		t.Fatal("missing bundle detail")

@@ -9,6 +9,7 @@ import (
 	"github.com/GetEvinced/stark-marketplace/engine/internal/adapter"
 	"github.com/GetEvinced/stark-marketplace/engine/internal/adapter/claude"
 	"github.com/GetEvinced/stark-marketplace/engine/internal/digest"
+	"github.com/GetEvinced/stark-marketplace/engine/internal/merge"
 	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
 )
 
@@ -25,15 +26,23 @@ type Entry struct {
 	Tags        []string          `json:"tags,omitempty"`
 	Category    string            `json:"category,omitempty"`
 	Maturity    string            `json:"maturity,omitempty"`
-	Support     map[string]string `json:"support"` // runtime -> native|emulated|unsupported
 	Version     string            `json:"version"`
+	Runtimes    []string          `json:"runtimes"` // CC-2: search filters by runtime without fetching detail
+	Support     map[string]string `json:"support"`  // runtime -> native|emulated|unsupported
 	Digest      string            `json:"digest"`
+}
+
+// GeneratedBy is the CC-2 index-level provenance hook: the adapter target versions
+// that produced this index (spec §7.7). Lets consumers detect adapter-version skew.
+type GeneratedBy struct {
+	AdapterVersions map[string]string `json:"adapterVersions"`
 }
 
 // Index is the lean search index.
 type Index struct {
-	SchemaVersion int     `json:"schemaVersion"`
-	Artifacts     []Entry `json:"artifacts"`
+	SchemaVersion int         `json:"schemaVersion"`
+	GeneratedBy   GeneratedBy `json:"generatedBy"`
+	Artifacts     []Entry     `json:"artifacts"`
 }
 
 // BundleDetail is the full per-bundle detail file (CC-3 structured shape).
@@ -142,9 +151,25 @@ func claudeFilesForArtifact(a *model.Artifact, files []adapter.OutputFile) []Out
 	return out
 }
 
+// divergedOnClaude reports whether the artifact uses an annotated full-body
+// override for the Claude runtime (author divergence, in scope this slice). It
+// only resolves when the artifact actually targets Claude.
+func divergedOnClaude(a *model.Artifact) bool {
+	for _, rt := range a.Runtimes {
+		if rt == model.RuntimeClaude {
+			_, f, err := merge.Resolve(a, model.RuntimeClaude)
+			return err == nil && f.Diverged
+		}
+	}
+	return false
+}
+
 // Build returns the lean index and a map of bundle-name -> CC-3 detail.
 func Build(cat *model.Catalog) (Index, map[string]BundleDetail) {
-	idx := Index{SchemaVersion: SchemaVersion}
+	idx := Index{
+		SchemaVersion: SchemaVersion,
+		GeneratedBy:   GeneratedBy{AdapterVersions: map[string]string{"claude": claude.Version}},
+	}
 	details := map[string]BundleDetail{}
 	for _, b := range cat.Bundles {
 		claudeOut := claudeOutputsByArtifact(b)
@@ -156,6 +181,10 @@ func Build(cat *model.Catalog) (Index, map[string]BundleDetail) {
 					support[string(rt)] = s
 				}
 			}
+			runtimes := make([]string, 0, len(a.Runtimes))
+			for _, rt := range a.Runtimes {
+				runtimes = append(runtimes, string(rt))
+			}
 			idx.Artifacts = append(idx.Artifacts, Entry{
 				Name:        a.Name,
 				Type:        string(a.Type),
@@ -164,8 +193,9 @@ func Build(cat *model.Catalog) (Index, map[string]BundleDetail) {
 				Tags:        a.Tags,
 				Category:    a.Category,
 				Maturity:    string(a.Maturity),
-				Support:     support,
 				Version:     a.Version,
+				Runtimes:    runtimes,
+				Support:     support,
 				Digest:      digest.Source(a),
 			})
 
@@ -176,10 +206,6 @@ func Build(cat *model.Catalog) (Index, map[string]BundleDetail) {
 			for _, r := range a.Requires {
 				requires = append(requires, Requirement{Type: string(r.Type), Ref: r.Ref})
 			}
-			runtimes := make([]string, 0, len(a.Runtimes))
-			for _, rt := range a.Runtimes {
-				runtimes = append(runtimes, string(rt))
-			}
 			outputs := map[string][]Output{}
 			fidelity := map[string]string{}
 			if outs, ok := claudeOut[a.Name]; ok {
@@ -188,14 +214,16 @@ func Build(cat *model.Catalog) (Index, map[string]BundleDetail) {
 			}
 			// plan 03 fills outputs["codex"]/outputs["gemini"] + their fidelityNotes.
 			detailArtifacts = append(detailArtifacts, DetailEntry{
-				Name:          a.Name,
-				Type:          string(a.Type),
-				Description:   a.Description,
-				Version:       a.Version,
-				Runtimes:      runtimes,
-				Support:       support,
-				Requires:      requires,
-				Diverged:      false, // plan 03 sets per-runtime divergence when emulating
+				Name:        a.Name,
+				Type:        string(a.Type),
+				Description: a.Description,
+				Version:     a.Version,
+				Runtimes:    runtimes,
+				Support:     support,
+				Requires:    requires,
+				// claude author-divergence (full-body `# diverged:` override) is in
+				// scope this slice; plan 03 adds per-runtime divergence for codex/gemini.
+				Diverged:      divergedOnClaude(a),
 				Outputs:       outputs,
 				FidelityNotes: fidelity,
 			})

@@ -90,7 +90,12 @@ func valueEqual(a, b any) bool {
 	if aok && bok {
 		return as == bs
 	}
-	return a == b
+	// Non-string elements: `requires` entries are map[string]any (== panics on maps),
+	// and numbers may be json.Number on the base side (Raw came through a YAML→JSON
+	// round-trip with UseNumber) vs Go int on the yaml-decoded override side (== is
+	// type-sensitive). Compare by canonical string form instead — fmt prints map keys
+	// in sorted order (Go ≥1.12), so this stays deterministic and never panics.
+	return fmt.Sprintf("%v", a) == fmt.Sprintf("%v", b)
 }
 
 // Resolved is the per-runtime output of merging an artifact.
@@ -126,6 +131,18 @@ func Resolve(a *model.Artifact, rt model.Runtime) (Resolved, Findings, error) {
 			oa, oaOK := ov.Fields[field].([]any)
 			if baOK && oaOK && arrayDropsPrefix(ba, oa) {
 				f.ArrayDrops = append(f.ArrayDrops, field)
+			}
+		}
+		// Nested mcp.args is a spec-§4.3-named foot-gun: an override that drops a
+		// prefix element of args silently truncates the launch command. The top-level
+		// scan can't see it, so descend into the mcp sub-map explicitly.
+		if bm, ok := base["mcp"].(map[string]any); ok {
+			if om, ok := ov.Fields["mcp"].(map[string]any); ok {
+				ba, baOK := bm["args"].([]any)
+				oa, oaOK := om["args"].([]any)
+				if baOK && oaOK && arrayDropsPrefix(ba, oa) {
+					f.ArrayDrops = append(f.ArrayDrops, "mcp.args")
+				}
 			}
 		}
 		fm = deepMerge(base, ov.Fields)
