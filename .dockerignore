@@ -1,0 +1,18 @@
+# Keep the build context to the static server + its prebuilt web payload only.
+# web/dist is git-ignored but IS required in the context (the workflow builds it
+# before `docker build`); do not exclude it.
+.git
+.github
+node_modules
+**/node_modules
+engine
+catalog
+dist/codex
+dist/gemini
+docs
+**/*.test.ts
+**/*.test.tsx
+web/src
+web/node_modules
+*.log
+.DS_Store
