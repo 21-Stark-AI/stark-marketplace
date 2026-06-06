@@ -2,7 +2,9 @@
   "schemaVersion": 1,
   "generatedBy": {
     "adapterVersions": {
-      "claude": "claude@1"
+      "claude": "claude@1",
+      "codex": "codex@1",
+      "gemini": "gemini@1"
     }
   },
   "artifacts": [
@@ -25,7 +27,9 @@
         "gemini"
       ],
       "support": {
-        "claude": "native"
+        "claude": "native",
+        "codex": "native",
+        "gemini": "native"
       },
       "digest": "sha256:6e71b670324cfb2e54f257be5090bdc42f2718b40776770bfb2bc6c99cfed2b5"
     },
@@ -48,7 +52,9 @@
         "gemini"
       ],
       "support": {
-        "claude": "native"
+        "claude": "native",
+        "codex": "native",
+        "gemini": "native"
       },
       "digest": "sha256:cc399e46295ebc0b2e0768ffad57118b89a0d3ba3dc5bd1aea4733565e65ba36"
     }

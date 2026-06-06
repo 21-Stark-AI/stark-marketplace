@@ -1,0 +1,6 @@
+---
+name: stark-review
+description: Single-agent PR review.
+model: gpt-5-codex
+---
+Do the review.

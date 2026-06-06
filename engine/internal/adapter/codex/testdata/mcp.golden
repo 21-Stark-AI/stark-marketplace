@@ -1,0 +1,7 @@
+[mcp_servers]
+[mcp_servers.bigquery]
+command = 'stark-bq-mcp'
+args = ['--project', '${BQ_PROJECT}']
+
+[mcp_servers.bigquery.env]
+BQ_PROJECT = '${BQ_PROJECT}'
