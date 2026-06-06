@@ -1,0 +1,40 @@
+{
+  "name": "stark-marketplace",
+  "owner": {
+    "name": "Evinced Platform",
+    "email": "platform@evinced.com"
+  },
+  "plugins": [
+    {
+      "name": "alpha-bundle",
+      "source": "./dist/claude/alpha-bundle",
+      "description": "Alpha tools.",
+      "version": "1.2.0",
+      "author": {
+        "name": "Alpha Team",
+        "email": "alpha@evinced.com"
+      },
+      "category": "examples",
+      "tags": [
+        "demo"
+      ],
+      "strict": true
+    },
+    {
+      "name": "stark-gh",
+      "source": "./dist/claude/stark-gh",
+      "description": "GitHub workflow.",
+      "version": "0.1.0",
+      "author": {
+        "name": "GH Team",
+        "email": "gh@evinced.com"
+      },
+      "category": "productivity",
+      "tags": [
+        "github",
+        "pr"
+      ],
+      "strict": true
+    }
+  ]
+}

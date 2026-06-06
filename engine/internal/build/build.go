@@ -15,6 +15,7 @@ import (
 	"github.com/GetEvinced/stark-marketplace/engine/internal/adapter/claude"
 	"github.com/GetEvinced/stark-marketplace/engine/internal/canonjson"
 	"github.com/GetEvinced/stark-marketplace/engine/internal/index"
+	"github.com/GetEvinced/stark-marketplace/engine/internal/marketplace"
 	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
 )
 
@@ -33,8 +34,9 @@ type Output struct {
 	DivergenceBudget string // e.g. "diverged 0 / 2 = 0.0%"
 }
 
-// generatedRoots are the repo-relative trees this slice owns and fully regenerates.
-var generatedRoots = []string{"dist/claude", "index.json", "bundles"}
+// generatedRoots are the repo-relative trees this build owns and fully regenerates.
+// .claude-plugin holds the repo-root CC marketplace manifest (spec §8).
+var generatedRoots = []string{"dist/claude", "index.json", "bundles", ".claude-plugin"}
 
 // Build runs the pipeline over a loaded catalog.
 func Build(cat *model.Catalog) (Output, error) {
@@ -84,6 +86,24 @@ func Build(cat *model.Catalog) (Output, error) {
 		}
 		out.Files["bundles/"+n+".json"] = db
 	}
+
+	// CC marketplace manifest (spec §8): one plugins[] entry per bundle, committed
+	// under dist/claude so `/plugin marketplace add` resolves it. Emitted into the
+	// generated set so the existing drift gate covers it — no separate gate.
+	// The manifest is committed at the REPO ROOT (.claude-plugin/marketplace.json):
+	// `/plugin marketplace add GetEvinced/stark-marketplace` looks for the manifest
+	// at the repo root, and CC resolves each entry's relative `source` against the
+	// marketplace root (= the dir containing .claude-plugin/ = repo root), so a
+	// source of "./dist/claude/<bundle>" resolves to the committed bundle tree.
+	mani, err := marketplace.Marshal(marketplace.Generate(cat, marketplace.Options{
+		Name:     "stark-marketplace",
+		Owner:    marketplace.Owner{Name: "Evinced", Email: "engineering@evinced.com"},
+		DistRoot: "./dist/claude",
+	}))
+	if err != nil {
+		return Output{}, err
+	}
+	out.Files[marketplace.ManifestRelPath] = mani
 
 	pct := 0.0
 	if totalArtifacts > 0 {

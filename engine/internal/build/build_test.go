@@ -46,6 +46,29 @@ func keys(m map[string][]byte) []string {
 	return ks
 }
 
+func TestBuildEmitsMarketplaceManifest(t *testing.T) {
+	cat, err := load.Load("../../../catalog")
+	if err != nil {
+		t.Fatal(err)
+	}
+	out, err := Build(cat)
+	if err != nil {
+		t.Fatal(err)
+	}
+	b, ok := out.Files[".claude-plugin/marketplace.json"]
+	if !ok {
+		t.Fatal("marketplace.json not produced into the generated set (repo-root .claude-plugin)")
+	}
+	s := string(b)
+	// root owner, entry author (red-team Part B), seed bundle present.
+	if !strings.Contains(s, `"owner"`) || !strings.Contains(s, `"author"`) {
+		t.Fatalf("manifest shape wrong: %s", s)
+	}
+	if !strings.Contains(s, `"stark-gh"`) || !strings.Contains(s, `"./dist/claude/stark-gh"`) {
+		t.Fatalf("manifest missing seed bundle / source: %s", s)
+	}
+}
+
 func TestDivergenceBudgetCountsDiverged(t *testing.T) {
 	// A claude artifact with an annotated full-body override is author-divergence:
 	// merge.Resolve marks it Diverged, claude.foldFindings prefixes "diverged: ", and

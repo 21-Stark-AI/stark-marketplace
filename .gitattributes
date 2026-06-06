@@ -4,3 +4,4 @@ schema/** text eol=lf
 dist/** linguist-generated=true
 index.json linguist-generated=true
 bundles/** linguist-generated=true
+.claude-plugin/** linguist-generated=true

@@ -1,0 +1,26 @@
+{
+  "name": "stark-marketplace",
+  "owner": {
+    "name": "Evinced",
+    "email": "engineering@evinced.com"
+  },
+  "plugins": [
+    {
+      "name": "stark-gh",
+      "source": "./dist/claude/stark-gh",
+      "description": "GitHub workflow commands + MCP for stark.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Evinced",
+        "email": "engineering@evinced.com"
+      },
+      "category": "productivity",
+      "tags": [
+        "github",
+        "pr",
+        "workflow"
+      ],
+      "strict": true
+    }
+  ]
+}
