@@ -72,8 +72,9 @@ type DetailEntry struct {
 	Description   string              `json:"description,omitempty"`
 	Version       string              `json:"version"`
 	Runtimes      []string            `json:"runtimes"`
-	Support       map[string]string   `json:"support"`       // runtime -> native|emulated|unsupported
-	Requires      []Requirement       `json:"requires"`      // [] not null
+	Support       map[string]string   `json:"support"`         // runtime -> native|emulated|unsupported
+	Tools         []string            `json:"tools,omitempty"` // agent tool grants, surfaced for the install-consent UX (spec §7.4/§9.3)
+	Requires      []Requirement       `json:"requires"`        // [] not null
 	Diverged      bool                `json:"diverged"`
 	Outputs       map[string][]Output `json:"outputs"`       // runtime -> emitted files
 	FidelityNotes map[string]string   `json:"fidelityNotes"` // runtime -> note (emulated only)
@@ -222,6 +223,7 @@ func Build(cat *model.Catalog) (Index, map[string]BundleDetail, error) {
 				Version:       a.Version,
 				Runtimes:      runtimes,
 				Support:       support,
+				Tools:         a.Tools, // agent tool grants surfaced in detail (spec §7.4 "surfaced in the index")
 				Requires:      requires,
 				Diverged:      divergedOnClaude(a),
 				Outputs:       outputs,

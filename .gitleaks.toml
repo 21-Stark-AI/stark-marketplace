@@ -1,0 +1,41 @@
+# gitleaks config for stark-marketplace.
+# Extends the default ruleset (token/key detectors) and tunes it for the catalog:
+# the catalog legitimately references secrets BY NAME via {secretRef: <key>} and
+# never holds values, so secretRef keys must NOT trip the scanner, while any real
+# inline credential ANYWHERE in the repo must fail CI (spec §7.4).
+
+title = "stark-marketplace gitleaks"
+
+[extend]
+useDefault = true
+
+# ── Inline-credential rule: applies REPO-WIDE (no path filter), so a token/password/
+#    secret/api_key set to a literal value fails CI wherever it appears — not only in the
+#    catalog. Test fixtures / testdata are exempted via the global [allowlist].paths below;
+#    secretRef object form is the sanctioned way to NAME a secret and is never a finding.
+[[rules]]
+id = "stark-inline-credential"
+description = "Inline credential (token/password/secret/api_key = literal value — use secretRef instead)"
+# The keyword is non-capturing; group 1 (secretGroup) is the VALUE. gitleaks sets
+# finding.Secret = the captured value, so the allowlists below (which default to matching
+# finding.Secret) evaluate against the value — not the literal word "token"/"api_key".
+regex = '''(?i)(?:token|password|secret|api[_-]?key)\s*[=:]\s*['"]?([A-Za-z0-9_\-]{16,})'''
+secretGroup = 1
+[rules.allowlist]
+regexes = [
+  '''secretRef:\s*[a-z0-9][a-z0-9-]*''',
+]
+
+[allowlist]
+description = "Global allowlist — test fixtures and values that ARE a known placeholder"
+paths = [
+  '''engine/.*_test\.go$''',          # test fixtures use fake tokens deliberately
+  '''engine/internal/.*/testdata/.*''',
+]
+regexes = [
+  '''\$\{[A-Z0-9_]+\}''',             # ${ENV_VAR} placeholders are not secrets
+  '''secretRef:\s*[a-z0-9][a-z0-9-]*''',
+  # ANCHORED: the whole value must BE a placeholder (example…/placeholder…/x{8,}…),
+  # so a real secret that merely CONTAINS the word "example" is NOT excused.
+  '''(?i)^(example|placeholder|dummy|redacted|sample|x{8,})[a-z0-9_\-]*$''',
+]

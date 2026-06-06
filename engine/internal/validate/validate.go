@@ -41,6 +41,7 @@ func Catalog(cat *model.Catalog) *Result {
 			checkSecurity(r, where, a)
 			checkFences(r, where, a)
 			checkCapability(r, where, a)
+			checkAgentTools(r, where, a)
 		}
 		checkOutputUniqueness(r, b)
 	}

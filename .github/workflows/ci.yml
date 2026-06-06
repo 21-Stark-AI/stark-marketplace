@@ -1,0 +1,89 @@
+name: ci
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  engine:
+    name: engine (validate + drift + tests)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: engine
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: engine/go.mod   # pinned toolchain (spec §7.6)
+          cache: true
+      - name: go vet
+        run: go vet ./...
+      - name: unit + golden + determinism + integration tests
+        run: go test ./... -count=1
+      - name: stark validate (fail-closed, blocking)
+        run: go run ./cmd/stark validate ../catalog
+      - name: stark build --check (drift — REQUIRED, non-bypassable)
+        run: go run ./cmd/stark build --check ../catalog
+      - name: stark check-bumps (version-bump immutability — REQUIRED, blocking)
+        run: go run ./cmd/stark check-bumps ../catalog
+      - name: stark lint (body suspicious-pattern scan — non-blocking, surfaced)
+        run: go run ./cmd/stark lint ../catalog || true
+
+  secrets:
+    name: secret scan (catalog)
+    runs-on: ubuntu-latest
+    env:
+      # gitleaks-action@v2 requires a paid license for GitHub orgs; the CLI is free
+      # (MIT). Pin + run the binary directly so the gate stays fail-closed and licence-free.
+      GITLEAKS_VERSION: 8.30.1
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # full history so the PR-range scan below can diff base..head
+      - name: install gitleaks (pinned CLI)
+        run: |
+          curl -sSfL "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" -o gitleaks.tar.gz
+          tar -xzf gitleaks.tar.gz gitleaks
+          sudo install gitleaks /usr/local/bin/gitleaks
+          gitleaks version
+      - name: gitleaks — working tree (fail-closed)
+        run: gitleaks dir . --config .gitleaks.toml --redact --exit-code 1 --verbose
+      - name: gitleaks — PR commit history (catches a secret added then removed within the PR)
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: gitleaks git . --config .gitleaks.toml --redact --exit-code 1 --log-opts "${BASE_SHA}..${HEAD_SHA}"
+
+  web:
+    name: web build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - run: npm run build
+
+  actionlint:
+    name: actionlint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: rhysd/actionlint@v1.7.7
