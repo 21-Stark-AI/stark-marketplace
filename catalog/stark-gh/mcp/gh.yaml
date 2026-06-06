@@ -1,0 +1,11 @@
+name: gh
+type: mcp
+description: GitHub MCP server.
+version: 0.1.0
+runtimes: [claude, codex, gemini]
+mcp:
+  transport: stdio
+  command: node
+  args: ["gh-mcp-server.js"]
+  env:
+    GITHUB_TOKEN: { secretRef: stark-gh-token }

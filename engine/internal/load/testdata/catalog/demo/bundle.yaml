@@ -1,0 +1,7 @@
+name: demo
+version: 0.1.0
+description: demo bundle
+owner: { name: Evinced }
+category: examples
+tags: [demo]
+runtimes: [claude, codex, gemini]

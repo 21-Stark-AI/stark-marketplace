@@ -1,7 +1,8 @@
 .superpowers/
 .DS_Store
 node_modules/
-dist/
+dist/codex/
+dist/gemini/
 *.log
 .env
 .env.*

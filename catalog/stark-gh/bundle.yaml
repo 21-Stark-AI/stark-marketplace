@@ -1,0 +1,9 @@
+name: stark-gh
+version: 0.1.0
+description: GitHub workflow commands + MCP for stark.
+category: productivity
+tags: [github, pr, workflow]
+owner: { name: Evinced, email: engineering@evinced.com }
+maturity: beta
+runtimes: [claude, codex, gemini]
+homepage: https://github.com/GetEvinced/stark-marketplace/tree/main/catalog/stark-gh
