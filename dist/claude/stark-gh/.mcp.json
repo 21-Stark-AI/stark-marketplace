@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "gh": {
+      "args": [
+        "gh-mcp-server.js"
+      ],
+      "command": "node",
+      "env": {
+        "GITHUB_TOKEN": {
+          "secretRef": "stark-gh-token"
+        }
+      },
+      "transport": "stdio"
+    }
+  }
+}

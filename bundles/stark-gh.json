@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "bundle": {
+    "name": "stark-gh",
+    "version": "0.1.0",
+    "description": "GitHub workflow commands + MCP for stark.",
+    "category": "productivity",
+    "tags": [
+      "github",
+      "pr",
+      "workflow"
+    ],
+    "owner": "Evinced",
+    "maturity": "beta",
+    "homepage": "https://github.com/GetEvinced/stark-marketplace/tree/main/catalog/stark-gh"
+  },
+  "artifacts": [
+    {
+      "name": "pr-open",
+      "type": "command",
+      "description": "Open or update a PR with Codex-drafted prose.",
+      "version": "0.1.0",
+      "runtimes": [
+        "claude",
+        "codex",
+        "gemini"
+      ],
+      "support": {
+        "claude": "native"
+      },
+      "requires": [],
+      "diverged": false,
+      "outputs": {
+        "claude": [
+          {
+            "path": "commands/pr-open.md",
+            "kind": "file",
+            "emulated": false
+          }
+        ]
+      },
+      "fidelityNotes": {
+        "claude": "native"
+      }
+    },
+    {
+      "name": "gh",
+      "type": "mcp",
+      "description": "GitHub MCP server.",
+      "version": "0.1.0",
+      "runtimes": [
+        "claude",
+        "codex",
+        "gemini"
+      ],
+      "support": {
+        "claude": "native"
+      },
+      "requires": [],
+      "diverged": false,
+      "outputs": {
+        "claude": [
+          {
+            "path": ".mcp.json",
+            "kind": "mergeJSONKey",
+            "key": "mcpServers.gh",
+            "emulated": false
+          }
+        ]
+      },
+      "fidelityNotes": {
+        "claude": "native"
+      }
+    }
+  ]
+}
