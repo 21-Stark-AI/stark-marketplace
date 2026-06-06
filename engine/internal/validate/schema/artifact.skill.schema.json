@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "stark:artifact.skill",
+  "type": "object",
+  "required": ["name", "type", "description", "version"],
+  "additionalProperties": false,
+  "properties": {
+    "name": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{0,63}$" },
+    "type": { "const": "skill" },
+    "description": { "type": "string", "minLength": 1 },
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "tags": { "type": "array", "items": { "type": "string" } },
+    "category": { "type": "string" },
+    "maturity": { "enum": ["experimental", "beta", "stable", "deprecated"] },
+    "summary": { "type": "string" },
+    "runtimes": { "type": "array", "items": { "enum": ["claude", "codex", "gemini"] } },
+    "requires": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["type", "ref"],
+        "additionalProperties": false,
+        "properties": {
+          "type": { "enum": ["skill", "prompt", "command", "agent", "mcp"] },
+          "ref": { "type": "string", "pattern": "^[a-z0-9][a-z0-9/-]{0,128}$" }
+        }
+      }
+    },
+    "model": { "type": "string" },
+    "disable-model-invocation": { "type": "boolean" },
+    "allowed-tools": { "type": "array", "items": { "type": "string" } },
+    "overrides": { "type": "object" }
+  }
+}

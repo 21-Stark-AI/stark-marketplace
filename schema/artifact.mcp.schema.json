@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "stark:artifact.mcp",
+  "type": "object",
+  "required": ["name", "type", "description", "version", "mcp"],
+  "additionalProperties": false,
+  "properties": {
+    "name": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{0,63}$" },
+    "type": { "const": "mcp" },
+    "description": { "type": "string", "minLength": 1 },
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "tags": { "type": "array", "items": { "type": "string" } },
+    "category": { "type": "string" },
+    "maturity": { "enum": ["experimental", "beta", "stable", "deprecated"] },
+    "summary": { "type": "string" },
+    "runtimes": { "type": "array", "items": { "enum": ["claude", "codex", "gemini"] } },
+    "requires": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["type", "ref"],
+        "additionalProperties": false,
+        "properties": {
+          "type": { "enum": ["skill", "prompt", "command", "agent", "mcp"] },
+          "ref": { "type": "string", "pattern": "^[a-z0-9][a-z0-9/-]{0,128}$" }
+        }
+      }
+    },
+    "overrides": { "type": "object" },
+    "mcp": {
+      "type": "object",
+      "required": ["transport"],
+      "additionalProperties": false,
+      "properties": {
+        "transport": { "enum": ["stdio", "http"] },
+        "command": { "type": "string" },
+        "args": { "type": "array", "items": { "type": "string" } },
+        "url": { "type": "string" },
+        "env": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["secretRef"],
+            "additionalProperties": false,
+            "properties": { "secretRef": { "type": "string" } }
+          }
+        }
+      }
+    }
+  }
+}
