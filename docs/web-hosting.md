@@ -67,9 +67,11 @@ browser → marketplace.evinced.rocks
 | runtime SA, CI SA + WIF, GAR, NEG, IAP backend, host rule, DNS, registry slot 16 | `infra-ai-platform` (`infra/stark-marketplace.tf`) | all infra primitives |
 
 **Cloud Run posture:** `--ingress internal-and-cloud-load-balancing` blocks the
-public `*.run.app` URL (only the external LB reaches the service);
-`--allow-unauthenticated` because IAP is the gate (ingress + IAP = the only path
-in, no `run.invoker` dance).
+public `*.run.app` URL (only the external LB reaches the service). The LB →
+Cloud Run hop on a serverless NEG carries no Cloud Run IAM token, so the service
+needs an `allUsers` `run.invoker` binding — **owned by Terraform** (gated), so the
+deploy SA (`run.developer`) never calls `setIamPolicy`. Safe because ingress
+restricts the path to the LB and **IAP gates every user at the edge**.
 
 **Required repo variables** (Settings → Secrets and variables → Actions → Variables),
 set from the Terraform outputs after the infra PR applies:
