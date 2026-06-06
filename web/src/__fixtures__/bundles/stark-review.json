@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "bundle": {
+    "name": "stark-review",
+    "version": "0.7.0",
+    "description": "Multi-agent PR review toolkit.",
+    "category": "code-review",
+    "tags": ["pr", "review"],
+    "maturity": "stable",
+    "owner": "Evinced",
+    "homepage": "https://github.com/GetEvinced/stark-marketplace/tree/main/catalog/stark-review"
+  },
+  "artifacts": [
+    {
+      "name": "stark-review",
+      "type": "skill",
+      "description": "Single-agent PR review with triage-selected domains.",
+      "version": "0.7.0",
+      "runtimes": ["claude", "codex", "gemini"],
+      "support": { "claude": "native", "codex": "native", "gemini": "emulated" },
+      "requires": [{ "type": "skill", "ref": "stark-session" }],
+      "diverged": false,
+      "outputs": {
+        "claude": [{ "path": "skills/stark-review/SKILL.md", "kind": "file", "emulated": false }],
+        "codex": [{ "path": ".agents/skills/stark-review/SKILL.md", "kind": "file", "emulated": false }],
+        "gemini": [{ "path": "GEMINI.md", "kind": "sentinel", "sentinel": "stark-review/stark-review", "emulated": true }]
+      },
+      "fidelityNotes": {
+        "gemini": "EMULATED — derived shape; may not auto-activate; verify."
+      }
+    },
+    {
+      "name": "review",
+      "type": "command",
+      "description": "Run a PR review.",
+      "version": "0.7.0",
+      "runtimes": ["claude", "codex", "gemini"],
+      "support": { "claude": "native", "codex": "native", "gemini": "native" },
+      "requires": [],
+      "diverged": false,
+      "outputs": {
+        "claude": [{ "path": "commands/review.md", "kind": "file", "emulated": false }],
+        "codex": [{ "path": ".agents/skills/review/SKILL.md", "kind": "file", "emulated": false }],
+        "gemini": [{ "path": ".gemini/commands/review.toml", "kind": "file", "emulated": false }]
+      },
+      "fidelityNotes": {}
+    }
+  ]
+}
