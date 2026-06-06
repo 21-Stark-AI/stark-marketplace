@@ -45,3 +45,28 @@ func TestOutputUniquenessNoFalsePositive(t *testing.T) {
 		t.Fatalf("distinct names should not collide: %+v", r2.Errors)
 	}
 }
+
+func TestCodexAgentFoldsIntoSkillNamespace(t *testing.T) {
+	// CC-7: on Codex, skill and agent share one namespace (both → .agents/skills/).
+	if outputNamespace(model.TypeSkill, model.RuntimeCodex) != outputNamespace(model.TypeAgent, model.RuntimeCodex) {
+		t.Fatal("codex agent must share the skill-like namespace (CC-7)")
+	}
+	// Guard: the fold is Codex-only. On Gemini, skill/agent emulate into distinct
+	// GEMINI.md sentinel blocks (no filename collision) → distinct namespaces.
+	if outputNamespace(model.TypeSkill, model.RuntimeGemini) == outputNamespace(model.TypeAgent, model.RuntimeGemini) {
+		t.Fatal("gemini skill/agent emulate to distinct sentinel blocks; must NOT share a namespace")
+	}
+}
+
+func TestCodexSkillAgentNameCollision(t *testing.T) {
+	// A Codex skill "x" and agent "x" overwrite each other → must error (CC-7).
+	b := &model.Bundle{Name: "demo", Runtimes: []model.Runtime{model.RuntimeCodex}, Artifacts: []*model.Artifact{
+		{Name: "x", Type: model.TypeSkill, Runtimes: []model.Runtime{model.RuntimeCodex}},
+		{Name: "x", Type: model.TypeAgent, Runtimes: []model.Runtime{model.RuntimeCodex}},
+	}}
+	r := &Result{}
+	checkOutputUniqueness(r, b)
+	if !r.HasErrors() {
+		t.Fatal("codex skill+agent name collision must error (CC-7)")
+	}
+}

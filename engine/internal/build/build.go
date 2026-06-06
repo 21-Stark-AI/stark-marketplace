@@ -63,7 +63,10 @@ func Build(cat *model.Catalog) (Output, error) {
 	}
 
 	// index.json + bundles/<name>.json
-	idx, details := index.Build(cat)
+	idx, details, err := index.Build(cat)
+	if err != nil {
+		return Output{}, err
+	}
 	idxBytes, err := canonjson.Marshal(idx)
 	if err != nil {
 		return Output{}, err
