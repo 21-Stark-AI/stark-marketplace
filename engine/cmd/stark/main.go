@@ -15,6 +15,7 @@ func main() {
 		SilenceErrors: true,
 	}
 	root.AddCommand(newValidateCmd())
+	root.AddCommand(newImportCmd())
 	root.AddCommand(newBuildCmd())
 	root.AddCommand(newCheckBumpsCmd())
 	root.AddCommand(newSearchCmd())
