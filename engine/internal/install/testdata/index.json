@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "artifacts": [
+    { "name": "agentmd", "type": "agent", "bundle": "multi", "version": "1.0.0",
+      "support": { "claude": "native", "codex": "emulated", "gemini": "emulated" } },
+    { "name": "srv", "type": "mcp", "bundle": "multi", "version": "1.0.0",
+      "support": { "claude": "native", "codex": "native", "gemini": "native" } },
+    { "name": "hello", "type": "command", "bundle": "multi", "version": "1.0.0",
+      "support": { "claude": "native", "codex": "native", "gemini": "native" } }
+  ]
+}

@@ -17,6 +17,12 @@ func main() {
 	root.AddCommand(newValidateCmd())
 	root.AddCommand(newBuildCmd())
 	root.AddCommand(newCheckBumpsCmd())
+	root.AddCommand(newSearchCmd())
+	root.AddCommand(newInfoCmd())
+	root.AddCommand(newInstallCmd(realAdapter))
+	root.AddCommand(newDoctorCmd())
+	root.AddCommand(newVersionCmd())
+	root.AddCommand(newSelfUpdateCmd())
 	if err := root.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, "error:", err)
 		if ec, ok := err.(interface{ ExitCode() int }); ok {

@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "bundle": { "name": "multi", "version": "1.0.0", "description": "multi-runtime",
+              "category": "demo", "tags": ["demo"], "owner": "stark", "maturity": "beta" },
+  "artifacts": [
+    { "name": "hello", "type": "command", "version": "1.0.0",
+      "runtimes": ["claude","codex","gemini"],
+      "support": { "claude": "native", "codex": "native", "gemini": "native" },
+      "diverged": false,
+      "outputs": {
+        "claude": [{ "path": "commands/hello.md", "kind": "file" }],
+        "codex":  [{ "path": ".agents/skills/hello/SKILL.md", "kind": "file" }],
+        "gemini": [{ "path": ".gemini/commands/hello.toml", "kind": "file" }] } },
+    { "name": "srv", "type": "mcp", "version": "1.0.0",
+      "runtimes": ["claude","codex","gemini"],
+      "support": { "claude": "native", "codex": "native", "gemini": "native" },
+      "diverged": false,
+      "mcp": { "transport": "stdio", "command": "node", "args": ["srv.js"] },
+      "outputs": {
+        "claude": [{ "path": ".mcp.json", "kind": "mergeJSONKey", "key": "mcpServers.srv" }],
+        "codex":  [{ "path": "config.toml", "kind": "mergeTOMLKey", "key": "mcp_servers.srv" }],
+        "gemini": [{ "path": "settings.json", "kind": "mergeJSONKey", "key": "mcpServers.srv" }] } },
+    { "name": "agentmd", "type": "agent", "version": "1.0.0",
+      "runtimes": ["claude","codex","gemini"],
+      "support": { "claude": "native", "codex": "emulated", "gemini": "emulated" },
+      "diverged": false,
+      "outputs": {
+        "claude": [{ "path": "agents/agentmd.md", "kind": "file" }],
+        "codex":  [{ "path": ".agents/skills/agentmd/SKILL.md", "kind": "file", "emulated": true }],
+        "gemini": [{ "path": "GEMINI.md", "kind": "sentinel", "sentinel": "multi/agentmd", "emulated": true }] } }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "artifacts": [
+    { "name": "pr-open", "type": "command", "bundle": "stark-gh", "tags": ["github","pr"],
+      "category": "productivity", "maturity": "beta", "version": "0.1.0",
+      "support": { "claude": "native", "codex": "native", "gemini": "native" },
+      "digest": "sha256:cmd0000" },
+    { "name": "gh", "type": "mcp", "bundle": "stark-gh", "tags": ["github"],
+      "category": "productivity", "maturity": "beta", "version": "0.1.0",
+      "support": { "claude": "native", "codex": "native", "gemini": "native" },
+      "digest": "sha256:mcp0000" }
+  ]
+}
