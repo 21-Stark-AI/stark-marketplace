@@ -6,6 +6,42 @@
   },
   "plugins": [
     {
+      "name": "stark-analyze",
+      "source": "./dist/claude/stark-analyze",
+      "description": "Multi-domain review and adversarial red-team of designs, execution plans, and PRs, plus review-prompt improvement from assessment feedback. Maps to spec-kit's analyze phase.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Evinced",
+        "email": "engineering@evinced.com"
+      },
+      "category": "review",
+      "tags": [
+        "review",
+        "red-team",
+        "quality",
+        "analyze"
+      ],
+      "strict": true
+    },
+    {
+      "name": "stark-constitution",
+      "source": "./dist/claude/stark-constitution",
+      "description": "Project setup and session priming — scaffold a dev-docs/standards structure (template/backfill/upgrade modes) and assign a session persona. Maps to spec-kit's constitution phase.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Evinced",
+        "email": "engineering@evinced.com"
+      },
+      "category": "setup",
+      "tags": [
+        "setup",
+        "docs",
+        "persona",
+        "constitution"
+      ],
+      "strict": true
+    },
+    {
       "name": "stark-gh",
       "source": "./dist/claude/stark-gh",
       "description": "GitHub workflow commands + MCP for stark.",
@@ -19,6 +55,60 @@
         "github",
         "pr",
         "workflow"
+      ],
+      "strict": true
+    },
+    {
+      "name": "stark-implement",
+      "source": "./dist/claude/stark-implement",
+      "description": "Autonomously execute a development phase end-to-end — implement, PR, review, fix, merge, release — via a paired lead/wing agent loop. Maps to spec-kit's implement phase.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Evinced",
+        "email": "engineering@evinced.com"
+      },
+      "category": "implementation",
+      "tags": [
+        "implementation",
+        "automation",
+        "lead-wing",
+        "autonomous"
+      ],
+      "strict": true
+    },
+    {
+      "name": "stark-ops",
+      "source": "./dist/claude/stark-ops",
+      "description": "Repository operations beyond the spec-driven pipeline — cut releases, housekeep stale issues/branches/worktrees, run session start/end, and switch GitHub identities.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Evinced",
+        "email": "engineering@evinced.com"
+      },
+      "category": "ops",
+      "tags": [
+        "release",
+        "housekeeping",
+        "session",
+        "git"
+      ],
+      "strict": true
+    },
+    {
+      "name": "stark-plan",
+      "source": "./dist/claude/stark-plan",
+      "description": "Turn a design doc into a phased implementation plan, then decompose it into phased GitHub issues with story points and risk labels. Maps to spec-kit's plan + tasks phases.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Evinced",
+        "email": "engineering@evinced.com"
+      },
+      "category": "planning",
+      "tags": [
+        "planning",
+        "plan",
+        "tasks",
+        "issues"
       ],
       "strict": true
     }

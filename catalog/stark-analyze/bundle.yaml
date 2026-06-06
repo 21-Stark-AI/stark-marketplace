@@ -1,0 +1,15 @@
+name: stark-analyze
+version: 0.1.0
+description: Multi-domain review and adversarial red-team of designs, execution plans, and PRs, plus review-prompt improvement from assessment feedback. Maps to spec-kit's analyze phase.
+category: review
+tags:
+  - review
+  - red-team
+  - quality
+  - analyze
+owner:
+  name: Evinced
+  email: engineering@evinced.com
+maturity: beta
+runtimes:
+  - claude

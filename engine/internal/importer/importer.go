@@ -33,25 +33,28 @@ func (r *ImportResult) note(where, field, note string) {
 
 // Options configures a single bundle-by-bundle import (spec §12).
 type Options struct {
-	From   string // path to a stark-skills checkout
-	Bundle string // target catalog bundle name
+	From   string   // path to a stark-skills checkout
+	Bundle string   // target catalog bundle name
+	Skills []string // optional: import ONLY these skill names (nil/empty = every skill under skill/)
 }
 
 // Import reads a stark-skills checkout and produces ONE canonical bundle in memory
 // plus a human-metadata checklist. Pure: no writes, no network (the CLI does I/O).
+// Source selection is bundle-by-bundle: skills are taken from skill/ (all, or the
+// Skills subset), and a same-named plugin is taken from plugins/<bundle> when present.
 func Import(opts Options) (*ImportResult, error) {
 	if opts.Bundle == "" {
 		return nil, errors.New("import: --bundle is required")
 	}
 	res := &ImportResult{Bundle: newBundle(opts.Bundle)}
-	if err := importSkills(opts.From, opts.Bundle, res); err != nil {
+	if err := importSkills(opts.From, opts.Bundle, opts.Skills, res); err != nil {
 		return nil, err
 	}
 	if err := importPlugin(opts.From, opts.Bundle, res); err != nil {
 		return nil, err
 	}
 	if len(res.Bundle.Artifacts) == 0 {
-		return nil, errors.New("import: nothing to import (no skill/ or plugins/stark-gh under --from)")
+		return nil, errors.New("import: nothing to import (no matching skill/ entries or plugins/" + opts.Bundle + " under --from)")
 	}
 	finalizeBundle(res)
 	return res, nil

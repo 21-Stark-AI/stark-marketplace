@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "bundle": {
+    "name": "stark-plan",
+    "version": "0.1.0",
+    "description": "Turn a design doc into a phased implementation plan, then decompose it into phased GitHub issues with story points and risk labels. Maps to spec-kit's plan + tasks phases.",
+    "category": "planning",
+    "tags": [
+      "planning",
+      "plan",
+      "tasks",
+      "issues"
+    ],
+    "owner": "Evinced",
+    "maturity": "beta"
+  },
+  "artifacts": [
+    {
+      "name": "stark-design-to-plan",
+      "type": "skill",
+      "description": "Convert design docs into phased implementation plans via paired lead/wing agents. Lead drafts, wing reviews, fix-loop until approved. Use for plan from design/spec.",
+      "version": "0.1.0",
+      "runtimes": [
+        "claude"
+      ],
+      "support": {
+        "claude": "native"
+      },
+      "requires": [],
+      "diverged": false,
+      "outputs": {
+        "claude": [
+          {
+            "path": "skills/stark-design-to-plan/SKILL.md",
+            "kind": "file",
+            "emulated": false
+          }
+        ]
+      },
+      "fidelityNotes": {}
+    },
+    {
+      "name": "stark-plan-to-tasks",
+      "type": "skill",
+      "description": "Decompose spec/plan into phased GitHub issues with story points and risk labels. Use for plan to tasks, decompose plan.",
+      "version": "0.1.0",
+      "runtimes": [
+        "claude"
+      ],
+      "support": {
+        "claude": "native"
+      },
+      "requires": [],
+      "diverged": false,
+      "outputs": {
+        "claude": [
+          {
+            "path": "skills/stark-plan-to-tasks/SKILL.md",
+            "kind": "file",
+            "emulated": false
+          }
+        ]
+      },
+      "fidelityNotes": {}
+    }
+  ]
+}

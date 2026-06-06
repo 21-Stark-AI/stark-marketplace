@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "bundle": {
+    "name": "stark-implement",
+    "version": "0.1.0",
+    "description": "Autonomously execute a development phase end-to-end — implement, PR, review, fix, merge, release — via a paired lead/wing agent loop. Maps to spec-kit's implement phase.",
+    "category": "implementation",
+    "tags": [
+      "implementation",
+      "automation",
+      "lead-wing",
+      "autonomous"
+    ],
+    "owner": "Evinced",
+    "maturity": "beta"
+  },
+  "artifacts": [
+    {
+      "name": "stark-copilot",
+      "type": "skill",
+      "description": "Autonomous lead/wing implementation: lead subagent implements, wing subagent reviews, fix-loop until wing approves. Use for copilot, paired build.",
+      "version": "0.1.0",
+      "runtimes": [
+        "claude"
+      ],
+      "support": {
+        "claude": "native"
+      },
+      "requires": [],
+      "diverged": false,
+      "outputs": {
+        "claude": [
+          {
+            "path": "skills/stark-copilot/SKILL.md",
+            "kind": "file",
+            "emulated": false
+          }
+        ]
+      },
+      "fidelityNotes": {}
+    },
+    {
+      "name": "stark-phase-execute",
+      "type": "skill",
+      "description": "Autonomously execute a dev phase: implement tasks, PR, review, fix, merge, release. Use for execute phase, run plan.",
+      "version": "0.1.0",
+      "runtimes": [
+        "claude"
+      ],
+      "support": {
+        "claude": "native"
+      },
+      "requires": [],
+      "diverged": false,
+      "outputs": {
+        "claude": [
+          {
+            "path": "skills/stark-phase-execute/SKILL.md",
+            "kind": "file",
+            "emulated": false
+          }
+        ]
+      },
+      "fidelityNotes": {}
+    }
+  ]
+}

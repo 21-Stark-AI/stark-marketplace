@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/GetEvinced/stark-marketplace/engine/internal/importer"
 	"github.com/spf13/cobra"
@@ -12,13 +13,25 @@ type importOpts struct {
 	from   string
 	bundle string
 	dest   string // catalog dir to write under (default "catalog")
+	skills string // optional comma-separated subset of skill names (empty = all)
 	dryRun bool
+}
+
+// splitCSV parses a comma-separated flag into a trimmed, non-empty slice (nil when blank).
+func splitCSV(s string) []string {
+	var out []string
+	for _, p := range strings.Split(s, ",") {
+		if p = strings.TrimSpace(p); p != "" {
+			out = append(out, p)
+		}
+	}
+	return out
 }
 
 // runImport scaffolds a canonical bundle from a stark-skills checkout (local only —
 // NOT publish; spec §12). Returns an exit code per spec §9.8 (0 ok, 1 error).
 func runImport(o importOpts) int {
-	res, err := importer.Import(importer.Options{From: o.from, Bundle: o.bundle})
+	res, err := importer.Import(importer.Options{From: o.from, Bundle: o.bundle, Skills: splitCSV(o.skills)})
 	if err != nil {
 		fmt.Println("import error:", err)
 		return 1
@@ -55,7 +68,7 @@ func printChecklist(res *importer.ImportResult) {
 func newImportCmd() *cobra.Command {
 	o := importOpts{dest: "catalog"}
 	cmd := &cobra.Command{
-		Use:   "import --from <stark-skills path> --bundle <name> [--dry-run]",
+		Use:   "import --from <stark-skills path> --bundle <name> [--skills a,b,c] [--dry-run]",
 		Short: "Scaffold a canonical bundle from a stark-skills checkout (local; not publish)",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if o.from == "" || o.bundle == "" {
@@ -69,6 +82,7 @@ func newImportCmd() *cobra.Command {
 	}
 	cmd.Flags().StringVar(&o.from, "from", "", "path to a stark-skills checkout")
 	cmd.Flags().StringVar(&o.bundle, "bundle", "", "target catalog bundle name")
+	cmd.Flags().StringVar(&o.skills, "skills", "", "comma-separated skill names to import (default: all skills under skill/)")
 	cmd.Flags().StringVar(&o.dest, "dest", "catalog", "catalog dir to write the bundle under")
 	cmd.Flags().BoolVar(&o.dryRun, "dry-run", false, "print the plan without writing")
 	return cmd

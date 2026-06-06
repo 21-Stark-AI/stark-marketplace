@@ -1,0 +1,15 @@
+name: stark-ops
+version: 0.1.0
+description: Repository operations beyond the spec-driven pipeline — cut releases, housekeep stale issues/branches/worktrees, run session start/end, and switch GitHub identities.
+category: ops
+tags:
+  - release
+  - housekeeping
+  - session
+  - git
+owner:
+  name: Evinced
+  email: engineering@evinced.com
+maturity: beta
+runtimes:
+  - claude

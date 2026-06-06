@@ -61,10 +61,34 @@ func decodeFrontmatter(fm []byte) (raw map[string]any, sanitized bool, err error
 	return raw, sanitized, nil
 }
 
-// importSkills walks <from>/skill/<name>/SKILL.md and maps each to a model.Artifact.
-// Missing skill/ dir is not an error (a plugin-only import is valid).
-func importSkills(from, bundle string, res *ImportResult) error {
+// importSkills maps <from>/skill/<name>/SKILL.md files into the bundle. When `only` is
+// non-empty, exactly those skills are imported in the given order and a missing/typo'd name
+// is a hard error (fail-closed — you get the bundle you asked for). When `only` is empty,
+// every skill under skill/ is imported in sorted order. A missing skill/ dir is not an error
+// (a plugin-only import is valid).
+func importSkills(from, bundle string, only []string, res *ImportResult) error {
 	skillRoot := filepath.Join(from, "skill")
+
+	if len(only) > 0 {
+		seen := make(map[string]bool, len(only))
+		for _, name := range only {
+			if seen[name] {
+				return fmt.Errorf("skill %q: duplicated in the requested set", name)
+			}
+			seen[name] = true
+			path := filepath.Join(skillRoot, name, "SKILL.md")
+			if _, err := os.Stat(path); err != nil {
+				return fmt.Errorf("skill %q: not found under %s (%w)", name, skillRoot, err)
+			}
+			a, err := mapSkillFile(path, bundle, res)
+			if err != nil {
+				return fmt.Errorf("skill %s: %w", name, err)
+			}
+			res.Bundle.Artifacts = append(res.Bundle.Artifacts, a)
+		}
+		return nil
+	}
+
 	entries, err := os.ReadDir(skillRoot)
 	if os.IsNotExist(err) {
 		return nil

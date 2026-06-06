@@ -22,10 +22,11 @@ type pluginManifest struct {
 	} `json:"author"`
 }
 
-// importPlugin maps plugins/stark-gh (commands + optional mcp) into the bundle.
-// Missing plugin dir is not an error (a skill-only import is valid).
+// importPlugin maps plugins/<bundle> (commands + optional mcp) into the bundle, so a
+// skills bundle (no matching plugin dir) pulls only skills and a plugin bundle pulls its
+// plugin. Missing plugin dir is not an error (a skill-only import is valid).
 func importPlugin(from, bundle string, res *ImportResult) error {
-	pluginDir := filepath.Join(from, "plugins", "stark-gh")
+	pluginDir := filepath.Join(from, "plugins", bundle)
 	if _, err := os.Stat(pluginDir); os.IsNotExist(err) {
 		return nil
 	}
