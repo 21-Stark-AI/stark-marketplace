@@ -40,6 +40,7 @@ func Catalog(cat *model.Catalog) *Result {
 			checkRuntimesNarrowing(r, where, a, b)
 			checkSecurity(r, where, a)
 			checkFences(r, where, a)
+			checkCapability(r, where, a)
 		}
 		checkOutputUniqueness(r, b)
 	}

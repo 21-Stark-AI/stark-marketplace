@@ -26,7 +26,9 @@
         "gemini"
       ],
       "support": {
-        "claude": "native"
+        "claude": "native",
+        "codex": "native",
+        "gemini": "native"
       },
       "requires": [],
       "diverged": false,
@@ -37,11 +39,23 @@
             "kind": "file",
             "emulated": false
           }
+        ],
+        "codex": [
+          {
+            "path": ".agents/skills/pr-open/SKILL.md",
+            "kind": "file",
+            "emulated": false
+          }
+        ],
+        "gemini": [
+          {
+            "path": ".gemini/commands/pr-open.toml",
+            "kind": "file",
+            "emulated": false
+          }
         ]
       },
-      "fidelityNotes": {
-        "claude": "native"
-      }
+      "fidelityNotes": {}
     },
     {
       "name": "gh",
@@ -54,7 +68,9 @@
         "gemini"
       ],
       "support": {
-        "claude": "native"
+        "claude": "native",
+        "codex": "native",
+        "gemini": "native"
       },
       "requires": [],
       "diverged": false,
@@ -66,11 +82,25 @@
             "key": "mcpServers.gh",
             "emulated": false
           }
+        ],
+        "codex": [
+          {
+            "path": "config.toml",
+            "kind": "mergeTOMLKey",
+            "key": "mcp_servers.gh",
+            "emulated": false
+          }
+        ],
+        "gemini": [
+          {
+            "path": "settings.json",
+            "kind": "mergeJSONKey",
+            "key": "mcpServers.gh",
+            "emulated": false
+          }
         ]
       },
-      "fidelityNotes": {
-        "claude": "native"
-      }
+      "fidelityNotes": {}
     }
   ]
 }

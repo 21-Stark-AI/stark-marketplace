@@ -35,10 +35,13 @@ func checkRuntimesNarrowing(r *Result, where string, a *model.Artifact, b *model
 func outputNamespace(t model.ArtifactType, rt model.Runtime) string {
 	switch rt {
 	case model.RuntimeCodex:
-		// skill, prompt, command all collapse toward a prompt/skill namespace
+		// On Codex, skill/prompt/command AND agent all emit
+		// .agents/skills/<name>/SKILL.md (agent is emulated as a skill), so they
+		// share one output namespace — a skill "x" and agent "x" would overwrite
+		// each other and MUST be reported as a collision (CC-7 / plan 03 Task 17).
 		switch t {
-		case model.TypeSkill, model.TypePrompt, model.TypeCommand:
-			return "codex:cmdlike"
+		case model.TypeSkill, model.TypePrompt, model.TypeCommand, model.TypeAgent:
+			return "codex:skilllike"
 		default:
 			return "codex:" + string(t)
 		}

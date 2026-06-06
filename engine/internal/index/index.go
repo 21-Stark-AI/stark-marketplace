@@ -4,10 +4,11 @@
 package index
 
 import (
+	"fmt"
 	"strings"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/adapter"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/adapter/claude"
+	"github.com/GetEvinced/stark-marketplace/engine/internal/adapter/capability"
+	"github.com/GetEvinced/stark-marketplace/engine/internal/adapter/registry"
 	"github.com/GetEvinced/stark-marketplace/engine/internal/digest"
 	"github.com/GetEvinced/stark-marketplace/engine/internal/merge"
 	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
@@ -74,8 +75,8 @@ type DetailEntry struct {
 	Support       map[string]string   `json:"support"`       // runtime -> native|emulated|unsupported
 	Requires      []Requirement       `json:"requires"`      // [] not null
 	Diverged      bool                `json:"diverged"`
-	Outputs       map[string][]Output `json:"outputs"`       // runtime -> output files (claude only in slice 2)
-	FidelityNotes map[string]string   `json:"fidelityNotes"` // runtime -> note (claude only in slice 2)
+	Outputs       map[string][]Output `json:"outputs"`       // runtime -> emitted files
+	FidelityNotes map[string]string   `json:"fidelityNotes"` // runtime -> note (emulated only)
 }
 
 // Requirement is a dependency reference (CC-3).
@@ -94,66 +95,65 @@ type Output struct {
 	Emulated bool   `json:"emulated"`
 }
 
-// supportFor returns the capability badge for (type, runtime). Slice 2 implements
-// Claude only; Codex/Gemini badges are filled by slice 3's capability matrix.
+// supportFor returns the capability badge for (type, runtime) from the versioned
+// matrix (§6) — native | emulated | unsupported (CC-4: all runtimes, not claude-only).
 func supportFor(t model.ArtifactType, rt model.Runtime) string {
-	if rt == model.RuntimeClaude {
-		return string(model.SupportNative) // all five types are native on Claude (spec §6)
-	}
-	return "" // unknown until slice 3 wires the matrix
+	return string(capability.Level(t, rt))
 }
 
-// claudeOutputsByArtifact renders the bundle with the Claude target and groups
-// the resulting output paths by artifact name. The Claude path convention
-// (skills/<name>/SKILL.md, commands/<name>.md, agents/<name>.md, .mcp.json) lets
-// us attribute each file back to its artifact deterministically.
-func claudeOutputsByArtifact(b *model.Bundle) map[string][]Output {
-	files, _, err := claude.New().Render(b)
-	if err != nil {
-		return map[string][]Output{} // render errors surface in the build orchestrator
-	}
-	byArtifact := map[string][]Output{}
-	for _, a := range b.Artifacts {
-		for _, f := range claudeFilesForArtifact(a, files) {
-			byArtifact[a.Name] = append(byArtifact[a.Name], f)
-		}
-	}
-	return byArtifact
-}
-
-// claudeFilesForArtifact picks the OutputFiles that belong to artifact a, mapping
-// each to a CC-3 Output. MCP artifacts contribute a mergeJSONKey row keyed by name.
-func claudeFilesForArtifact(a *model.Artifact, files []adapter.OutputFile) []Output {
-	var out []Output
-	switch a.Type {
-	case model.TypeMCP:
-		for _, f := range files {
-			if f.Path == ".mcp.json" {
-				out = append(out, Output{Path: ".mcp.json", Kind: "mergeJSONKey", Key: "mcpServers." + a.Name})
-			}
-		}
+// classifyOutput maps one emitted file path to its CC-3 kind (+ key/sentinel).
+// The classification is by the install-merge strategy the file implies:
+//   - .mcp.json / settings.json → mergeJSONKey (mcpServers.<name>)
+//   - config.toml               → mergeTOMLKey (mcp_servers.<name>)
+//   - GEMINI.md / AGENTS.md      → sentinel (<bundle>/<name>)
+//   - everything else            → file
+func classifyOutput(a *model.Artifact, path string) Output {
+	switch {
+	case strings.HasSuffix(path, ".mcp.json"), strings.HasSuffix(path, "settings.json"):
+		return Output{Path: path, Kind: "mergeJSONKey", Key: "mcpServers." + a.Name}
+	case strings.HasSuffix(path, "config.toml"):
+		return Output{Path: path, Kind: "mergeTOMLKey", Key: "mcp_servers." + a.Name}
+	case strings.HasSuffix(path, "GEMINI.md"), strings.HasSuffix(path, "AGENTS.md"):
+		return Output{Path: path, Kind: "sentinel", Sentinel: a.Bundle + "/" + a.Name}
 	default:
-		var prefix string
-		switch a.Type {
-		case model.TypeSkill:
-			prefix = "skills/" + a.Name + "/"
-		case model.TypeCommand, model.TypePrompt:
-			prefix = "commands/" + a.Name + "."
-		case model.TypeAgent:
-			prefix = "agents/" + a.Name + "."
+		return Output{Path: path, Kind: "file"}
+	}
+}
+
+// runtimeOutputs renders the artifact through each targeted runtime's adapter
+// (CC-4) and records the emitted files by CC-3 kind, plus a fidelity note for
+// emulated runtimes. Render is deterministic, so this is byte-attributable to the
+// dist tree the build orchestrator emits.
+func runtimeOutputs(a *model.Artifact) (map[string][]Output, map[string]string, error) {
+	outputs := map[string][]Output{}
+	fidelity := map[string]string{}
+	reg := registry.All()
+	for _, rt := range a.Runtimes {
+		tgt, ok := reg[rt]
+		if !ok {
+			continue
+		}
+		emulated := capability.Level(a.Type, rt) == model.SupportEmulated
+		files, _, err := tgt.Render(&model.Bundle{Name: a.Bundle, Artifacts: []*model.Artifact{a}})
+		if err != nil {
+			// A render error on a runtime the artifact opted into is a real fault;
+			// surface it (the build verb only renders claude, so nothing else would).
+			return nil, nil, fmt.Errorf("render %s/%s on %s: %w", a.Bundle, a.Name, rt, err)
 		}
 		for _, f := range files {
-			if prefix != "" && strings.HasPrefix(f.Path, prefix) {
-				out = append(out, Output{Path: f.Path, Kind: "file"})
-			}
+			o := classifyOutput(a, f.Path)
+			o.Emulated = emulated
+			outputs[string(rt)] = append(outputs[string(rt)], o)
+		}
+		if emulated {
+			fidelity[string(rt)] = "emulated — derived shape; may not auto-activate on this runtime; verify."
 		}
 	}
-	return out
+	return outputs, fidelity, nil
 }
 
 // divergedOnClaude reports whether the artifact uses an annotated full-body
-// override for the Claude runtime (author divergence, in scope this slice). It
-// only resolves when the artifact actually targets Claude.
+// override for the Claude runtime (author divergence, in scope since slice 2).
 func divergedOnClaude(a *model.Artifact) bool {
 	for _, rt := range a.Runtimes {
 		if rt == model.RuntimeClaude {
@@ -164,25 +164,32 @@ func divergedOnClaude(a *model.Artifact) bool {
 	return false
 }
 
-// Build returns the lean index and a map of bundle-name -> CC-3 detail.
-func Build(cat *model.Catalog) (Index, map[string]BundleDetail) {
+// adapterVersions lists the version of every runtime target that contributes to
+// this index (CC-2 generatedBy). Sourced from the registry so a target bump shows up.
+func adapterVersions() map[string]string {
+	av := map[string]string{}
+	for rt, tgt := range registry.All() {
+		av[string(rt)] = tgt.Version()
+	}
+	return av
+}
+
+// Build returns the lean index and a map of bundle-name -> CC-3 detail. It errors
+// if any targeted runtime's render fails (a real engine fault — validation gates
+// unsupported types before this point).
+func Build(cat *model.Catalog) (Index, map[string]BundleDetail, error) {
 	idx := Index{
 		SchemaVersion: SchemaVersion,
-		GeneratedBy:   GeneratedBy{AdapterVersions: map[string]string{"claude": claude.Version}},
+		GeneratedBy:   GeneratedBy{AdapterVersions: adapterVersions()},
 	}
 	details := map[string]BundleDetail{}
 	for _, b := range cat.Bundles {
-		claudeOut := claudeOutputsByArtifact(b)
 		detailArtifacts := make([]DetailEntry, 0, len(b.Artifacts))
 		for _, a := range b.Artifacts {
 			support := map[string]string{}
-			for _, rt := range a.Runtimes {
-				if s := supportFor(a.Type, rt); s != "" {
-					support[string(rt)] = s
-				}
-			}
 			runtimes := make([]string, 0, len(a.Runtimes))
 			for _, rt := range a.Runtimes {
+				support[string(rt)] = supportFor(a.Type, rt)
 				runtimes = append(runtimes, string(rt))
 			}
 			idx.Artifacts = append(idx.Artifacts, Entry{
@@ -199,30 +206,23 @@ func Build(cat *model.Catalog) (Index, map[string]BundleDetail) {
 				Digest:      digest.Source(a),
 			})
 
-			// CC-3 detail. Claude fields are populated from the rendered output;
-			// codex/gemini entries are intentionally absent until plan 03 wires the
-			// capability matrix + Codex/Gemini targets.
+			// CC-3 / CC-4 detail: per-runtime support, outputs, and fidelity notes.
 			requires := make([]Requirement, 0, len(a.Requires))
 			for _, r := range a.Requires {
 				requires = append(requires, Requirement{Type: string(r.Type), Ref: r.Ref})
 			}
-			outputs := map[string][]Output{}
-			fidelity := map[string]string{}
-			if outs, ok := claudeOut[a.Name]; ok {
-				outputs["claude"] = outs
-				fidelity["claude"] = "native"
+			outputs, fidelity, err := runtimeOutputs(a)
+			if err != nil {
+				return Index{}, nil, err
 			}
-			// plan 03 fills outputs["codex"]/outputs["gemini"] + their fidelityNotes.
 			detailArtifacts = append(detailArtifacts, DetailEntry{
-				Name:        a.Name,
-				Type:        string(a.Type),
-				Description: a.Description,
-				Version:     a.Version,
-				Runtimes:    runtimes,
-				Support:     support,
-				Requires:    requires,
-				// claude author-divergence (full-body `# diverged:` override) is in
-				// scope this slice; plan 03 adds per-runtime divergence for codex/gemini.
+				Name:          a.Name,
+				Type:          string(a.Type),
+				Description:   a.Description,
+				Version:       a.Version,
+				Runtimes:      runtimes,
+				Support:       support,
+				Requires:      requires,
 				Diverged:      divergedOnClaude(a),
 				Outputs:       outputs,
 				FidelityNotes: fidelity,
@@ -243,5 +243,5 @@ func Build(cat *model.Catalog) (Index, map[string]BundleDetail) {
 			Artifacts: detailArtifacts,
 		}
 	}
-	return idx, details
+	return idx, details, nil
 }
