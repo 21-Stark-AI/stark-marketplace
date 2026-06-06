@@ -1,6 +1,7 @@
 package importer
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -39,17 +40,24 @@ func sanitizeFrontmatter(fm []byte) []byte {
 	})
 }
 
-// decodeFrontmatter parses frontmatter as strict YAML, falling back to a sanitized re-parse
-// (quoting loose argument-hint values) for real stark-skills files. Returns whether the
-// fallback was needed so the caller can record it for human review.
+// decodeFrontmatter parses frontmatter, ALWAYS quoting a loose argument-hint first. This is
+// run unconditionally (not only on a parse error) because the common real shape
+// `argument-hint: [start|end]` is VALID YAML — it parses as a flow sequence ([]any), not a
+// string, and would otherwise be silently dropped by the .(string) carry. Quoting it up front
+// makes it a string literal; `sanitized` reports whether anything was rewritten so the caller
+// can flag it for review.
 func decodeFrontmatter(fm []byte) (raw map[string]any, sanitized bool, err error) {
-	if err = yaml.Unmarshal(fm, &raw); err == nil {
+	clean := sanitizeFrontmatter(fm)
+	sanitized = !bytes.Equal(clean, fm)
+	if err = yaml.Unmarshal(clean, &raw); err != nil {
+		// sanitizing only quotes argument-hint; if the cleaned form somehow fails, retry the
+		// original so we surface the most informative parse error.
+		if err2 := yaml.Unmarshal(fm, &raw); err2 != nil {
+			return nil, false, err
+		}
 		return raw, false, nil
 	}
-	if err2 := yaml.Unmarshal(sanitizeFrontmatter(fm), &raw); err2 != nil {
-		return nil, false, err // surface the ORIGINAL error (more informative)
-	}
-	return raw, true, nil
+	return raw, sanitized, nil
 }
 
 // importSkills walks <from>/skill/<name>/SKILL.md and maps each to a model.Artifact.
@@ -105,11 +113,21 @@ func mapSkillFile(path, bundle string, res *ImportResult) (*model.Artifact, erro
 		Body:   cleanBody(body),
 	}
 	mapCommonFrontmatter(a, raw)
-	where := bundle + "/skill/" + a.Name
-	if sanitized {
-		res.note(where, "frontmatter", "source frontmatter required sanitizing (loose unquoted value) — verify mapped fields")
+	// stark-skills derive identity from the directory; fall back to it when `name:` is absent or
+	// non-string, so the output is never a name-less artifact that fails validate.
+	nameDerived := false
+	if a.Name == "" {
+		a.Name = filepath.Base(filepath.Dir(path))
+		nameDerived = true
 	}
-	noteDroppedSourceFields(raw, res, where)
+	where := bundle + "/skill/" + a.Name
+	if nameDerived {
+		res.note(where, "name", "name derived from the source directory (frontmatter had none) — confirm")
+	}
+	if sanitized {
+		res.note(where, "argument-hint", "argument-hint was reformatted from a loose/unquoted source value — verify it")
+	}
+	noteUnmappedFields(raw, res, where)
 	// argument-hint is command-only canonically; a skill that carried one in stark-skills loses
 	// it on import — surface that so the human can fold it into the description if it matters.
 	if _, ok := raw["argument-hint"]; ok {
@@ -120,13 +138,33 @@ func mapSkillFile(path, bundle string, res *ImportResult) (*model.Artifact, erro
 }
 
 // mapCommonFrontmatter copies the carryable canonical fields from a raw frontmatter map.
-// Shared by skills and commands (both use the same key shapes in stark-skills).
+// Shared by skills and commands. It carries EVERY schema-valid field the source provides —
+// including version/tags/category/maturity/summary/runtimes — so a source value is never
+// silently discarded and then misreported by applyArtifactDefaults as "defaulted".
 func mapCommonFrontmatter(a *model.Artifact, raw map[string]any) {
 	if v, ok := raw["name"].(string); ok {
 		a.Name = v
 	}
 	if v, ok := raw["description"].(string); ok {
 		a.Description = strings.TrimSpace(v)
+	}
+	if v, ok := raw["version"].(string); ok {
+		a.Version = v
+	}
+	if v, ok := raw["category"].(string); ok {
+		a.Category = v
+	}
+	if v, ok := raw["summary"].(string); ok {
+		a.Summary = v
+	}
+	if v, ok := raw["maturity"].(string); ok {
+		a.Maturity = model.Maturity(v)
+	}
+	if tags := parseToolList(raw["tags"]); len(tags) > 0 {
+		a.Tags = tags
+	}
+	if rts := parseRuntimes(raw["runtimes"]); len(rts) > 0 {
+		a.Runtimes = rts
 	}
 	if v, ok := raw["argument-hint"].(string); ok {
 		a.ArgumentHint = v
@@ -138,6 +176,22 @@ func mapCommonFrontmatter(a *model.Artifact, raw map[string]any) {
 		a.DisableModelInvocation = v
 	}
 	a.AllowedTools = parseToolList(raw["allowed-tools"])
+}
+
+func parseRuntimes(v any) []model.Runtime {
+	var out []model.Runtime
+	for _, s := range parseToolList(v) {
+		out = append(out, model.Runtime(s))
+	}
+	return out
+}
+
+// handledKeys are the frontmatter keys mapCommonFrontmatter carries (or that the type-specific
+// note logic explicitly handles). Anything else is reported by noteUnmappedFields.
+var handledKeys = map[string]bool{
+	"name": true, "type": true, "description": true, "version": true, "category": true,
+	"summary": true, "maturity": true, "tags": true, "runtimes": true,
+	"argument-hint": true, "model": true, "disable-model-invocation": true, "allowed-tools": true,
 }
 
 // parseToolList accepts either a YAML list or a comma-separated string ("Bash, Read").
@@ -164,12 +218,18 @@ func parseToolList(v any) []string {
 	}
 }
 
-// noteDroppedSourceFields records source-only frontmatter keys (revision/revision_date)
-// that have no canonical equivalent and are intentionally dropped.
-func noteDroppedSourceFields(raw map[string]any, res *ImportResult, where string) {
-	for _, k := range sourceOnlyFields {
-		if _, ok := raw[k]; ok {
-			res.note(where, k, "source-only field dropped (no canonical equivalent)")
+// noteUnmappedFields records EVERY source frontmatter key the importer did not carry/handle
+// (spec §12: surface every dropped field). This is a residual sweep, not a fixed allowlist, so
+// real keys like `context: fork` or `revision` are reported instead of silently lost.
+func noteUnmappedFields(raw map[string]any, res *ImportResult, where string) {
+	var keys []string
+	for k := range raw {
+		if !handledKeys[k] {
+			keys = append(keys, k)
 		}
+	}
+	sort.Strings(keys)
+	for _, k := range keys {
+		res.note(where, k, "source field dropped — no canonical equivalent; fold into the description/overrides if it carries meaning")
 	}
 }

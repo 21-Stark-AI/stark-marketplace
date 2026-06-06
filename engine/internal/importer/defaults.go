@@ -14,10 +14,6 @@ const (
 // human decision (recorded as a note), never an import-time guess.
 func defaultRuntimes() []model.Runtime { return []model.Runtime{model.RuntimeClaude} }
 
-// sourceOnlyFields are stark-skills frontmatter keys with no canonical equivalent.
-// They are dropped on import (recorded once per artifact when present).
-var sourceOnlyFields = []string{"revision", "revision_date"}
-
 // applyArtifactDefaults fills the canonical-superset fields that stark-skills source
 // lacks, and records each as a MetaNote for human review (spec §12).
 func applyArtifactDefaults(a *model.Artifact, res *ImportResult, where string) {

@@ -1,6 +1,9 @@
 package importer
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 // Real stark-skills frontmatter writes argument-hint unquoted with YAML-significant chars,
 // which strict YAML rejects. decodeFrontmatter must fall back to a sanitized re-parse.
@@ -36,5 +39,31 @@ func TestDecodeFrontmatterStrictPathUnchanged(t *testing.T) {
 	}
 	if raw["argument-hint"] != "[patch|minor|major]" {
 		t.Fatalf("argument-hint = %v", raw["argument-hint"])
+	}
+}
+
+// `argument-hint: [start|end]` is VALID YAML (a flow sequence), so strict parse succeeds and
+// yields a []any — without unconditional sanitizing the .(string) carry drops it silently.
+// This is the real stark-skills shape (e.g. skill/stark-session). It must become a string.
+func TestDecodeFrontmatterFlowSequenceArgumentHintBecomesString(t *testing.T) {
+	for _, in := range []string{
+		"argument-hint: [start|end]\n",
+		"argument-hint: [--dry-run]\n",
+		"argument-hint: [patch|minor|major]\n",
+	} {
+		raw, sanitized, err := decodeFrontmatter([]byte(in))
+		if err != nil {
+			t.Fatalf("%q: %v", in, err)
+		}
+		if !sanitized {
+			t.Fatalf("%q: expected sanitized=true (loose flow-sequence hint)", in)
+		}
+		s, ok := raw["argument-hint"].(string)
+		if !ok {
+			t.Fatalf("%q: argument-hint is %T, want string", in, raw["argument-hint"])
+		}
+		if !strings.HasPrefix(s, "[") {
+			t.Fatalf("%q: argument-hint string lost its literal text: %q", in, s)
+		}
 	}
 }

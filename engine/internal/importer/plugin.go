@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 
 	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
 	"gopkg.in/yaml.v3"
@@ -102,11 +103,21 @@ func mapCommandFile(path, bundle string, res *ImportResult) (*model.Artifact, er
 	}
 	a := &model.Artifact{Type: model.TypeCommand, Bundle: bundle, Body: cleanBody(body)}
 	mapCommonFrontmatter(a, raw)
-	where := bundle + "/command/" + a.Name
-	if sanitized {
-		res.note(where, "frontmatter", "source frontmatter required sanitizing (loose unquoted value) — verify mapped fields")
+	// fall back to the file basename when `name:` is absent, so commands never write a name-less
+	// artifact that fails validate.
+	nameDerived := false
+	if a.Name == "" {
+		a.Name = strings.TrimSuffix(filepath.Base(path), filepath.Ext(path))
+		nameDerived = true
 	}
-	noteDroppedSourceFields(raw, res, where)
+	where := bundle + "/command/" + a.Name
+	if nameDerived {
+		res.note(where, "name", "name derived from the source filename (frontmatter had none) — confirm")
+	}
+	if sanitized {
+		res.note(where, "argument-hint", "argument-hint was reformatted from a loose/unquoted source value — verify it")
+	}
+	noteUnmappedFields(raw, res, where)
 	applyArtifactDefaults(a, res, where)
 	return a, nil
 }

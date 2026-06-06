@@ -5,12 +5,18 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
 
 	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
 	"gopkg.in/yaml.v3"
 )
+
+// slugRE is the canonical name pattern (mirrors the validate schema). WriteBundle refuses any
+// artifact/bundle name that isn't a clean slug, so a `..`/slash-bearing name can never make a
+// write escape the bundle directory (defense-in-depth; validate runs only after the write).
+var slugRE = regexp.MustCompile(`^[a-z0-9][a-z0-9-]{0,63}$`)
 
 // serializeArtifact renders an Artifact to its canonical on-disk bytes:
 // .md (frontmatter + verbatim body) for non-mcp types, plain YAML for mcp.
@@ -75,6 +81,17 @@ func serializeMCP(a *model.Artifact) ([]byte, error) {
 	putKV(m, "type", string(a.Type))
 	putKV(m, "description", a.Description)
 	putKV(m, "version", a.Version)
+	if len(a.Tags) > 0 {
+		putKV(m, "tags", a.Tags)
+	}
+	if a.Category != "" {
+		putKV(m, "category", a.Category)
+	}
+	// Emit maturity so the on-disk mcp file matches its IMPORT-NOTE (applyArtifactDefaults
+	// defaults+notes maturity for mcp too); the mcp schema allows it.
+	if a.Maturity != "" {
+		putKV(m, "maturity", string(a.Maturity))
+	}
 	if len(a.Runtimes) > 0 {
 		putKV(m, "runtimes", runtimeStrings(a.Runtimes))
 	}
@@ -114,6 +131,14 @@ func encodeYAML(node *yaml.Node) ([]byte, error) {
 // (skills/ commands/ agents/ mcp/), bundle.yaml, and IMPORT-NOTES.md. Files are
 // written with LF, 0644; dirs 0755. Atomic per-file (temp+rename).
 func WriteBundle(res *ImportResult, dst string) error {
+	if !slugRE.MatchString(res.Bundle.Name) {
+		return fmt.Errorf("refusing to write: invalid bundle name %q (must match %s)", res.Bundle.Name, slugRE)
+	}
+	for _, a := range res.Bundle.Artifacts {
+		if !slugRE.MatchString(a.Name) {
+			return fmt.Errorf("refusing to write %s artifact: invalid name %q (must match %s)", a.Type, a.Name, slugRE)
+		}
+	}
 	root := filepath.Join(dst, res.Bundle.Name)
 	if err := os.MkdirAll(root, 0o755); err != nil {
 		return err
