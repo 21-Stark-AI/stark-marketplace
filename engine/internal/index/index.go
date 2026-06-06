@@ -4,6 +4,7 @@
 package index
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/GetEvinced/stark-marketplace/engine/internal/adapter/capability"
@@ -123,7 +124,7 @@ func classifyOutput(a *model.Artifact, path string) Output {
 // (CC-4) and records the emitted files by CC-3 kind, plus a fidelity note for
 // emulated runtimes. Render is deterministic, so this is byte-attributable to the
 // dist tree the build orchestrator emits.
-func runtimeOutputs(a *model.Artifact) (map[string][]Output, map[string]string) {
+func runtimeOutputs(a *model.Artifact) (map[string][]Output, map[string]string, error) {
 	outputs := map[string][]Output{}
 	fidelity := map[string]string{}
 	reg := registry.All()
@@ -135,7 +136,9 @@ func runtimeOutputs(a *model.Artifact) (map[string][]Output, map[string]string) 
 		emulated := capability.Level(a.Type, rt) == model.SupportEmulated
 		files, _, err := tgt.Render(&model.Bundle{Name: a.Bundle, Artifacts: []*model.Artifact{a}})
 		if err != nil {
-			continue // the build verb surfaces hard render errors; detail records what rendered
+			// A render error on a runtime the artifact opted into is a real fault;
+			// surface it (the build verb only renders claude, so nothing else would).
+			return nil, nil, fmt.Errorf("render %s/%s on %s: %w", a.Bundle, a.Name, rt, err)
 		}
 		for _, f := range files {
 			o := classifyOutput(a, f.Path)
@@ -146,7 +149,7 @@ func runtimeOutputs(a *model.Artifact) (map[string][]Output, map[string]string) 
 			fidelity[string(rt)] = "emulated — derived shape; may not auto-activate on this runtime; verify."
 		}
 	}
-	return outputs, fidelity
+	return outputs, fidelity, nil
 }
 
 // divergedOnClaude reports whether the artifact uses an annotated full-body
@@ -171,8 +174,10 @@ func adapterVersions() map[string]string {
 	return av
 }
 
-// Build returns the lean index and a map of bundle-name -> CC-3 detail.
-func Build(cat *model.Catalog) (Index, map[string]BundleDetail) {
+// Build returns the lean index and a map of bundle-name -> CC-3 detail. It errors
+// if any targeted runtime's render fails (a real engine fault — validation gates
+// unsupported types before this point).
+func Build(cat *model.Catalog) (Index, map[string]BundleDetail, error) {
 	idx := Index{
 		SchemaVersion: SchemaVersion,
 		GeneratedBy:   GeneratedBy{AdapterVersions: adapterVersions()},
@@ -206,7 +211,10 @@ func Build(cat *model.Catalog) (Index, map[string]BundleDetail) {
 			for _, r := range a.Requires {
 				requires = append(requires, Requirement{Type: string(r.Type), Ref: r.Ref})
 			}
-			outputs, fidelity := runtimeOutputs(a)
+			outputs, fidelity, err := runtimeOutputs(a)
+			if err != nil {
+				return Index{}, nil, err
+			}
 			detailArtifacts = append(detailArtifacts, DetailEntry{
 				Name:          a.Name,
 				Type:          string(a.Type),
@@ -235,5 +243,5 @@ func Build(cat *model.Catalog) (Index, map[string]BundleDetail) {
 			Artifacts: detailArtifacts,
 		}
 	}
-	return idx, details
+	return idx, details, nil
 }

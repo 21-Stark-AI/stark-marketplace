@@ -17,7 +17,10 @@ func TestBuildLeanIndex(t *testing.T) {
 				Runtimes: []model.Runtime{model.RuntimeClaude}, Body: "b\n"},
 		},
 	}}}
-	idx, details := Build(cat)
+	idx, details, err := Build(cat)
+	if err != nil {
+		t.Fatal(err)
+	}
 	if idx.SchemaVersion == 0 {
 		t.Fatal("schemaVersion must be set")
 	}

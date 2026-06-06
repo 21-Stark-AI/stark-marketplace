@@ -20,7 +20,10 @@ func TestDetailCoversAllTargetedRuntimes(t *testing.T) {
 			Runtimes: model.AllRuntimes(), Raw: map[string]any{}, Body: "Attack the design.\n",
 		}},
 	}}}
-	idx, details := Build(cat)
+	idx, details, err := Build(cat)
+	if err != nil {
+		t.Fatal(err)
+	}
 	da := details["stark-review"].Artifacts[0]
 
 	for _, rt := range []string{"claude", "codex", "gemini"} {

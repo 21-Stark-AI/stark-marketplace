@@ -38,6 +38,30 @@ func TestGeminiEmitsMCPSettingsJSON(t *testing.T) {
 	}
 }
 
+func TestGeminiMCPEnvMultiKeySorted(t *testing.T) {
+	a := &model.Artifact{
+		Name: "m", Type: model.TypeMCP, Bundle: "b", Runtimes: []model.Runtime{model.RuntimeGemini},
+		MCP: &model.MCPConfig{Transport: "stdio", Command: "stark-bq-mcp",
+			Env: map[string]model.SecretRef{
+				"C_KEY": {SecretRef: "c"}, "A_KEY": {SecretRef: "a"}, "B_KEY": {SecretRef: "b"},
+			}},
+	}
+	r1, _, err := New().Render(bundleWith(a))
+	if err != nil {
+		t.Fatal(err)
+	}
+	r2, _, _ := New().Render(bundleWith(a))
+	b1, _ := find(r1, "settings.json")
+	b2, _ := find(r2, "settings.json")
+	if b1 != b2 {
+		t.Fatal("multi-key env must be deterministic")
+	}
+	ia, ib, ic := strings.Index(b1, "A_KEY"), strings.Index(b1, "B_KEY"), strings.Index(b1, "C_KEY")
+	if ia < 0 || ia > ib || ib > ic {
+		t.Fatalf("env keys not in sorted order:\n%s", b1)
+	}
+}
+
 func assertGolden(t *testing.T, name string, got []byte) {
 	t.Helper()
 	path := filepath.Join("testdata", name)

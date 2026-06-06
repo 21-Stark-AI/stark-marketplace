@@ -18,6 +18,7 @@ import (
 	"github.com/GetEvinced/stark-marketplace/engine/internal/merge"
 	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
 	"github.com/pelletier/go-toml/v2"
+	"gopkg.in/yaml.v3"
 )
 
 // version is the independently-versioned target identity (spec §7.7).
@@ -45,8 +46,8 @@ func modelMap(canonical string) (string, bool) {
 // Render emits Codex output for every artifact in the bundle that targets Codex.
 // Per CC-1 it owns body resolution: merge.Resolve(a, RuntimeCodex) runs fence.Strip
 // internally — the target never receives a pre-stripped body. merge.Resolve returns
-// (Resolved, Findings, error); the resolved body is res.Body and merge findings are
-// folded into the flat []adapter.Finding (CC-1).
+// (Resolved, Findings, error); the resolved frontmatter+body drive emission and
+// merge findings + dropped-field warnings are folded into the flat []adapter.Finding.
 func (t *Target) Render(b *model.Bundle) ([]adapter.OutputFile, []adapter.Finding, error) {
 	var files []adapter.OutputFile
 	var findings []adapter.Finding
@@ -59,11 +60,12 @@ func (t *Target) Render(b *model.Bundle) ([]adapter.OutputFile, []adapter.Findin
 			return nil, nil, fmt.Errorf("codex: resolve %s/%s: %w", b.Name, a.Name, err)
 		}
 		findings = append(findings, foldFindings(b.Name, a, mf)...)
-		out, err := t.emitArtifact(a, res.Body)
+		out, fdrops, err := t.emitArtifact(a, res)
 		if err != nil {
 			return nil, nil, err
 		}
 		files = append(files, out...)
+		findings = append(findings, fdrops...)
 	}
 	return files, findings, nil
 }
@@ -98,32 +100,54 @@ func foldFindings(bundle string, a *model.Artifact, mf merge.Findings) []adapter
 	return out
 }
 
-func (t *Target) emitArtifact(a *model.Artifact, body string) ([]adapter.OutputFile, error) {
+// dropFindings surfaces §6.2 drop+warn fields as warn-level findings.
+func dropFindings(bundle, name string, rt model.Runtime, dropped []string) []adapter.Finding {
+	var out []adapter.Finding
+	for _, f := range dropped {
+		out = append(out, adapter.Finding{
+			Where: fmt.Sprintf("%s/%s@%s", bundle, name, rt),
+			Level: "warn",
+			Msg:   fmt.Sprintf("field %q dropped on %s (§6.2)", f, rt),
+		})
+	}
+	return out
+}
+
+func (t *Target) emitArtifact(a *model.Artifact, res merge.Resolved) ([]adapter.OutputFile, []adapter.Finding, error) {
 	switch a.Type {
 	case model.TypeSkill, model.TypePrompt, model.TypeCommand:
-		return t.emitSkill(a, body, false), nil
+		f, fd := t.emitSkill(a, res, false)
+		return f, fd, nil
 	case model.TypeAgent:
-		return t.emitSkill(a, body, true), nil // emulated
+		f, fd := t.emitSkill(a, res, true) // emulated
+		return f, fd, nil
 	case model.TypeMCP:
-		return t.emitMCP(a)
+		of, err := t.emitMCP(a)
+		return of, nil, err
 	default:
-		return nil, fmt.Errorf("codex: unsupported artifact type %q", a.Type)
+		return nil, nil, fmt.Errorf("codex: unsupported artifact type %q", a.Type)
 	}
 }
 
 // emitSkill writes .agents/skills/<name>/SKILL.md. emulated=true prepends the
-// §6.1 fidelity header (agents have no Codex primitive).
-func (t *Target) emitSkill(a *model.Artifact, body string, emulated bool) []adapter.OutputFile {
-	res := fieldmap.Apply(a, model.RuntimeCodex, modelMap)
+// §6.1 fidelity header (agents have no Codex primitive). Frontmatter is emitted via
+// yaml.Marshal so values escape correctly and carried lists become YAML sequences.
+func (t *Target) emitSkill(a *model.Artifact, res merge.Resolved, emulated bool) ([]adapter.OutputFile, []adapter.Finding) {
+	fa := fieldmap.Apply(res.Frontmatter, a, model.RuntimeCodex, modelMap)
+
+	desc := a.Description
+	if d, ok := res.Frontmatter["description"].(string); ok && d != "" {
+		desc = d
+	}
 
 	var fm strings.Builder
 	fm.WriteString("---\n")
 	// name + description are REQUIRED by Codex skills.
-	fm.WriteString("name: " + a.Name + "\n")
-	fm.WriteString("description: " + a.Description + "\n")
+	writeYAMLField(&fm, "name", a.Name)
+	writeYAMLField(&fm, "description", desc)
 	// carried fields, sorted by key for determinism (§7.6).
-	for _, k := range sortedKeys(res.Carried) {
-		fm.WriteString(k + ": " + res.Carried[k] + "\n")
+	for _, k := range sortedAnyKeys(fa.Carried) {
+		writeYAMLField(&fm, k, fa.Carried[k])
 	}
 	fm.WriteString("---\n")
 
@@ -132,18 +156,30 @@ func (t *Target) emitSkill(a *model.Artifact, body string, emulated bool) []adap
 		b.WriteString(emulate.Header(a.Bundle, a.Name, "<!-- ", " -->"))
 	}
 	// derived fields render as usage prose (§6.2: argument-hint → usage note).
-	if hint, ok := res.Derived["argument-hint"]; ok {
+	if hint, ok := fa.Derived["argument-hint"]; ok {
 		b.WriteString("Usage: " + a.Name + " " + hint + "\n\n")
 	}
-	b.WriteString(body)
+	b.WriteString(res.Body)
 
-	return []adapter.OutputFile{{
+	files := []adapter.OutputFile{{
 		Path:    ".agents/skills/" + a.Name + "/SKILL.md",
 		Content: []byte(fm.String() + b.String()),
 	}}
+	return files, dropFindings(a.Bundle, a.Name, model.RuntimeCodex, fa.Dropped)
 }
 
-func sortedKeys(m map[string]string) []string {
+// writeYAMLField appends `k: <yaml-encoded v>` using yaml.Marshal so scalars are
+// quoted/escaped when needed and slices emit as YAML sequences — valid, deterministic.
+func writeYAMLField(b *strings.Builder, k string, v any) {
+	out, err := yaml.Marshal(map[string]any{k: v})
+	if err != nil {
+		fmt.Fprintf(b, "%s: %v\n", k, v)
+		return
+	}
+	b.Write(out)
+}
+
+func sortedAnyKeys(m map[string]any) []string {
 	ks := make([]string, 0, len(m))
 	for k := range m {
 		ks = append(ks, k)

@@ -11,14 +11,13 @@ package gemini
 
 import (
 	"bytes"
-	"crypto/sha256"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"strings"
 
 	"github.com/GetEvinced/stark-marketplace/engine/internal/adapter"
 	"github.com/GetEvinced/stark-marketplace/engine/internal/adapter/emulate"
+	"github.com/GetEvinced/stark-marketplace/engine/internal/aggregate"
 	"github.com/GetEvinced/stark-marketplace/engine/internal/fieldmap"
 	"github.com/GetEvinced/stark-marketplace/engine/internal/merge"
 	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
@@ -49,11 +48,12 @@ func (t *Target) Render(b *model.Bundle) ([]adapter.OutputFile, []adapter.Findin
 			return nil, nil, fmt.Errorf("gemini: resolve %s/%s: %w", b.Name, a.Name, err)
 		}
 		findings = append(findings, foldFindings(b.Name, a, mf)...)
-		out, err := t.emitArtifact(a, res.Body)
+		out, fdrops, err := t.emitArtifact(a, res)
 		if err != nil {
 			return nil, nil, err
 		}
 		files = append(files, out...)
+		findings = append(findings, fdrops...)
 	}
 	return files, findings, nil
 }
@@ -86,16 +86,31 @@ func foldFindings(bundle string, a *model.Artifact, mf merge.Findings) []adapter
 	return out
 }
 
-func (t *Target) emitArtifact(a *model.Artifact, body string) ([]adapter.OutputFile, error) {
+// dropFindings surfaces §6.2 drop+warn fields as warn-level findings.
+func dropFindings(bundle, name string, rt model.Runtime, dropped []string) []adapter.Finding {
+	var out []adapter.Finding
+	for _, f := range dropped {
+		out = append(out, adapter.Finding{
+			Where: fmt.Sprintf("%s/%s@%s", bundle, name, rt),
+			Level: "warn",
+			Msg:   fmt.Sprintf("field %q dropped on %s (§6.2)", f, rt),
+		})
+	}
+	return out
+}
+
+func (t *Target) emitArtifact(a *model.Artifact, res merge.Resolved) ([]adapter.OutputFile, []adapter.Finding, error) {
 	switch a.Type {
 	case model.TypeCommand, model.TypePrompt:
-		return t.emitCommand(a, body)
+		return t.emitCommand(a, res)
 	case model.TypeSkill, model.TypeAgent:
-		return t.emitEmulated(a, body), nil
+		f, fd := t.emitEmulated(a, res)
+		return f, fd, nil
 	case model.TypeMCP:
-		return t.emitMCP(a)
+		of, err := t.emitMCP(a)
+		return of, nil, err
 	default:
-		return nil, fmt.Errorf("gemini: unsupported artifact type %q", a.Type)
+		return nil, nil, fmt.Errorf("gemini: unsupported artifact type %q", a.Type)
 	}
 }
 
@@ -106,31 +121,30 @@ type geminiCmd struct {
 	Prompt      string `toml:"prompt"`
 }
 
-func (t *Target) emitCommand(a *model.Artifact, body string) ([]adapter.OutputFile, error) {
-	res := fieldmap.Apply(a, model.RuntimeGemini, nil)
-	prompt := body
-	if hint, ok := res.Derived["argument-hint"]; ok {
-		prompt = "Usage: /" + a.Name + " " + hint + "\n\n" + body
+func (t *Target) emitCommand(a *model.Artifact, res merge.Resolved) ([]adapter.OutputFile, []adapter.Finding, error) {
+	fa := fieldmap.Apply(res.Frontmatter, a, model.RuntimeGemini, nil)
+	prompt := res.Body
+	if hint, ok := fa.Derived["argument-hint"]; ok {
+		prompt = "Usage: /" + a.Name + " " + hint + "\n\n" + res.Body
 	}
-	doc := geminiCmd{Description: a.Description, Prompt: prompt}
+	desc := a.Description
+	if d, ok := res.Frontmatter["description"].(string); ok && d != "" {
+		desc = d
+	}
+	doc := geminiCmd{Description: desc, Prompt: prompt}
 	out, err := toml.Marshal(doc)
 	if err != nil {
-		return nil, fmt.Errorf("gemini: marshal command toml: %w", err)
+		return nil, nil, fmt.Errorf("gemini: marshal command toml: %w", err)
 	}
-	return []adapter.OutputFile{{
-		Path:    ".gemini/commands/" + a.Name + ".toml",
-		Content: out,
-	}}, nil
+	files := []adapter.OutputFile{{Path: ".gemini/commands/" + a.Name + ".toml", Content: out}}
+	return files, dropFindings(a.Bundle, a.Name, model.RuntimeGemini, fa.Dropped), nil
 }
 
-// sectionDigest is a short content digest used in the begin sentinel so install
-// can detect drift. Pure function of the rendered inner content.
-func sectionDigest(inner string) string {
-	sum := sha256.Sum256([]byte(inner))
-	return hex.EncodeToString(sum[:])[:12]
-}
-
-func (t *Target) emitEmulated(a *model.Artifact, body string) []adapter.OutputFile {
+// emitEmulated renders a skill/agent into a GEMINI.md sentinel block. The block is
+// built via aggregate.Merge so the begin-sentinel digest + trailing-newline rule
+// are IDENTICAL to the install-side aggregator — a single source of truth, so the
+// block survives Parse→Merge round-trips (§6.3, fixes the duplicated-digest drift).
+func (t *Target) emitEmulated(a *model.Artifact, res merge.Resolved) ([]adapter.OutputFile, []adapter.Finding) {
 	var inner strings.Builder
 	inner.WriteString(emulate.Header(a.Bundle, a.Name, "<!-- ", " -->"))
 	switch a.Type {
@@ -141,19 +155,14 @@ func (t *Target) emitEmulated(a *model.Artifact, body string) []adapter.OutputFi
 		inner.WriteString("## Skill: " + a.Name + "\n")
 		inner.WriteString(a.Description + "\n\n")
 	}
-	inner.WriteString(body)
+	inner.WriteString(res.Body)
 
-	id := a.Bundle + "/" + a.Name
-	innerStr := inner.String()
-	var b strings.Builder
-	fmt.Fprintf(&b, "<!-- stark:begin %s@%s -->\n", id, sectionDigest(innerStr))
-	b.WriteString(innerStr)
-	if !strings.HasSuffix(innerStr, "\n") {
-		b.WriteString("\n")
-	}
-	fmt.Fprintf(&b, "<!-- stark:end %s -->\n", id)
+	doc := aggregate.Merge([]aggregate.Section{{Bundle: a.Bundle, Name: a.Name, Content: inner.String()}})
 
-	return []adapter.OutputFile{{Path: "GEMINI.md", Content: []byte(b.String())}}
+	// surface §6.2 dropped fields (model/tools/etc. on gemini) as warnings.
+	fa := fieldmap.Apply(res.Frontmatter, a, model.RuntimeGemini, nil)
+	return []adapter.OutputFile{{Path: "GEMINI.md", Content: []byte(doc)}},
+		dropFindings(a.Bundle, a.Name, model.RuntimeGemini, fa.Dropped)
 }
 
 // geminiMCPServer mirrors Gemini CLI settings.json mcpServers.<name>. Marshaled
