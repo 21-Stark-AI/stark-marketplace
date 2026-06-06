@@ -81,6 +81,23 @@ jobs:
       - run: npm ci
       - run: npm run build
 
+  server:
+    name: server (static origin)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: server/go.mod
+          cache: true
+      - name: go vet
+        run: go vet ./...
+      - name: unit tests
+        run: go test ./... -count=1
+
   actionlint:
     name: actionlint
     runs-on: ubuntu-latest

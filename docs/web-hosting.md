@@ -1,7 +1,11 @@
 # stark-marketplace — Web registry hosting (gated-static behind SSO)
 
-> **No ad-hoc provisioning.** This documents the target pattern. Provisioning lands
-> through the standard Evinced IaC path (Terraform), not from this repo's CI.
+> **Provisioned.** Host = `marketplace.evinced.rocks`, served on **Cloud Run + IAP**
+> behind the shared platform LB. Infra primitives (SAs/IAM/GAR/NEG/IAP/host-rule/DNS)
+> live in Terraform (`infra-ai-platform/infra/stark-marketplace.tf`) — no ad-hoc
+> `gcloud`. The **Cloud Run service itself is deployed by this repo's CI** via WIF
+> (`.github/workflows/web-deploy.yml`), per the infra-ai-platform ownership split.
+> See **Provisioned implementation** at the bottom for the concrete wiring.
 
 ## Pattern: identity-aware proxy in front of static content
 
@@ -45,3 +49,44 @@ and to re-authenticate (`src/data/registry.ts`).
 If the index `schemaVersion` is newer than the deployed SPA understands (or unreadable),
 the SPA shows the degraded view rather than blank-failing (`src/data/schema.ts`,
 `src/pages/DegradedPage.tsx`). N-1 schema versions still render.
+
+## Provisioned implementation
+
+```
+browser → marketplace.evinced.rocks
+        → platform HTTPS LB (host rule, *.evinced.rocks wildcard cert)
+        → IAP  (Evinced Google SSO)
+        → serverless NEG → Cloud Run `stark-marketplace` (server/)
+```
+
+| Piece | Owner | What |
+|-------|-------|------|
+| `server/` | this repo | stdlib Go static fileserver (SPA + `index.json` + `bundles/`, cache headers, `/healthz`) |
+| `Dockerfile` | this repo | `web/dist` (built in CI) + the Go binary → distroless image |
+| `.github/workflows/web-deploy.yml` | this repo | build → push to GAR → `gcloud run deploy` (WIF, keyless) |
+| runtime SA, CI SA + WIF, GAR, NEG, IAP backend, host rule, DNS, registry slot 16 | `infra-ai-platform` (`infra/stark-marketplace.tf`) | all infra primitives |
+
+**Cloud Run posture:** `--ingress internal-and-cloud-load-balancing` blocks the
+public `*.run.app` URL (only the external LB reaches the service);
+`--allow-unauthenticated` because IAP is the gate (ingress + IAP = the only path
+in, no `run.invoker` dance).
+
+**Required repo variables** (Settings → Secrets and variables → Actions → Variables),
+set from the Terraform outputs after the infra PR applies:
+
+| Variable | Terraform output |
+|----------|------------------|
+| `GCP_WORKLOAD_IDENTITY_PROVIDER` | `wif_provider_name` |
+| `GCP_DEPLOY_SA` | `marketplace_ci_sa_email` |
+
+Project (`infra-ai-platform`), region (`us-east1`), GAR repo, service name, and
+runtime SA are fixed in the workflow `env:` block.
+
+**Bootstrap order (first time only):**
+1. infra-ai-platform PR → review → CI apply (creates identity, GAR, IAP backend, host rule, DNS).
+2. Set the two repo variables from the TF outputs.
+3. Merge this repo to `main` → CI builds + deploys the Cloud Run service.
+4. Visit `https://marketplace.evinced.rocks` → IAP SSO → registry.
+
+Until step 3's first deploy lands, the host resolves and IAP prompts, but the
+backend has no Cloud Run revision yet (502/404 behind IAP) — expected.
