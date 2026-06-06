@@ -58,12 +58,25 @@ func loadBundle(catalogDir, name string) (*model.Bundle, error) {
 	// type dirs in deterministic order
 	for _, t := range model.AllArtifactTypes() {
 		dir := filepath.Join(bundleDir, typeDir(t))
-		files, _ := os.ReadDir(dir)
+		files, err := os.ReadDir(dir)
+		if err != nil {
+			// A missing type dir is normal (a bundle rarely has all five). Any other
+			// error (permission, ENOTDIR when the name is a regular file) is a real
+			// fault and must fail closed rather than be read as "no artifacts".
+			if !os.IsNotExist(err) {
+				return nil, fmt.Errorf("read %s: %w", typeDir(t), err)
+			}
+			files = nil
+		}
 		var fnames []string
 		for _, f := range files {
-			if !f.IsDir() {
-				fnames = append(fnames, f.Name())
+			// Only canonical artifact files are loaded: `.md` for the markdown types,
+			// `.yaml`/`.yml` for mcp. Stray files (.DS_Store, .json, README.txt, editor
+			// swap files) are skipped so they never become phantom YAML artifacts.
+			if f.IsDir() || !isArtifactFile(t, f.Name()) {
+				continue
 			}
+			fnames = append(fnames, f.Name())
 		}
 		sort.Strings(fnames)
 		for _, fn := range fnames {
@@ -128,6 +141,16 @@ func typeDir(t model.ArtifactType) string {
 	default:
 		return string(t) + "s" // skills, prompts, commands, agents
 	}
+}
+
+// isArtifactFile reports whether name is a canonical artifact file for type t:
+// `.yaml`/`.yml` for mcp, `.md` for the markdown-bodied types. Anything else is
+// a stray file to skip (keeps loadArtifact's md/yaml routing well-defined too).
+func isArtifactFile(t model.ArtifactType, name string) bool {
+	if t == model.TypeMCP {
+		return strings.HasSuffix(name, ".yaml") || strings.HasSuffix(name, ".yml")
+	}
+	return strings.HasSuffix(name, ".md")
 }
 
 func readLF(path string) ([]byte, error) {

@@ -42,3 +42,32 @@ func TestStripErrors(t *testing.T) {
 		}
 	}
 }
+
+func TestStripErrorsFenceInsideCodeBlock(t *testing.T) {
+	// A runtime marker inside a ``` code block must be a validation error (spec §4.2),
+	// not silently treated as a real fence.
+	body := "```\n<!-- runtime: claude -->\nx\n<!-- /runtime -->\n```\n"
+	if _, err := Strip(body, model.RuntimeClaude, model.AllRuntimes()); err == nil {
+		t.Fatal("expected error for runtime fence inside a fenced code block")
+	}
+}
+
+func TestStripErrorsEmptySection(t *testing.T) {
+	// An authored fence section with no content is an error (spec §4.2).
+	body := "<!-- runtime: claude -->\n\n<!-- /runtime -->\n"
+	if _, err := Strip(body, model.RuntimeClaude, model.AllRuntimes()); err == nil {
+		t.Fatal("expected error for empty runtime fence section")
+	}
+}
+
+func TestStripKeepsCodeBlockOutsideFences(t *testing.T) {
+	// A code block with no runtime markers passes through untouched.
+	body := "intro\n```\ncode line\n```\ntail\n"
+	got, err := Strip(body, model.RuntimeClaude, model.AllRuntimes())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got != body {
+		t.Fatalf("code block mangled: got %q want %q", got, body)
+	}
+}

@@ -12,7 +12,11 @@ func checkSecurity(r *Result, where string, a *model.Artifact) {
 		return
 	}
 	m := a.MCP
-	if m.Transport == "stdio" {
+	// The command-allowlist + inline-eval/npx checks are the highest-trust surface
+	// (spec §7.4) and must NOT depend on a self-declared transport label: scrutinize
+	// whenever a command is present, regardless of transport. The schema permits
+	// command/args on http too, so gating on transport=="stdio" would fail open.
+	if m.Command != "" {
 		base := path.Base(m.Command)
 		if base != m.Command && strings.Contains(m.Command, "/") {
 			r.Errorf(where, "mcp.command must be a bare allowlisted basename, got path %q", m.Command)
@@ -21,11 +25,29 @@ func checkSecurity(r *Result, where string, a *model.Artifact) {
 			r.Errorf(where, "mcp.command %q not on the allowlist (spec §7.4)", base)
 		}
 		for _, arg := range m.Args {
-			if inlineEvalFlags[arg] {
+			// Match the forbidden flag whether it stands alone (`--eval CODE`) or
+			// carries its value attached with `=` (`--eval=CODE`) — interpreters like
+			// node honor the attached form, which an exact-token match would miss.
+			flag := arg
+			if i := strings.IndexByte(arg, '='); i >= 0 {
+				flag = arg[:i]
+			}
+			if inlineEvalFlags[flag] {
 				r.Errorf(where, "mcp.args contains inline-eval flag %q", arg)
 			}
-			if strings.HasPrefix(arg, "npx") && !strings.Contains(arg, "@") {
-				r.Warnf(where, "unpinned npx in args %q — pin a version/digest", arg)
+		}
+		// Unpinned-npx: `npx` is the COMMAND, with the package as the first non-flag
+		// arg (e.g. `command: npx`, `args: ["-y", "pkg@1.2.3"]`). Warn when that
+		// package spec carries no @version/digest pin (spec §7.4).
+		if base == "npx" {
+			for _, arg := range m.Args {
+				if strings.HasPrefix(arg, "-") {
+					continue
+				}
+				if !strings.Contains(arg, "@") {
+					r.Warnf(where, "unpinned npx package %q — pin a version/digest", arg)
+				}
+				break
 			}
 		}
 	}
@@ -39,7 +61,7 @@ func checkSecurity(r *Result, where string, a *model.Artifact) {
 func scanInlineCred(r *Result, where, s string) {
 	low := strings.ToLower(s)
 	// Patterns that warn ON THEIR OWN (a literal value follows the token).
-	for _, p := range []string{"token=", "key=", "--token=", "--password="} {
+	for _, p := range []string{"token=", "key=", "password=", "passwd=", "secret=", "apikey=", "--token=", "--password="} {
 		if strings.Contains(low, p) {
 			r.Warnf(where, "possible inline credential in %q — use secretRef", s)
 			return
