@@ -1,6 +1,7 @@
 package install
 
 import (
+	"errors"
 	"os"
 	"path/filepath"
 	"testing"
@@ -115,6 +116,100 @@ func TestRepairAfterCrashMidInstall(t *testing.T) {
 	}
 	if _, err := os.Stat(jp); !os.IsNotExist(err) {
 		t.Fatal("journal should be cleared after repair")
+	}
+}
+
+// §9.2 collision refusal must hold for the JSON kind (Claude/Gemini), not just TOML.
+func TestInstallRefusesUnmanagedJSONCollision(t *testing.T) {
+	dest := t.TempDir()
+	os.WriteFile(filepath.Join(dest, ".mcp.json"),
+		[]byte(`{"mcpServers":{"gh":{"command":"theirs"}}}`), 0o644)
+	p := &installplan.Plan{Runtime: model.RuntimeClaude, Steps: []installplan.Step{
+		{Bundle: "b", Name: "gh", Type: model.TypeMCP, Files: []installplan.AdaptedFile{
+			{Path: ".mcp.json", Kind: "mergeJSONKey", Key: "mcpServers.gh", Payload: `{"command":"node"}`}}}}}
+	if _, err := Install(dest, p, Options{}); !errors.As(err, new(*ConflictError)) {
+		t.Fatalf("want ConflictError, got %T %v", err, err)
+	}
+	if _, err := Install(dest, p, Options{Force: true}); err != nil {
+		t.Fatalf("force install failed: %v", err)
+	}
+}
+
+// §9.2 collision refusal for the sentinel kind (Gemini/Claude shared MD).
+func TestInstallRefusesUnmanagedSentinelCollision(t *testing.T) {
+	dest := t.TempDir()
+	os.WriteFile(filepath.Join(dest, "GEMINI.md"),
+		[]byte("<!-- stark:begin b/agent -->\nhand-written\n<!-- stark:end b/agent -->\n"), 0o644)
+	p := &installplan.Plan{Runtime: model.RuntimeGemini, Steps: []installplan.Step{
+		{Bundle: "b", Name: "agent", Type: model.TypeAgent, Files: []installplan.AdaptedFile{
+			{Path: "GEMINI.md", Kind: "sentinel", Sentinel: "b/agent", Payload: "role\n"}}}}}
+	if _, err := Install(dest, p, Options{}); !errors.As(err, new(*ConflictError)) {
+		t.Fatalf("want ConflictError, got %T %v", err, err)
+	}
+}
+
+// Repair must LEAVE a committed install intact (only drop the journal) — it must act on the
+// committed marker, not roll back a healthy install.
+func TestRepairLeavesCommittedInstallIntact(t *testing.T) {
+	dest := t.TempDir()
+	jp := filepath.Join(dest, ".stark", "install.journal")
+	os.MkdirAll(filepath.Dir(jp), 0o755)
+	j, _ := OpenJournal(jp)
+	j.Record(JournalEntry{Op: "write", Path: ".agents/skills/x/SKILL.md"})
+	j.Commit() // COMMITTED
+	j.Close()
+	os.MkdirAll(filepath.Join(dest, ".agents/skills/x"), 0o755)
+	os.WriteFile(filepath.Join(dest, ".agents/skills/x/SKILL.md"), []byte("kept\n"), 0o644)
+
+	if err := Repair(dest); err != nil {
+		t.Fatal(err)
+	}
+	if b, _ := os.ReadFile(filepath.Join(dest, ".agents/skills/x/SKILL.md")); string(b) != "kept\n" {
+		t.Fatalf("committed install must NOT be rolled back, got %q", b)
+	}
+	if _, err := os.Stat(jp); !os.IsNotExist(err) {
+		t.Fatal("journal should be removed after repairing a committed run")
+	}
+}
+
+// Re-running install after a crash must auto-repair the uncommitted journal (rolling back the
+// prior partial) instead of truncating it and orphaning the partial mutations forever.
+func TestReinstallRecoversCrashedJournal(t *testing.T) {
+	dest := t.TempDir()
+	os.WriteFile(filepath.Join(dest, "config.toml"), []byte("# mine\n"), 0o644)
+	jp := filepath.Join(dest, ".stark", "install.journal")
+	os.MkdirAll(filepath.Dir(jp), 0o755)
+	j, _ := OpenJournal(jp)
+	j.Record(JournalEntry{Op: "write", Path: ".agents/skills/pr-open/SKILL.md"})
+	j.Close() // NOT committed → simulates a crash
+	os.MkdirAll(filepath.Join(dest, ".agents/skills/pr-open"), 0o755)
+	os.WriteFile(filepath.Join(dest, ".agents/skills/pr-open/SKILL.md"), []byte("partial\n"), 0o644)
+
+	res, err := Install(dest, samplePlan(), Options{})
+	if err != nil {
+		t.Fatalf("re-install: %v", err)
+	}
+	// the crashed partial was rolled back by the auto-repair
+	if _, err := os.Stat(filepath.Join(dest, ".agents/skills/pr-open/SKILL.md")); !os.IsNotExist(err) {
+		t.Fatal("auto-repair should have rolled back the crashed partial file")
+	}
+	// and the fresh plan applied cleanly
+	if b, _ := os.ReadFile(filepath.Join(dest, ".agents/skills/session/SKILL.md")); string(b) != "session\n" {
+		t.Fatalf("clean install did not complete, got %q", b)
+	}
+	if rep, _ := Doctor(dest, res.ManifestPath); len(rep.Broken) != 0 {
+		t.Fatalf("doctor broken after recovered re-install: %+v", rep.Broken)
+	}
+}
+
+// A torn write (on-disk bytes != what we wrote) surfaces as a *DigestError → exit 3 (§9.4/§9.8).
+func TestWriteVerifiedDetectsTornWrite(t *testing.T) {
+	orig := readBack
+	defer func() { readBack = orig }()
+	readBack = func(string) ([]byte, error) { return []byte("CORRUPT"), nil }
+	err := writeVerified(filepath.Join(t.TempDir(), "f"), []byte("intended"))
+	if !errors.As(err, new(*DigestError)) {
+		t.Fatalf("want *DigestError on torn write, got %T %v", err, err)
 	}
 }
 

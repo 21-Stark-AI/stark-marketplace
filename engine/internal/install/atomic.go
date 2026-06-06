@@ -56,13 +56,27 @@ func Digest(b []byte) string {
 	return "sha256:" + hex.EncodeToString(sum[:])
 }
 
-// PreValidateDigest asserts staged content matches an expected digest before commit.
+// DigestError is a content-integrity failure. It maps to exit code 3 (spec §9.8) at the CLI
+// boundary; callers discriminate it with errors.As rather than string-matching the message.
+type DigestError struct{ Got, Want string }
+
+func (e *DigestError) Error() string {
+	return fmt.Sprintf("digest mismatch: got %s want %s", e.Got, e.Want)
+}
+
+// PreValidateDigest asserts content matches an expected digest (spec §9.4 integrity gate).
+// Used as a post-write read-back verify in the executor and as the building block for the
+// remote-fetch install path. A nil/empty expected digest is a no-op.
 func PreValidateDigest(content []byte, expected string) error {
 	if expected == "" {
 		return nil
 	}
 	if got := Digest(content); got != expected {
-		return fmt.Errorf("digest mismatch: got %s want %s", got, expected)
+		return &DigestError{Got: got, Want: expected}
 	}
 	return nil
 }
+
+// readBack reads a just-written file for the post-write integrity verify. It is a package var
+// so a test can simulate a corrupt/torn write and exercise the §9.8 exit-3 path.
+var readBack = os.ReadFile

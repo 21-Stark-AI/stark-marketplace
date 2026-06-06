@@ -50,3 +50,20 @@ func TestSentinelRefusesUnsentineledClobber(t *testing.T) {
 		t.Fatal("expected error on unterminated sentinel")
 	}
 }
+
+// removeSentinel must excise exactly the managed block and preserve all surrounding user
+// content (§9.2 precise removal). A mutation that no-ops this would otherwise ship undetected.
+func TestRemoveSentinelExcisesBlockPreservingSurroundings(t *testing.T) {
+	out := string(removeSentinel([]byte(existingMD), "rev/session"))
+	if strings.Contains(out, "stark:begin rev/session") || strings.Contains(out, "old session block") ||
+		strings.Contains(out, "stark:end rev/session") {
+		t.Fatalf("managed block not excised:\n%s", out)
+	}
+	if !strings.Contains(out, "User-authored intro") || !strings.Contains(out, "User note at the bottom") {
+		t.Fatalf("surrounding user content lost:\n%s", out)
+	}
+	// removing an absent id is a no-op
+	if string(removeSentinel([]byte(existingMD), "rev/absent")) != existingMD {
+		t.Fatal("removing an absent sentinel must be a no-op")
+	}
+}

@@ -55,11 +55,25 @@ func TestInstallVerifyRemoveAllRuntimes(t *testing.T) {
 			}
 			// preservation checks
 			assertUserContent(t, rt, dest)
+			// managed sentinel block is actually written on the emulated-agent gemini path
+			if rt == model.RuntimeGemini {
+				g, _ := os.ReadFile(filepath.Join(dest, "GEMINI.md"))
+				if !has(string(g), "<!-- stark:begin multi/agentmd -->") {
+					t.Fatalf("gemini: sentinel block not written on install:\n%s", g)
+				}
+			}
 
 			if err := Remove(dest, res.ManifestPath); err != nil {
 				t.Fatalf("remove %s: %v", rt, err)
 			}
 			assertUserContent(t, rt, dest) // still intact after removal
+			// and the managed sentinel block is excised on remove (not orphaned)
+			if rt == model.RuntimeGemini {
+				g, _ := os.ReadFile(filepath.Join(dest, "GEMINI.md"))
+				if has(string(g), "stark:begin multi/agentmd") {
+					t.Fatalf("gemini: sentinel block not excised on remove:\n%s", g)
+				}
+			}
 			if _, err := os.Stat(res.ManifestPath); !os.IsNotExist(err) {
 				t.Fatalf("%s: manifest should be gone after remove", rt)
 			}

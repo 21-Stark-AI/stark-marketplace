@@ -39,14 +39,20 @@ type Manifest struct {
 
 func (m *Manifest) Add(r Record) { m.Records = append(m.Records, r) }
 
-// sortRecords yields deterministic on-disk order.
+// sortRecords yields deterministic on-disk order. Path then Key then Sentinel — the Sentinel
+// tie-break matters when several sentinel blocks (each Key=="") land in one shared file
+// (GEMINI.md/AGENTS.md); without it their order, and the order-dependent Doctor output, would
+// depend on input order (§7.6). SliceStable keeps equal records in a fixed order.
 func (m *Manifest) sortRecords() {
-	sort.Slice(m.Records, func(i, j int) bool {
+	sort.SliceStable(m.Records, func(i, j int) bool {
 		a, b := m.Records[i], m.Records[j]
 		if a.Path != b.Path {
 			return a.Path < b.Path
 		}
-		return a.Key < b.Key
+		if a.Key != b.Key {
+			return a.Key < b.Key
+		}
+		return a.Sentinel < b.Sentinel
 	})
 }
 

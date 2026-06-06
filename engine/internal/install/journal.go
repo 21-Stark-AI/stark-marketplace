@@ -57,7 +57,14 @@ func (j *Journal) Commit() error {
 	return j.f.Sync()
 }
 
-func (j *Journal) Close() error { j.w.Flush(); return j.f.Close() }
+func (j *Journal) Close() error {
+	ferr := j.w.Flush()
+	cerr := j.f.Close()
+	if ferr != nil {
+		return ferr
+	}
+	return cerr
+}
 
 // ReadJournal returns recorded entries and whether the run committed cleanly.
 func ReadJournal(path string) (entries []JournalEntry, committed bool, err error) {

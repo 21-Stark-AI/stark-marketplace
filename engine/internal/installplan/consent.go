@@ -28,8 +28,10 @@ func addConsent(cp *ConsentPayload, n node, a *indexio.ArtifactDetail) {
 		}
 	case model.TypeAgent:
 		cp.Required = true
-		grants := "(none)"
-		// agent tool grants live on the detail via outputs/metadata; surface raw if present.
-		cp.AgentToolGrants = append(cp.AgentToolGrants, a.Name+": "+grants)
+		// The published CC-3 detail does not carry an agent's tool grants, so we cannot
+		// enumerate them here — be explicit rather than implying "(none)" granted. The safety
+		// gate (Required=true) still fires; a reviewer must inspect the agent before consenting.
+		// (Surfacing exact grants needs a CC-3 contract extension — tracked, out of slice 05.)
+		cp.AgentToolGrants = append(cp.AgentToolGrants, a.Name+": tool grants not published in index — review the agent before granting")
 	}
 }

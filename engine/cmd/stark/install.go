@@ -2,7 +2,9 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -13,6 +15,23 @@ import (
 	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
 	"github.com/spf13/cobra"
 )
+
+// osExit is the process-exit seam; tests override it to capture the §9.8 exit code without
+// terminating the test binary.
+var osExit = os.Exit
+
+// installExitCode maps an install error to its §9.8 exit code (4 conflict, 3 digest, else 1).
+func installExitCode(err error) int {
+	var ce *install.ConflictError
+	if errors.As(err, &ce) {
+		return ExitConflict
+	}
+	var de *install.DigestError
+	if errors.As(err, &de) {
+		return ExitDigest
+	}
+	return ExitValidation
+}
 
 func newInstallCmd(adapterFactory func(catalogDir string) installplan.Adapter) *cobra.Command {
 	var rt, dest, indexPath, bundlesDir, catalogDir, removeManifest string
@@ -25,7 +44,8 @@ func newInstallCmd(adapterFactory func(catalogDir string) installplan.Adapter) *
 			if repair {
 				if err := install.Repair(dest); err != nil {
 					fmt.Fprintln(os.Stderr, "repair:", err)
-					os.Exit(ExitValidation)
+					osExit(ExitValidation)
+					return err
 				}
 				fmt.Println("repair complete")
 				return nil
@@ -33,7 +53,8 @@ func newInstallCmd(adapterFactory func(catalogDir string) installplan.Adapter) *
 			if removeManifest != "" {
 				if err := install.Remove(dest, removeManifest); err != nil {
 					fmt.Fprintln(os.Stderr, "remove:", err)
-					os.Exit(ExitValidation)
+					osExit(ExitValidation)
+					return err
 				}
 				fmt.Println("removed")
 				return nil
@@ -47,36 +68,33 @@ func newInstallCmd(adapterFactory func(catalogDir string) installplan.Adapter) *
 			}
 			idx, err := indexio.LoadIndex(indexPath)
 			if err != nil {
-				os.Exit(indexLoadExit(err))
+				osExit(indexLoadExit(err))
+				return err
 			}
 			bundle, artifact := splitRef(args[0])
 			typ := rootType(idx, bundle, artifact)
 			p, err := installplan.Compute(idx, bundlesDir, adapterFactory(catalogDir), bundle, artifact, typ, r)
 			if err != nil {
 				fmt.Fprintln(os.Stderr, "plan:", err)
-				os.Exit(ExitValidation)
+				osExit(ExitValidation)
+				return err
 			}
 			printPlan(p)
 			if plan {
 				return nil // --plan: show, don't write
 			}
 			if p.Consent.Required && !yes {
-				if !confirm() {
+				if !confirm(c.InOrStdin()) {
 					fmt.Println("declined")
-					os.Exit(ExitConsentDeclined)
+					osExit(ExitConsentDeclined)
+					return nil
 				}
 			}
 			res, err := install.Install(dest, p, install.Options{Force: force})
 			if err != nil {
-				if _, ok := err.(*install.ConflictError); ok {
-					fmt.Fprintln(os.Stderr, "conflict:", err)
-					os.Exit(ExitConflict)
-				}
-				if strings.Contains(err.Error(), "digest mismatch") {
-					os.Exit(ExitDigest)
-				}
 				fmt.Fprintln(os.Stderr, "install:", err)
-				os.Exit(ExitValidation)
+				osExit(installExitCode(err))
+				return err
 			}
 			if jsonOut {
 				emitJSON(os.Stdout, "install", ExitOK, map[string]any{
@@ -144,9 +162,10 @@ func printPlan(p *installplan.Plan) {
 	}
 }
 
-func confirm() bool {
+// confirm reads a yes/no answer from in (cobra's stdin seam, so tests can inject one).
+func confirm(in io.Reader) bool {
 	fmt.Print("Proceed? [y/N] ")
-	sc := bufio.NewScanner(os.Stdin)
+	sc := bufio.NewScanner(in)
 	if !sc.Scan() {
 		return false
 	}

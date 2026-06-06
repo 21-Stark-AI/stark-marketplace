@@ -8,6 +8,7 @@ import (
 
 	"github.com/GetEvinced/stark-marketplace/engine/internal/adapter"
 	"github.com/GetEvinced/stark-marketplace/engine/internal/adapter/registry"
+	"github.com/GetEvinced/stark-marketplace/engine/internal/aggregate"
 	"github.com/GetEvinced/stark-marketplace/engine/internal/indexio"
 	"github.com/GetEvinced/stark-marketplace/engine/internal/install"
 	"github.com/GetEvinced/stark-marketplace/engine/internal/installplan"
@@ -140,7 +141,7 @@ func shapePayload(content string, o indexio.Output) (string, error) {
 	case "mergeJSONKey":
 		return extractJSONValue(content, o.Key)
 	case "sentinel":
-		return stripSentinelMarkers(content, o.Sentinel), nil
+		return sentinelBody(content, o.Sentinel)
 	default:
 		return "", fmt.Errorf("unknown output kind %q", o.Kind)
 	}
@@ -172,18 +173,18 @@ func extractJSONValue(content, dottedKey string) (string, error) {
 	return string(b), nil
 }
 
-// stripSentinelMarkers removes the outer stark sentinel markers from a rendered emulation block
-// so MergeSentinel can re-wrap a clean body. Marker format mirrors install §6.3.
-func stripSentinelMarkers(content, id string) string {
-	begin := "<!-- stark:begin " + id + " -->"
-	end := "<!-- stark:end " + id + " -->"
-	bi := strings.Index(content, begin)
-	ei := strings.Index(content, end)
-	if bi < 0 || ei < 0 || ei < bi {
-		return content // not wrapped as expected — pass through
+// sentinelBody recovers the clean inner body of one emulation section from a rendered shared
+// file. The render-time markers carry a digest (`<!-- stark:begin <id>@<digest> -->`), so we
+// parse with aggregate.Parse (the single source of truth for that format) rather than matching
+// the install-side (digest-free) markers — otherwise the markers leak into the payload and
+// install.MergeSentinel double-wraps them, corrupting the file. id is "<bundle>/<name>".
+func sentinelBody(content, id string) (string, error) {
+	for _, s := range aggregate.Parse(content) {
+		if s.Bundle+"/"+s.Name == id {
+			return s.Content, nil
+		}
 	}
-	body := content[bi+len(begin) : ei]
-	return strings.Trim(body, "\n") + "\n"
+	return "", fmt.Errorf("rendered output has no sentinel section %q", id)
 }
 
 // realAdapter returns the production adapter, rendering from the given catalog directory.

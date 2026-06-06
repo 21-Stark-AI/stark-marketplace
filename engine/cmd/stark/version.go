@@ -41,11 +41,16 @@ func newSelfUpdateCmd() *cobra.Command {
 			if indexPath != "" {
 				idx, err := indexio.LoadIndex(indexPath)
 				if err != nil {
+					// Only an out-of-range schemaVersion is exit 5; an IO/parse failure is a
+					// validation error (exit 1). indexLoadExit discriminates, same as the other
+					// commands — self-update must not misreport every load failure as exit 5.
 					fmt.Fprintln(os.Stderr, err)
-					os.Exit(ExitSchemaVersion)
+					osExit(indexLoadExit(err))
+					return err
 				}
 				if code := checkIndexSupported(idx.SchemaVersion); code != ExitOK {
-					os.Exit(code)
+					osExit(code)
+					return nil
 				}
 			}
 			fmt.Println(versionString())

@@ -177,3 +177,20 @@ func TestMergeJSONKeyIdempotent(t *testing.T) {
 		t.Fatalf("json merge not idempotent")
 	}
 }
+
+// A user who owns an intermediate path segment as a non-object (string/array/number) must not
+// have it silently replaced by the merge (§9.2). MergeJSONKey refuses, and jsonKeyExists flags
+// it so the executor's preflight raises a collision.
+func TestMergeJSONKeyRefusesNonObjectIntermediate(t *testing.T) {
+	existing := []byte(`{"mcpServers":"user's own string"}`)
+	if !jsonKeyExists(existing, "mcpServers.gh") {
+		t.Fatal("a non-object intermediate must be reported as a collision")
+	}
+	if _, _, err := MergeJSONKey(existing, "mcpServers.gh", map[string]any{"command": "node"}); err == nil {
+		t.Fatalf("merge must refuse to clobber a user-owned non-object intermediate")
+	}
+	// sanity: a genuinely-absent path is NOT a collision and merges cleanly
+	if jsonKeyExists([]byte(`{"other":1}`), "mcpServers.gh") {
+		t.Fatal("absent path must not be a collision")
+	}
+}

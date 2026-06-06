@@ -39,20 +39,27 @@ func Install(dest string, p *installplan.Plan, o Options) (*Result, error) {
 	if err := os.MkdirAll(starkDir(dest), 0o755); err != nil {
 		return nil, err
 	}
+	// 1. recover any crashed prior run BEFORE truncating its journal. A re-run is the natural
+	// reaction to a failed install; without this, OpenJournal's O_TRUNC would erase the
+	// uncommitted journal and orphan the prior run's partial mutations forever (§9.4).
+	if err := Repair(dest); err != nil {
+		return nil, fmt.Errorf("recover prior incomplete install: %w", err)
+	}
+
 	mPath := manifestPath(dest, string(p.Runtime))
 	manifest := &Manifest{SchemaVersion: 1, Runtime: p.Runtime}
 	if prev, err := LoadManifest(mPath); err == nil {
 		manifest = prev // keep prior records; merge actions are idempotent, file actions overwrite
 	}
 
-	// 1. collision pre-check (refuse before mutating anything)
+	// 2. collision pre-check (refuse before mutating anything)
 	if !o.Force {
 		if err := preflightCollisions(dest, p, manifest); err != nil {
 			return nil, err
 		}
 	}
 
-	// 2. open journal (write-ahead)
+	// 3. open journal (write-ahead)
 	j, err := OpenJournal(journalPath(dest))
 	if err != nil {
 		return nil, err
@@ -62,7 +69,7 @@ func Install(dest string, p *installplan.Plan, o Options) (*Result, error) {
 	res := &Result{ManifestPath: mPath}
 	for _, step := range p.Steps {
 		for _, f := range step.Files {
-			rec, err := applyFile(dest, j, step, f, o, manifest)
+			rec, err := applyFile(dest, j, step, f)
 			if err != nil {
 				return nil, err
 			}
@@ -75,11 +82,13 @@ func Install(dest string, p *installplan.Plan, o Options) (*Result, error) {
 		}
 	}
 
-	// 3. persist manifest, then mark journal committed
-	if err := SaveManifest(mPath, manifest); err != nil {
+	// 4. mark journal committed FIRST, then persist the manifest. If we crash between the two,
+	// Repair sees a committed journal and leaves the (intact) files in place — never a manifest
+	// that claims content a rollback already removed (§9.4 self-consistency).
+	if err := j.Commit(); err != nil {
 		return nil, err
 	}
-	if err := j.Commit(); err != nil {
+	if err := SaveManifest(mPath, manifest); err != nil {
 		return nil, err
 	}
 	_ = os.Remove(journalPath(dest)) // clean finish: drop the journal
@@ -87,45 +96,50 @@ func Install(dest string, p *installplan.Plan, o Options) (*Result, error) {
 }
 
 // applyFile writes/merges one AdaptedFile and returns its manifest Record.
-func applyFile(dest string, j *Journal, step installplan.Step, f installplan.AdaptedFile,
-	o Options, manifest *Manifest) (Record, error) {
+func applyFile(dest string, j *Journal, step installplan.Step, f installplan.AdaptedFile) (Record, error) {
 	abs := filepath.Join(dest, filepath.FromSlash(f.Path))
 	rec := Record{Bundle: step.Bundle, Name: step.Name, Type: step.Type, Path: f.Path, Key: f.Key, Sentinel: f.Sentinel}
 
 	switch f.Kind {
 	case "file":
-		_ = j.Record(JournalEntry{Op: "write", Path: f.Path})
-		if err := AtomicWrite(abs, []byte(f.Payload), 0o644); err != nil {
+		if err := j.Record(JournalEntry{Op: "write", Path: f.Path}); err != nil {
+			return rec, err
+		}
+		if err := writeVerified(abs, []byte(f.Payload)); err != nil {
 			return rec, err
 		}
 		rec.Action = ActionWriteFile
 		rec.Digest = Digest([]byte(f.Payload))
 
 	case "mergeTOMLKey":
-		lk, err := AcquireLock(abs)
+		lk, err := AcquireLock(dest, f.Path)
 		if err != nil {
 			return rec, err
 		}
 		defer lk.Release()
-		_ = j.Record(JournalEntry{Op: "mergeTOML", Path: f.Path, Key: f.Key})
+		if err := j.Record(JournalEntry{Op: "mergeTOML", Path: f.Path, Key: f.Key}); err != nil {
+			return rec, err
+		}
 		cur := readOrEmpty(abs)
 		out, _, err := MergeTOMLKey(cur, f.Key, f.Payload)
 		if err != nil {
 			return rec, err
 		}
-		if err := AtomicWrite(abs, out, 0o644); err != nil {
+		if err := writeVerified(abs, out); err != nil {
 			return rec, err
 		}
 		rec.Action = ActionMergeTOMLKey
 		rec.Digest = Digest([]byte(f.Payload))
 
 	case "mergeJSONKey":
-		lk, err := AcquireLock(abs)
+		lk, err := AcquireLock(dest, f.Path)
 		if err != nil {
 			return rec, err
 		}
 		defer lk.Release()
-		_ = j.Record(JournalEntry{Op: "mergeJSON", Path: f.Path, Key: f.Key})
+		if err := j.Record(JournalEntry{Op: "mergeJSON", Path: f.Path, Key: f.Key}); err != nil {
+			return rec, err
+		}
 		cur := readOrEmpty(abs)
 		var val any
 		if err := json.Unmarshal([]byte(f.Payload), &val); err != nil {
@@ -135,25 +149,27 @@ func applyFile(dest string, j *Journal, step installplan.Step, f installplan.Ada
 		if err != nil {
 			return rec, err
 		}
-		if err := AtomicWrite(abs, out, 0o644); err != nil {
+		if err := writeVerified(abs, out); err != nil {
 			return rec, err
 		}
 		rec.Action = ActionMergeJSONKey
 		rec.Digest = Digest([]byte(f.Payload))
 
 	case "sentinel":
-		lk, err := AcquireLock(abs)
+		lk, err := AcquireLock(dest, f.Path)
 		if err != nil {
 			return rec, err
 		}
 		defer lk.Release()
-		_ = j.Record(JournalEntry{Op: "sentinel", Path: f.Path, Sentinel: f.Sentinel})
+		if err := j.Record(JournalEntry{Op: "sentinel", Path: f.Path, Sentinel: f.Sentinel}); err != nil {
+			return rec, err
+		}
 		cur := readOrEmpty(abs)
 		out, _, err := MergeSentinel(cur, f.Sentinel, f.Payload)
 		if err != nil {
 			return rec, err
 		}
-		if err := AtomicWrite(abs, out, 0o644); err != nil {
+		if err := writeVerified(abs, out); err != nil {
 			return rec, err
 		}
 		rec.Action = ActionSentinelBlock
@@ -163,6 +179,19 @@ func applyFile(dest string, j *Journal, step installplan.Step, f installplan.Ada
 		return rec, fmt.Errorf("unknown adapted-file kind %q", f.Kind)
 	}
 	return rec, nil
+}
+
+// writeVerified atomically writes data, then reads it back and verifies the on-disk bytes match
+// (spec §9.4 integrity). A mismatch returns a *DigestError → exit 3 at the CLI boundary.
+func writeVerified(abs string, data []byte) error {
+	if err := AtomicWrite(abs, data, 0o644); err != nil {
+		return err
+	}
+	got, err := readBack(abs)
+	if err != nil {
+		return err
+	}
+	return PreValidateDigest(got, Digest(data))
 }
 
 // preflightCollisions refuses if a managed target collides with UNMANAGED pre-existing

@@ -28,12 +28,21 @@ func MergeJSONKey(doc []byte, dottedKey string, value any) ([]byte, string, erro
 			cur[p] = value
 			break
 		}
-		next, ok := cur[p].(map[string]any)
-		if !ok {
-			next = map[string]any{}
-			cur[p] = next
+		existing, present := cur[p]
+		if !present {
+			nm := map[string]any{}
+			cur[p] = nm
+			cur = nm
+			continue
 		}
-		cur = next
+		asMap, isMap := existing.(map[string]any)
+		if !isMap {
+			// A user owns this intermediate as a scalar/array — overwriting it would silently
+			// destroy their content (§9.2). Refuse; the executor's preflight surfaces this as a
+			// collision unless --force is set.
+			return nil, "", fmt.Errorf("cannot merge %q: %q is occupied by a non-object value", dottedKey, p)
+		}
+		cur = asMap
 	}
 	out, err := json.MarshalIndent(root, "", "  ")
 	if err != nil {
@@ -81,9 +90,13 @@ func jsonKeyExists(doc []byte, dottedKey string) bool {
 			_, ok := cur[p]
 			return ok
 		}
-		next, ok := cur[p].(map[string]any)
+		v, present := cur[p]
+		if !present {
+			return false // path absent → merge will create it cleanly, no collision
+		}
+		next, ok := v.(map[string]any)
 		if !ok {
-			return false
+			return true // intermediate occupied by a non-object → unmanaged collision
 		}
 		cur = next
 	}
