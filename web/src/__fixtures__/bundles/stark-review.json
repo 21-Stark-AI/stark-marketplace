@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "bundle": {
+    "name": "stark-review",
+    "version": "0.7.0",
+    "description": "Multi-agent PR review toolkit.",
+    "category": "code-review",
+    "tags": ["pr", "review"],
+    "maturity": "stable",
+    "owner": { "name": "Evinced", "email": "engineering@evinced.com" },
+    "runtimes": ["claude", "codex", "gemini"],
+    "homepage": "https://github.com/GetEvinced/stark-marketplace/tree/main/catalog/stark-review"
+  },
+  "artifacts": [
+    {
+      "name": "stark-review",
+      "type": "skill",
+      "description": "Single-agent PR review with triage-selected domains.",
+      "version": "0.7.0",
+      "tags": ["pr", "review", "multi-agent"],
+      "maturity": "stable",
+      "requires": [{ "type": "skill", "ref": "stark-session" }],
+      "support": { "claude": "native", "codex": "native", "gemini": "emulated" },
+      "diverged": false,
+      "outputs": {
+        "claude": [
+          { "path": "skills/stark-review/SKILL.md", "kind": "file", "key": null, "sentinel": null, "emulated": false }
+        ],
+        "codex": [
+          { "path": ".agents/skills/stark-review/SKILL.md", "kind": "file", "key": null, "sentinel": null, "emulated": false }
+        ],
+        "gemini": [
+          { "path": "GEMINI.md", "kind": "sentinel", "key": null, "sentinel": "stark-review", "emulated": true }
+        ]
+      },
+      "fidelityNotes": {
+        "gemini": "EMULATED — derived shape; may not auto-activate; verify."
+      },
+      "sourcePath": "catalog/stark-review/skills/stark-review.md"
+    },
+    {
+      "name": "review",
+      "type": "command",
+      "description": "Run a PR review.",
+      "version": "0.7.0",
+      "tags": ["pr", "review"],
+      "maturity": "stable",
+      "requires": [],
+      "support": { "claude": "native", "codex": "native", "gemini": "native" },
+      "diverged": false,
+      "outputs": {
+        "claude": [
+          { "path": "commands/review.md", "kind": "file", "key": null, "sentinel": null, "emulated": false }
+        ],
+        "codex": [
+          { "path": ".agents/skills/review/SKILL.md", "kind": "file", "key": null, "sentinel": null, "emulated": false }
+        ],
+        "gemini": [
+          { "path": ".gemini/commands/review.toml", "kind": "file", "key": null, "sentinel": null, "emulated": false }
+        ]
+      },
+      "fidelityNotes": {},
+      "sourcePath": "catalog/stark-review/commands/review.md"
+    }
+  ],
+  "dependencyClosure": [
+    { "from": "stark-review/stark-review", "to": "stark-review/stark-session" }
+  ]
+}

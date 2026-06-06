@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-06-06T00:00:00Z",
+  "artifacts": [
+    {
+      "name": "stark-review",
+      "type": "skill",
+      "bundle": "stark-review",
+      "description": "Single-agent PR review with triage-selected domains.",
+      "tags": ["pr", "review", "multi-agent"],
+      "category": "code-review",
+      "maturity": "stable",
+      "version": "0.7.0",
+      "digest": "sha256:aaa",
+      "support": { "claude": "native", "codex": "native", "gemini": "emulated" }
+    },
+    {
+      "name": "review",
+      "type": "command",
+      "bundle": "stark-review",
+      "description": "Run a PR review.",
+      "tags": ["pr", "review"],
+      "category": "code-review",
+      "maturity": "stable",
+      "version": "0.7.0",
+      "digest": "sha256:bbb",
+      "support": { "claude": "native", "codex": "native", "gemini": "native" }
+    },
+    {
+      "name": "gh",
+      "type": "mcp",
+      "bundle": "stark-gh",
+      "description": "GitHub MCP server.",
+      "tags": ["github"],
+      "category": "vcs",
+      "maturity": "beta",
+      "version": "1.2.0",
+      "digest": "sha256:ccc",
+      "support": { "claude": "native", "codex": "native", "gemini": "native" }
+    }
+  ]
+}
