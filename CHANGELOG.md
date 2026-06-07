@@ -4,6 +4,17 @@ All notable changes to `stark-marketplace`. The format follows [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.1.6] — 2026-06-07
+
+### Fixed
+- Gitignore the `sign-manifest.yml` scratch files
+  (`build-manifest.json{,.sig,.pem}`, `build-manifest.sha256`,
+  `release-notes.md`). With the `dist/claude` collision fixed in
+  v0.1.5, these untracked artifacts were the last thing keeping
+  goreleaser's clean-tree check unhappy. v0.1.5 itself shipped a
+  signed manifest but no binaries; v0.1.6 is the first release where
+  every assertion in the plan ships without workarounds.
+
 ## [0.1.5] — 2026-06-07
 
 ### Fixed
@@ -96,7 +107,8 @@ First tagged release. Spec slices 1–8 complete (catalog → engine → web →
 - Cosign-keyless signed build manifest via GitHub OIDC → Fulcio + Rekor.
 - Top-level docs: `CLAUDE.md`, `AGENTS.md`, `README.md`, `CONTRIBUTING.md`, `docs/SECURITY.md`, `docs/native-install-loop.md`, `docs/web-hosting.md`.
 
-[Unreleased]: https://github.com/GetEvinced/stark-marketplace/compare/v0.1.5...HEAD
+[Unreleased]: https://github.com/GetEvinced/stark-marketplace/compare/v0.1.6...HEAD
+[0.1.6]: https://github.com/GetEvinced/stark-marketplace/releases/tag/v0.1.6
 [0.1.5]: https://github.com/GetEvinced/stark-marketplace/releases/tag/v0.1.5
 [0.1.4]: https://github.com/GetEvinced/stark-marketplace/releases/tag/v0.1.4
 [0.1.3]: https://github.com/GetEvinced/stark-marketplace/releases/tag/v0.1.3
