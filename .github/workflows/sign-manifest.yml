@@ -42,6 +42,25 @@ jobs:
         working-directory: engine
         run: go run ./cmd/stark build --manifest ../build-manifest.json ../catalog
 
+      # Diagnostic for the unresolved dirty-tree mystery (see docs/plans/
+      # prod-ready-followup-2026-06-07.md §4): on Linux runners, goreleaser's
+      # clean-tree check reports the 19 dist/claude files as deleted, while
+      # locally on macOS the same `stark build` leaves git status clean.
+      # `verify-manifest` (next step) reads those files successfully, so they
+      # ARE on disk — git's view diverges from the actual file state. Capture
+      # both views here so the next investigation can compare.
+      - name: diagnostic — git state after stark build
+        run: |
+          echo "── ls dist/claude (sample) ──"
+          ls -la dist/claude/stark-analyze/skills/stark-red-team-design/ || true
+          echo "── git status --porcelain (count + first 30) ──"
+          git status --porcelain | wc -l
+          git status --porcelain | head -30
+          echo "── git diff --stat HEAD (first 30 lines) ──"
+          git diff --stat HEAD | head -30
+          echo "── git config core.* ──"
+          git config --list | grep -E '^core\.' || true
+
       - name: install cosign
         uses: sigstore/cosign-installer@v3
 
