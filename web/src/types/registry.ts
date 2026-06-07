@@ -27,10 +27,18 @@ export interface LeanArtifact {
   readonly support: SupportMatrix;
 }
 
+/** Engine provenance block emitted alongside index.json (spec §7.5). Adapter versions stamp
+ *  exactly which renderers produced the committed dist tree, so the SPA can surface them
+ *  alongside a link to the signed build manifest for offline verification. */
+export interface IndexProvenance {
+  readonly adapterVersions?: Partial<Record<Runtime, string>>;
+}
+
 /** Top-level lean index.json document. */
 export interface LeanIndex {
   readonly schemaVersion: number;
   readonly generatedAt?: string;
+  readonly generatedBy?: IndexProvenance;
   readonly artifacts: readonly LeanArtifact[];
 }
 
