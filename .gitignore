@@ -4,6 +4,12 @@ node_modules/
 dist/codex/
 dist/gemini/
 .goreleaser-dist/
+# sign-manifest.yml workflow scratch files — never committed
+build-manifest.json
+build-manifest.json.sig
+build-manifest.json.pem
+build-manifest.sha256
+release-notes.md
 *.log
 .env
 .env.*
