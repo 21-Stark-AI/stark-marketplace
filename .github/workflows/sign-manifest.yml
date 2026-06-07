@@ -42,25 +42,6 @@ jobs:
         working-directory: engine
         run: go run ./cmd/stark build --manifest ../build-manifest.json ../catalog
 
-      # Diagnostic for the unresolved dirty-tree mystery (see docs/plans/
-      # prod-ready-followup-2026-06-07.md §4): on Linux runners, goreleaser's
-      # clean-tree check reports the 19 dist/claude files as deleted, while
-      # locally on macOS the same `stark build` leaves git status clean.
-      # `verify-manifest` (next step) reads those files successfully, so they
-      # ARE on disk — git's view diverges from the actual file state. Capture
-      # both views here so the next investigation can compare.
-      - name: diagnostic — git state after stark build
-        run: |
-          echo "── ls dist/claude (sample) ──"
-          ls -la dist/claude/stark-analyze/skills/stark-red-team-design/ || true
-          echo "── git status --porcelain (count + first 30) ──"
-          git status --porcelain | wc -l
-          git status --porcelain | head -30
-          echo "── git diff --stat HEAD (first 30 lines) ──"
-          git diff --stat HEAD | head -30
-          echo "── git config core.* ──"
-          git config --list | grep -E '^core\.' || true
-
       - name: install cosign
         uses: sigstore/cosign-installer@v3
 
@@ -153,21 +134,18 @@ jobs:
           TAG: ${{ steps.ver.outputs.tag }}
         run: git fetch origin "refs/tags/${TAG}:refs/tags/${TAG}"
 
-      # `stark build` (called above to produce the manifest) re-renders
-      # dist/claude in place. Even when the rebuild is byte-identical, the
-      # remove-then-write sequence leaves git seeing files as modified,
-      # which trips goreleaser's default clean-tree check. --skip=validate
-      # bypasses that check; the build itself is unaffected because
-      # goreleaser builds binaries from the tagged ref (GORELEASER_CURRENT_TAG)
-      # via a `go build`-from-source path that consults engine/cmd/stark
-      # only — never dist/claude.
+      # `--clean` clears goreleaser's dist dir, which `.goreleaser.yaml`
+      # overrides to `.goreleaser-dist` so it does NOT collide with the
+      # repo's committed `dist/claude` tree. With that override, validate
+      # passes (the working tree IS clean post-stark-build) and no
+      # --skip is needed.
       - name: goreleaser — build + append stark CLI binaries to the release
         if: steps.tagcheck.outputs.exists == 'false'
         uses: goreleaser/goreleaser-action@v6
         with:
           distribution: goreleaser
           version: "~> v2"
-          args: release --clean --skip=validate
+          args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GORELEASER_CURRENT_TAG: ${{ steps.ver.outputs.tag }}

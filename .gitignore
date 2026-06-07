@@ -3,6 +3,7 @@
 node_modules/
 dist/codex/
 dist/gemini/
+.goreleaser-dist/
 *.log
 .env
 .env.*
