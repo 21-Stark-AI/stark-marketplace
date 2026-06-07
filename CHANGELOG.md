@@ -4,6 +4,19 @@ All notable changes to `stark-marketplace`. The format follows [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.1.5] — 2026-06-07
+
+### Fixed
+- Root cause for the v0.1.1–v0.1.3 "git dirty state" identified and
+  fixed: `goreleaser release --clean` was wiping its default `./dist`
+  directory, which collides with the repo's committed `dist/claude`
+  tree. `.goreleaser.yaml` now sets `dist: .goreleaser-dist`, so the
+  two never touch. `--skip=validate` removed from `sign-manifest.yml`;
+  the validate gate now passes legitimately.
+- Diagnostic step in `sign-manifest.yml` removed (served its purpose —
+  see v0.1.4 run 27098850309 in workflow history for the captured
+  state that exposed the cause).
+
 ## [0.1.4] — 2026-06-07
 
 First release covering all items in `docs/plans/prod-ready-followup-2026-06-07.md`.
@@ -83,7 +96,8 @@ First tagged release. Spec slices 1–8 complete (catalog → engine → web →
 - Cosign-keyless signed build manifest via GitHub OIDC → Fulcio + Rekor.
 - Top-level docs: `CLAUDE.md`, `AGENTS.md`, `README.md`, `CONTRIBUTING.md`, `docs/SECURITY.md`, `docs/native-install-loop.md`, `docs/web-hosting.md`.
 
-[Unreleased]: https://github.com/GetEvinced/stark-marketplace/compare/v0.1.4...HEAD
+[Unreleased]: https://github.com/GetEvinced/stark-marketplace/compare/v0.1.5...HEAD
+[0.1.5]: https://github.com/GetEvinced/stark-marketplace/releases/tag/v0.1.5
 [0.1.4]: https://github.com/GetEvinced/stark-marketplace/releases/tag/v0.1.4
 [0.1.3]: https://github.com/GetEvinced/stark-marketplace/releases/tag/v0.1.3
 [0.1.2]: https://github.com/GetEvinced/stark-marketplace/releases/tag/v0.1.2

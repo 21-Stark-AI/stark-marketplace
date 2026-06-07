@@ -10,6 +10,12 @@ version: 2
 
 project_name: stark
 
+# goreleaser's default dist dir is `./dist`. The repo's committed
+# `dist/claude` tree lives there, and `release --clean` would
+# RemoveAll(./dist) — wiping the committed tree mid-workflow. Point
+# goreleaser at a sibling so the two never collide.
+dist: .goreleaser-dist
+
 before:
   hooks:
     - go -C engine mod tidy
