@@ -55,7 +55,7 @@ type Artifact struct {
 	AllowedTools           []string `yaml:"allowed-tools,omitempty" json:"allowedTools,omitempty"`
 	Tools                  []string `yaml:"tools,omitempty" json:"tools,omitempty"` // agent
 
-	MCP       *MCPConfig          `yaml:"mcp,omitempty" json:"mcp,omitempty"`
+	MCP       *MCPConfig           `yaml:"mcp,omitempty" json:"mcp,omitempty"`
 	Overrides map[Runtime]Override `yaml:"overrides,omitempty" json:"overrides,omitempty"`
 
 	// runtime-populated

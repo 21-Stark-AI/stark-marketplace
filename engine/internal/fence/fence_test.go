@@ -32,9 +32,9 @@ func TestStripExceptForm(t *testing.T) {
 
 func TestStripErrors(t *testing.T) {
 	cases := []string{
-		"<!-- runtime: claude -->\nunterminated\n",                 // unterminated
+		"<!-- runtime: claude -->\nunterminated\n",                                                 // unterminated
 		"<!-- runtime: claude -->\n<!-- runtime: gemini -->\n<!-- /runtime -->\n<!-- /runtime -->", // nested
-		"<!-- runtime: bogus -->\nx\n<!-- /runtime -->\n",          // unknown runtime
+		"<!-- runtime: bogus -->\nx\n<!-- /runtime -->\n",                                          // unknown runtime
 	}
 	for i, c := range cases {
 		if _, err := Strip(c, model.RuntimeClaude, model.AllRuntimes()); err == nil {
