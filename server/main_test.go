@@ -122,3 +122,56 @@ func TestHeadOK(t *testing.T) {
 		t.Fatalf("status = %d, want 200", resp.StatusCode)
 	}
 }
+
+// Security headers must land on every response (status-class independent),
+// including /healthz, asset paths, the SPA shell + fallback, and the 405
+// response. These are app-layer defenses IAP doesn't add — losing one
+// silently regresses the threat model in docs/SECURITY.md.
+var requiredSecurityHeaders = map[string]string{
+	"Strict-Transport-Security": "max-age=63072000; includeSubDomains; preload",
+	"X-Content-Type-Options":    "nosniff",
+	"Referrer-Policy":           "strict-origin-when-cross-origin",
+	"X-Frame-Options":           "DENY",
+}
+
+func assertSecurityHeaders(t *testing.T, resp *http.Response, where string) {
+	t.Helper()
+	for k, want := range requiredSecurityHeaders {
+		if got := resp.Header.Get(k); got != want {
+			t.Errorf("%s: %s = %q, want %q", where, k, got, want)
+		}
+	}
+	csp := resp.Header.Get("Content-Security-Policy")
+	if csp == "" {
+		t.Errorf("%s: Content-Security-Policy missing", where)
+	}
+	for _, must := range []string{"default-src 'self'", "frame-ancestors 'none'", "script-src 'self'", "base-uri 'self'"} {
+		if csp != "" && !strings.Contains(csp, must) {
+			t.Errorf("%s: CSP missing %q (got %q)", where, must, csp)
+		}
+	}
+	if resp.Header.Get("Permissions-Policy") == "" {
+		t.Errorf("%s: Permissions-Policy missing", where)
+	}
+}
+
+func TestSecurityHeadersOnEveryResponse(t *testing.T) {
+	h := handler(testFS())
+	cases := []struct {
+		name, method, target string
+	}{
+		{"shell", http.MethodGet, "/"},
+		{"asset", http.MethodGet, "/assets/index.abc.js"},
+		{"data", http.MethodGet, "/index.json"},
+		{"spa-fallback", http.MethodGet, "/bundle/stark-gh"},
+		{"healthz", http.MethodGet, "/healthz"},
+		{"method-not-allowed", http.MethodPost, "/"},
+		{"head", http.MethodHead, "/"},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			resp := do(t, h, tc.method, tc.target)
+			assertSecurityHeaders(t, resp, tc.name)
+		})
+	}
+}

@@ -13,6 +13,10 @@
 // Caching mirrors the spec §10 atomic-unit model: content-hashed assets/ are
 // immutable and long-cached; the shell, index.json and bundles/ are no-cache so
 // a new deploy is picked up immediately.
+//
+// Every response carries a baseline of security headers (HSTS, CSP, frame
+// blockers, nosniff, Referrer-Policy, Permissions-Policy). IAP gates identity
+// at the edge; these headers are the app-layer defense the proxy doesn't add.
 package main
 
 import (
@@ -48,10 +52,45 @@ func env(key, def string) string {
 	return def
 }
 
+// CSP locked to first-party assets. 'unsafe-inline' on style-src is the
+// minimum Vite needs for its FOUC-guard inline <style>; scripts stay strict
+// 'self' because Vite emits hashed bundles, not inline scripts. frame-ancestors
+// 'none' + X-Frame-Options DENY block embedding; base-uri 'self' prevents
+// <base> hijacks; form-action 'self' bounds outbound posts; connect-src 'self'
+// restricts fetch/XHR to same-origin (the SPA only fetches ./index.json +
+// ./bundles/*.json).
+const contentSecurityPolicy = "default-src 'self'; " +
+	"img-src 'self' data:; " +
+	"style-src 'self' 'unsafe-inline'; " +
+	"script-src 'self'; " +
+	"connect-src 'self'; " +
+	"font-src 'self'; " +
+	"frame-ancestors 'none'; " +
+	"base-uri 'self'; " +
+	"form-action 'self'"
+
+// securityHeaders sets the response baseline before the file handler can write
+// anything. Applied to every response (including method-not-allowed, /healthz,
+// and the SPA-shell fallback) — these headers are independent of cache or auth
+// state.
+func securityHeaders(h http.Header) {
+	// HSTS: 2 years, include subdomains, preload-eligible. The Cloud Run +
+	// platform LB front this origin behind a managed *.evinced.rocks cert, so
+	// every real request is TLS — clients can safely cache HSTS.
+	h.Set("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload")
+	h.Set("Content-Security-Policy", contentSecurityPolicy)
+	h.Set("X-Content-Type-Options", "nosniff")
+	h.Set("Referrer-Policy", "strict-origin-when-cross-origin")
+	h.Set("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=(), usb=()")
+	h.Set("X-Frame-Options", "DENY") // defense-in-depth alongside CSP frame-ancestors 'none'
+}
+
 // handler serves files from fsys with cache headers, a /healthz probe, and an
 // app-shell fallback for unknown paths.
 func handler(fsys fs.FS) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		securityHeaders(w.Header())
+
 		if r.URL.Path == "/healthz" {
 			w.Header().Set("Cache-Control", "no-store")
 			w.WriteHeader(http.StatusOK)
@@ -63,9 +102,6 @@ func handler(fsys fs.FS) http.Handler {
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 			return
 		}
-
-		w.Header().Set("X-Content-Type-Options", "nosniff")
-		w.Header().Set("Referrer-Policy", "same-origin")
 
 		// path.Clean on a rooted path collapses any ../ so a request can never
 		// escape fsys; os.DirFS rejects the rest.
