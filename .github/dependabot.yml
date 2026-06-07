@@ -1,0 +1,57 @@
+# Dependabot — supply-chain hygiene for stark-marketplace.
+#
+# Three ecosystems: the engine + server Go modules, the web npm package, and
+# GitHub Actions itself. Actions are pinned by major today; Dependabot will
+# bump them to current major and we can tighten to SHA-pinning later.
+version: 2
+updates:
+  - package-ecosystem: gomod
+    directory: /engine
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels: [deps, go]
+    commit-message:
+      prefix: deps(engine)
+    groups:
+      go-minor-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: gomod
+    directory: /server
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 3
+    labels: [deps, go]
+    commit-message:
+      prefix: deps(server)
+    groups:
+      go-minor-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: npm
+    directory: /web
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels: [deps, web]
+    commit-message:
+      prefix: deps(web)
+    groups:
+      web-minor-patch:
+        update-types: [minor, patch]
+      web-types:
+        patterns: ["@types/*"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 3
+    labels: [deps, ci]
+    commit-message:
+      prefix: deps(ci)
