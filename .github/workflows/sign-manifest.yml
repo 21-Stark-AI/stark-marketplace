@@ -117,3 +117,26 @@ jobs:
             build-manifest.json.sig \
             build-manifest.json.pem \
             build-manifest.sha256
+
+      # ── stark CLI binaries ───────────────────────────────────────
+      # goreleaser runs in-workflow (NOT a separate workflow on tag push),
+      # because tags pushed by GITHUB_TOKEN don't trigger downstream
+      # `on: push: tags` workflows — GitHub blocks that anti-loop guard.
+      # Folding the build here keeps the release atomic: every signed
+      # release also gets cross-platform CLI binaries appended.
+      - name: fetch the freshly created tag (goreleaser needs it locally)
+        if: steps.tagcheck.outputs.exists == 'false'
+        env:
+          TAG: ${{ steps.ver.outputs.tag }}
+        run: git fetch origin "refs/tags/${TAG}:refs/tags/${TAG}"
+
+      - name: goreleaser — build + append stark CLI binaries to the release
+        if: steps.tagcheck.outputs.exists == 'false'
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          distribution: goreleaser
+          version: "~> v2"
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GORELEASER_CURRENT_TAG: ${{ steps.ver.outputs.tag }}

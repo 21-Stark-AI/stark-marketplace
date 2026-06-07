@@ -1,9 +1,11 @@
-# goreleaser config — builds the `stark` CLI for the three desktop platforms,
-# attaches binaries + checksums to the GitHub Release created by sign-manifest.yml.
+# goreleaser config — builds the `stark` CLI for the three desktop platforms
+# and APPENDS the binaries + a checksums file to the GitHub Release.
 #
-# Triggered by release.yml on a v* tag push. The signed build-manifest assets
-# already on the release (uploaded by sign-manifest.yml) are left in place —
-# goreleaser only adds binaries and the checksums file for them.
+# Invoked in-workflow by sign-manifest.yml (NOT a separate `on: push: tags`
+# workflow) because tags pushed by GITHUB_TOKEN don't trigger downstream
+# workflows. Folding the build into sign-manifest keeps every signed release
+# atomic: signed manifest + cross-platform binaries land together.
+# mode: append preserves the build-manifest assets already on the release.
 version: 2
 
 project_name: stark
