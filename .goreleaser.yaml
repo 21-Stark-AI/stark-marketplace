@@ -1,0 +1,64 @@
+# goreleaser config — builds the `stark` CLI for the three desktop platforms,
+# attaches binaries + checksums to the GitHub Release created by sign-manifest.yml.
+#
+# Triggered by release.yml on a v* tag push. The signed build-manifest assets
+# already on the release (uploaded by sign-manifest.yml) are left in place —
+# goreleaser only adds binaries and the checksums file for them.
+version: 2
+
+project_name: stark
+
+before:
+  hooks:
+    - go -C engine mod tidy
+
+builds:
+  - id: stark
+    binary: stark
+    main: ./cmd/stark
+    dir: engine
+    env:
+      - CGO_ENABLED=0
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w
+      - -X main.version={{ .Version }}
+      - -X main.commit={{ .Commit }}
+      - -X main.date={{ .Date }}
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm64]
+    ignore:
+      - goos: windows
+        goarch: arm64
+
+archives:
+  - id: stark
+    name_template: "stark_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    formats: ["tar.gz"]
+    format_overrides:
+      - goos: windows
+        formats: ["zip"]
+    files:
+      - LICENSE*
+      - README.md
+      - CHANGELOG.md
+
+checksum:
+  name_template: "stark_{{ .Version }}_checksums.txt"
+  algorithm: sha256
+
+snapshot:
+  version_template: "{{ incpatch .Version }}-next"
+
+changelog:
+  disable: true   # sign-manifest.yml already wrote the release notes from CHANGELOG.md
+
+release:
+  github:
+    owner: GetEvinced
+    name: stark-marketplace
+  draft: false
+  prerelease: auto
+  mode: append   # APPEND binaries to the existing release (signed manifest already attached)
+  name_template: "v{{ .Version }}"

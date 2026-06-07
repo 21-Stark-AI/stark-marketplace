@@ -1,35 +1,47 @@
 name: sign-manifest
 
+# Triggers on every push to main. Produces the build manifest, keyless-signs
+# it via GitHub OIDC → Fulcio + Rekor (cert subject =
+# .../sign-manifest.yml@refs/heads/main, matching the pin in
+# engine/internal/provenance/verify.go), self-verifies the bundle with
+# `stark verify-manifest`, then — if VERSION has been bumped — tags the
+# commit `v<VERSION>` and creates a GitHub Release with the signed manifest
+# attached as a downloadable asset. Idempotent: re-runs on the same SHA
+# skip tag/release creation.
 on:
   push:
     branches: [main]
 
 permissions:
-  contents: read
+  contents: write        # create tag + release + upload assets
   id-token: write        # REQUIRED for OIDC keyless signing (Fulcio)
+
+concurrency:
+  group: sign-manifest-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   sign:
-    name: build + cosign keyless sign
+    name: build + cosign keyless sign + release
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: engine
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # tags + history for changelog extraction
+
       - uses: actions/setup-go@v5
         with:
           go-version-file: engine/go.mod
           cache: true
 
       - name: produce build manifest (target versions + content digests)
+        working-directory: engine
         run: go run ./cmd/stark build --manifest ../build-manifest.json ../catalog
 
       - name: install cosign
         uses: sigstore/cosign-installer@v3
 
       - name: keyless sign the manifest (GitHub OIDC → Fulcio → Rekor)
-        working-directory: ${{ github.workspace }}
         env:
           COSIGN_EXPERIMENTAL: "1"
         run: |
@@ -39,7 +51,14 @@ jobs:
             --output-certificate build-manifest.json.pem \
             build-manifest.json
 
-      - name: upload signed manifest bundle
+      - name: self-verify signed bundle (signer identity + Rekor + digests)
+        working-directory: engine
+        run: go run ./cmd/stark verify-manifest --root .. ../build-manifest.json
+
+      - name: sha256 checksums for release assets
+        run: sha256sum build-manifest.json build-manifest.json.sig build-manifest.json.pem > build-manifest.sha256
+
+      - name: upload signed manifest bundle (workflow artifact, audit trail)
         uses: actions/upload-artifact@v4
         with:
           name: build-manifest
@@ -47,4 +66,54 @@ jobs:
             build-manifest.json
             build-manifest.json.sig
             build-manifest.json.pem
+            build-manifest.sha256
           if-no-files-found: error
+
+      - name: read VERSION
+        id: ver
+        run: |
+          v=$(tr -d ' \t\n\r' < VERSION)
+          echo "version=$v" >> "$GITHUB_OUTPUT"
+          echo "tag=v$v" >> "$GITHUB_OUTPUT"
+
+      - name: skip if tag already exists
+        id: tagcheck
+        env:
+          TAG: ${{ steps.ver.outputs.tag }}
+        run: |
+          if git rev-parse "refs/tags/$TAG" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: extract changelog section for this version
+        if: steps.tagcheck.outputs.exists == 'false'
+        env:
+          VERSION: ${{ steps.ver.outputs.version }}
+        run: |
+          awk -v ver="$VERSION" '
+            $0 ~ "^## \\[" ver "\\]" {p=1; print; next}
+            p && /^## \[/ {exit}
+            p {print}
+          ' CHANGELOG.md > release-notes.md
+          if [ ! -s release-notes.md ]; then
+            echo "Release $VERSION." > release-notes.md
+          fi
+
+      - name: tag commit and create release with signed manifest
+        if: steps.tagcheck.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ steps.ver.outputs.tag }}
+          SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          gh release create "$TAG" \
+            --title "$TAG" \
+            --target "$SHA" \
+            --notes-file release-notes.md \
+            build-manifest.json \
+            build-manifest.json.sig \
+            build-manifest.json.pem \
+            build-manifest.sha256
