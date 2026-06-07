@@ -36,8 +36,8 @@ jobs:
         run: go run ./cmd/stark build --check ../catalog
       - name: stark check-bumps (version-bump immutability — REQUIRED, blocking)
         run: go run ./cmd/stark check-bumps ../catalog
-      - name: stark lint (body suspicious-pattern scan — non-blocking, surfaced)
-        run: go run ./cmd/stark lint ../catalog || true
+      - name: stark lint --strict (body suspicious-pattern scan — BLOCKING)
+        run: go run ./cmd/stark lint --strict ../catalog
 
   secrets:
     name: secret scan (catalog)
