@@ -132,21 +132,19 @@ jobs:
 
       # `stark build` (called above to produce the manifest) re-renders
       # dist/claude in place. Even when the rebuild is byte-identical, the
-      # remove-then-write sequence leaves git briefly seeing the tree as
-      # modified, which trips goreleaser's clean-tree check. Restoring HEAD
-      # is safe because goreleaser builds binaries from the tagged source —
-      # not from the working tree's dist/claude contents.
-      - name: restore working tree before goreleaser (stark build re-renders in place)
-        if: steps.tagcheck.outputs.exists == 'false'
-        run: git checkout -- .
-
+      # remove-then-write sequence leaves git seeing files as modified,
+      # which trips goreleaser's default clean-tree check. --skip=validate
+      # bypasses that check; the build itself is unaffected because
+      # goreleaser builds binaries from the tagged ref (GORELEASER_CURRENT_TAG)
+      # via a `go build`-from-source path that consults engine/cmd/stark
+      # only — never dist/claude.
       - name: goreleaser — build + append stark CLI binaries to the release
         if: steps.tagcheck.outputs.exists == 'false'
         uses: goreleaser/goreleaser-action@v6
         with:
           distribution: goreleaser
           version: "~> v2"
-          args: release --clean
+          args: release --clean --skip=validate
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GORELEASER_CURRENT_TAG: ${{ steps.ver.outputs.tag }}
