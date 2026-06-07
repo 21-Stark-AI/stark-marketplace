@@ -12,9 +12,9 @@ import (
 
 func testFS() fs.FS {
 	return fstest.MapFS{
-		"index.html":         {Data: []byte("<!doctype html><title>stark-marketplace</title>")},
-		"index.json":         {Data: []byte(`{"schemaVersion":1,"bundles":[]}`)},
-		"assets/index.abc.js": {Data: []byte("console.log('hi')")},
+		"index.html":            {Data: []byte("<!doctype html><title>stark-marketplace</title>")},
+		"index.json":            {Data: []byte(`{"schemaVersion":1,"bundles":[]}`)},
+		"assets/index.abc.js":   {Data: []byte("console.log('hi')")},
 		"bundles/stark-gh.json": {Data: []byte(`{"bundle":"stark-gh"}`)},
 	}
 }

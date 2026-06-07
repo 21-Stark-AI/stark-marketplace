@@ -26,6 +26,14 @@ jobs:
         with:
           go-version-file: engine/go.mod   # pinned toolchain (spec §7.6)
           cache: true
+      - name: gofmt (blocks unformatted Go)
+        run: |
+          out=$(gofmt -l .)
+          if [ -n "$out" ]; then
+            echo "::error::gofmt found unformatted files:"
+            echo "$out"
+            exit 1
+          fi
       - name: go vet
         run: go vet ./...
       - name: unit + golden + determinism + integration tests
@@ -79,6 +87,12 @@ jobs:
           cache: npm
           cache-dependency-path: web/package-lock.json
       - run: npm ci
+      - name: typecheck (tsc --noEmit, strict)
+        run: npm run typecheck
+      - name: eslint
+        run: npm run lint
+      - name: vitest
+        run: npm test
       - run: npm run build
 
   server:
@@ -93,6 +107,14 @@ jobs:
         with:
           go-version-file: server/go.mod
           cache: true
+      - name: gofmt (blocks unformatted Go)
+        run: |
+          out=$(gofmt -l .)
+          if [ -n "$out" ]; then
+            echo "::error::gofmt found unformatted files:"
+            echo "$out"
+            exit 1
+          fi
       - name: go vet
         run: go vet ./...
       - name: unit tests
