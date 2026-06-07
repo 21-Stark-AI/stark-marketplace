@@ -20,6 +20,28 @@ that each recorded digest matches the committed bytes. **Self-computed digests a
 are only an anti-drift / consistency signal** — they prove the tree matches itself,
 never that it is the official build. (spec §7.5 / red-team C1.)
 
+### Where to get the signed manifest
+
+`sign-manifest.yml` attaches `build-manifest.json`, `build-manifest.json.sig`,
+`build-manifest.json.pem`, and `build-manifest.sha256` to the GitHub Release it
+creates when `VERSION` changes (tag `v<VERSION>`).
+
+End-to-end client verify:
+
+```bash
+# 1. Pull the signed bundle for a specific release (private repo → gh auth)
+gh release download v0.1.0 \
+  --repo GetEvinced/stark-marketplace \
+  --pattern 'build-manifest.json*'
+
+# 2. Verify signature (cosign keyless) + content digests against the local checkout
+stark verify-manifest --root . build-manifest.json
+```
+
+A non-zero exit code means EITHER the signature failed (wrong signer, no Rekor
+entry) OR a committed file's bytes drifted from the manifest digest. Treat both
+as install blockers.
+
 ## 2. Command-allowlist governance
 
 MCP `command` values must be on the positive allowlist in

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import type { LeanIndex } from '../types/registry';
 import { filterArtifacts, collectFacets, type Facets } from '../search/filter';
 import { FacetControls } from '../components/Facets';
+import { ProvenanceBadge } from '../components/ProvenanceBadge';
 
 const EMPTY: Facets = {
   query: '', type: undefined, tag: undefined, category: undefined, runtime: undefined, maturity: undefined,
@@ -16,6 +17,7 @@ export function SearchPage({ index }: { readonly index: LeanIndex }): JSX.Elemen
   return (
     <main>
       <h1>stark-marketplace</h1>
+      <ProvenanceBadge index={index} />
       <FacetControls values={facetValues} facets={facets} onChange={setFacets} />
       <ul>
         {results.map((a) => (
