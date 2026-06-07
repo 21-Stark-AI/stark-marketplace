@@ -9,6 +9,12 @@ on:
 permissions:
   contents: read
 
+# Opt into Node 24 for JS actions ahead of the Sep 2026 forced cutover so
+# Node-20 deprecation warnings stop and any incompatibility surfaces now —
+# not when GitHub flips the default. (Reversible: drop this env to revert.)
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true

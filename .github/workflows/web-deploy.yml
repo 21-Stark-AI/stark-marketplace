@@ -19,6 +19,8 @@ env:
   GAR_REPO: stark-marketplace
   CR_SERVICE: stark-marketplace
   RUNTIME_SA: marketplace-runtime@infra-ai-platform.iam.gserviceaccount.com
+  # Opt into Node 24 for JS actions ahead of the Sep 2026 forced cutover.
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
 
 jobs:
   build-and-deploy:
