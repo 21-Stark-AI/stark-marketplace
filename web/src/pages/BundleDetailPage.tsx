@@ -68,7 +68,7 @@ export function BundleDetailPage(): JSX.Element {
   const { bundle, artifacts } = state.detail;
   const edges = edgesFromArtifacts(bundle.name, artifacts);
   return (
-    <main>
+    <main className="content">
       <p><Link to="/">← back to search</Link></p>
       <h1>{bundle.name}</h1>
       {bundle.description ? <p>{bundle.description}</p> : null}

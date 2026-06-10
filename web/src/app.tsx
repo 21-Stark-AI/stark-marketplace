@@ -8,6 +8,7 @@ import { loadIndex, type IndexResult } from './data/registry';
 import { SearchPage } from './pages/SearchPage';
 import { DegradedPage } from './pages/DegradedPage';
 import { BundleDetailPage } from './pages/BundleDetailPage';
+import { LearnPage } from './pages/LearnPage';
 
 export function App(): JSX.Element {
   const [state, setState] = useState<IndexResult | 'loading'>('loading');
@@ -24,6 +25,7 @@ export function App(): JSX.Element {
     <HashRouter>
       <Routes>
         <Route path="/" element={<SearchPage index={state.index} />} />
+        <Route path="/learn" element={<LearnPage />} />
         <Route path="/bundle/:name" element={<BundleDetailPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
