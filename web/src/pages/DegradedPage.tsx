@@ -6,7 +6,7 @@ export function DegradedPage({ reason, githubUrl }: { readonly reason: DegradeRe
   // to just the status sentence — role="alert" on the whole page would drop the landmark and
   // assertively announce the entire document including the heading and link.
   return (
-    <main>
+    <main className="content">
       <h1>Registry unavailable</h1>
       <p role="status">{registryError(reason)}</p>
       <a href={githubUrl}>Open the source on GitHub</a>
