@@ -2,6 +2,7 @@ catalog/** text eol=lf
 schema/** text eol=lf
 *.go text eol=lf
 dist/** linguist-generated=true
+vendor/** linguist-generated=true
 index.json linguist-generated=true
 bundles/** linguist-generated=true
 .claude-plugin/** linguist-generated=true

@@ -76,7 +76,7 @@ func TestVerifyManifestSignatureFailureExits3(t *testing.T) {
 func TestVerifyManifestRoundTripFromBuild(t *testing.T) {
 	root := repoRoot(t)
 	mp := filepath.Join(t.TempDir(), "build-manifest.json")
-	if code := runBuild(filepath.Join(root, "catalog"), root, mp, false); code != 0 {
+	if code := runBuild(filepath.Join(root, "catalog"), root, mp, "", false); code != 0 {
 		t.Fatalf("build --manifest want 0, got %d", code)
 	}
 	if code := runVerifyManifest(mp, root, true); code != 0 {

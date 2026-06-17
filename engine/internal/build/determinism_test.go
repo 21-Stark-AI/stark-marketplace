@@ -15,11 +15,11 @@ func TestBuildTwiceIdentical(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	a, err := Build(cat)
+	a, err := Build(cat, Options{})
 	if err != nil {
 		t.Fatal(err)
 	}
-	b, err := Build(cat)
+	b, err := Build(cat, Options{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -48,8 +48,8 @@ func TestSourceKeyReorderIdentical(t *testing.T) {
 	}
 	c1 := mk(map[string]any{"name": "rev", "model": "opus", "argument-hint": "[PR]"})
 	c2 := mk(map[string]any{"argument-hint": "[PR]", "model": "opus", "name": "rev"})
-	o1, _ := Build(c1)
-	o2, _ := Build(c2)
+	o1, _ := Build(c1, Options{})
+	o2, _ := Build(c2, Options{})
 	for p, v := range o1.Files {
 		if string(o2.Files[p]) != string(v) {
 			t.Fatalf("key reorder changed %s:\n%s\nvs\n%s", p, v, o2.Files[p])

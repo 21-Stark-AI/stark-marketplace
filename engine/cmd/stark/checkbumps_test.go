@@ -16,7 +16,7 @@ import (
 func TestCheckBumpsCleanRepoExitsZero(t *testing.T) {
 	root := repoRoot(t)
 	// ensure committed output is current so the previous index is coherent
-	if code := runBuild(filepath.Join(root, "catalog"), root, "", false); code != 0 {
+	if code := runBuild(filepath.Join(root, "catalog"), root, "", "", false); code != 0 {
 		t.Fatalf("pre-build want 0, got %d", code)
 	}
 	if code := runCheckBumps(filepath.Join(root, "catalog"), root); code != 0 {
@@ -126,7 +126,7 @@ func TestCheckBumpsKeysByArtifactType(t *testing.T) {
 // arg against the real repo: a correctly-derived repoRoot yields a clean gate (exit 0 → nil).
 func TestCheckBumpsCmdDerivesRepoRootFromCatalogArg(t *testing.T) {
 	root := repoRoot(t)
-	if code := runBuild(filepath.Join(root, "catalog"), root, "", false); code != 0 {
+	if code := runBuild(filepath.Join(root, "catalog"), root, "", "", false); code != 0 {
 		t.Fatalf("pre-build want 0, got %d", code)
 	}
 	cmd := newCheckBumpsCmd()

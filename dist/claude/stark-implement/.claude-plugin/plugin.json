@@ -1,0 +1,15 @@
+{
+  "author": {
+    "email": "engineering@evinced.com",
+    "name": "Evinced"
+  },
+  "description": "Autonomously execute a development phase end-to-end — implement, PR, review, fix, merge, release — via a paired lead/wing agent loop. Maps to spec-kit's implement phase.",
+  "keywords": [
+    "implementation",
+    "automation",
+    "lead-wing",
+    "autonomous"
+  ],
+  "name": "stark-implement",
+  "version": "0.1.1"
+}

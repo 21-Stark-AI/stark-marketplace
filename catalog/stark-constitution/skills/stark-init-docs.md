@@ -2,7 +2,7 @@
 name: stark-init-docs
 type: skill
 description: Scaffold dev docs structure (template/backfill/upgrade/clean modes). Use for init docs, setup docs, scaffold docs.
-version: 0.1.0
+version: 0.1.1
 maturity: beta
 runtimes:
   - claude
@@ -27,7 +27,7 @@ Scaffold a standardized developer documentation structure into any repository. F
 ## Constants
 
 ```
-TEMPLATES = ~/.claude/code-review/standards/templates/
+TEMPLATES = ${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/code-review}/standards/templates/
 ```
 
 ## No-arg Mode
@@ -311,7 +311,7 @@ If nothing was removed, skip the commit.
 
 ## Error Handling
 
-- If `$TEMPLATES` directory doesn't exist: error "Templates not found at ~/.claude/code-review/standards/templates/. Run install.sh first."
+- If `$TEMPLATES` directory doesn't exist: error "Templates not found at ${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/code-review}/standards/templates/. Run install.sh first."
 - If not in a git repo: error "Not a git repository."
 - If `gh` CLI is unavailable during `--backfill`: warn and continue without PR data.
 - If `git mv` fails during `--upgrade` (file already exists at target): warn, skip that file, continue.

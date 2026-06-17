@@ -1,0 +1,15 @@
+{
+  "author": {
+    "email": "engineering@evinced.com",
+    "name": "Evinced"
+  },
+  "description": "Turn a design doc into a phased implementation plan, then decompose it into phased GitHub issues with story points and risk labels. Maps to spec-kit's plan + tasks phases.",
+  "keywords": [
+    "planning",
+    "plan",
+    "tasks",
+    "issues"
+  ],
+  "name": "stark-plan",
+  "version": "0.1.1"
+}

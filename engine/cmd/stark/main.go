@@ -19,6 +19,7 @@ func main() {
 	root.AddCommand(newAllowlistCmd())
 	root.AddCommand(newVerifyManifestCmd())
 	root.AddCommand(newImportCmd())
+	root.AddCommand(newSyncCmd())
 	root.AddCommand(newBuildCmd())
 	root.AddCommand(newCheckBumpsCmd())
 	root.AddCommand(newSearchCmd())

@@ -135,7 +135,7 @@ Store as `$CURRENT_VERSION`.
 ## Step 3: Gather Unreleased Changes
 
 ```bash
-TOOLS="$HOME/.claude/code-review/tools"
+TOOLS="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/code-review}/tools"
 CHANGES_JSON=$(node --experimental-strip-types "$TOOLS/release_changelog.ts" --json)
 ```
 

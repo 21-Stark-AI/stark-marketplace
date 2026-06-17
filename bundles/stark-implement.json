@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "bundle": {
     "name": "stark-implement",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "Autonomously execute a development phase end-to-end — implement, PR, review, fix, merge, release — via a paired lead/wing agent loop. Maps to spec-kit's implement phase.",
     "category": "implementation",
     "tags": [
@@ -19,7 +19,7 @@
       "name": "stark-copilot",
       "type": "skill",
       "description": "Autonomous lead/wing implementation: lead subagent implements, wing subagent reviews, fix-loop until wing approves. Use for copilot, paired build.",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "runtimes": [
         "claude"
       ],
@@ -43,7 +43,7 @@
       "name": "stark-phase-execute",
       "type": "skill",
       "description": "Autonomously execute a dev phase: implement tasks, PR, review, fix, merge, release. Use for execute phase, run plan.",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "runtimes": [
         "claude"
       ],

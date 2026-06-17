@@ -120,8 +120,41 @@ func (t *Target) Render(b *model.Bundle) ([]adapter.OutputFile, []adapter.Findin
 	if mf := t.renderMCP(b); mf != nil {
 		files = append(files, *mf)
 	}
+	if pj := renderPluginJSON(b); pj != nil {
+		files = append(files, *pj)
+	}
 	adapter.SortFiles(files)
 	return files, findings, nil
+}
+
+// renderPluginJSON emits `.claude-plugin/plugin.json` so each rendered bundle is
+// a self-contained, installable Claude Code plugin (testable directly via
+// `claude --plugin-dir dist/claude/<bundle>`), not only resolvable through the
+// repo-root marketplace manifest. Fields mirror the manifest entry; author comes
+// from the bundle owner.
+func renderPluginJSON(b *model.Bundle) *adapter.OutputFile {
+	pj := map[string]any{
+		"name":        b.Name,
+		"description": b.Description,
+	}
+	if b.Version != "" {
+		pj["version"] = b.Version
+	}
+	if b.Owner.Name != "" {
+		author := map[string]any{"name": b.Owner.Name}
+		if b.Owner.Email != "" {
+			author["email"] = b.Owner.Email
+		}
+		pj["author"] = author
+	}
+	if len(b.Tags) > 0 {
+		pj["keywords"] = b.Tags
+	}
+	if b.Homepage != "" {
+		pj["homepage"] = b.Homepage
+	}
+	content, _ := canonjson.Marshal(pj)
+	return &adapter.OutputFile{Path: ".claude-plugin/plugin.json", Content: content}
 }
 
 // selectFields builds the frontmatter map from resolved frontmatter, falling
@@ -187,6 +220,36 @@ func foldFindings(bundle string, a *model.Artifact, mf merge.Findings) []adapter
 	return out
 }
 
+// rewriteMCPPath prefixes a bundle-relative server-script path with
+// ${CLAUDE_PLUGIN_ROOT} so it resolves once the plugin is installed (plugins are
+// copied to an opaque cache dir, so bare/relative paths would not resolve). Bare
+// executables (node, npx), absolute paths, flags (-x), `~`, and paths already
+// rooted at a shell variable are left untouched.
+func rewriteMCPPath(s string) string {
+	if s == "" ||
+		strings.HasPrefix(s, "-") ||
+		strings.HasPrefix(s, "/") ||
+		strings.HasPrefix(s, "$") ||
+		strings.HasPrefix(s, "~") {
+		return s
+	}
+	// Only rewrite things that look like an in-bundle script: a relative path
+	// (contains a slash) or a bare filename with a known script extension.
+	if strings.Contains(s, "/") || hasScriptExt(s) {
+		return "${CLAUDE_PLUGIN_ROOT}/" + strings.TrimPrefix(s, "./")
+	}
+	return s
+}
+
+func hasScriptExt(s string) bool {
+	for _, ext := range []string{".js", ".mjs", ".cjs", ".ts", ".py", ".sh"} {
+		if strings.HasSuffix(s, ext) {
+			return true
+		}
+	}
+	return false
+}
+
 // renderMCP aggregates all claude-targeted MCP artifacts into one `.mcp.json`.
 // Returns nil when the bundle has no MCP artifacts. Server map keys are sorted
 // by canonjson; env preserves the secretRef object form (spec §4.4) for install.
@@ -198,10 +261,14 @@ func (*Target) renderMCP(b *model.Bundle) *adapter.OutputFile {
 		}
 		entry := map[string]any{"transport": a.MCP.Transport}
 		if a.MCP.Command != "" {
-			entry["command"] = a.MCP.Command
+			entry["command"] = rewriteMCPPath(a.MCP.Command)
 		}
 		if len(a.MCP.Args) > 0 {
-			entry["args"] = a.MCP.Args
+			args := make([]string, len(a.MCP.Args))
+			for i, arg := range a.MCP.Args {
+				args[i] = rewriteMCPPath(arg)
+			}
+			entry["args"] = args
 		}
 		if a.MCP.URL != "" {
 			entry["url"] = a.MCP.URL

@@ -1,4 +1,9 @@
 .superpowers/
+.claude/
+.agents/
+.codex/
+.stark/
+/config.toml
 .DS_Store
 node_modules/
 dist/codex/

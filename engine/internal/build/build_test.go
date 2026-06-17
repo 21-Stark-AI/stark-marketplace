@@ -13,7 +13,7 @@ func TestBuildProducesClaudeTreeAndIndex(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	out, err := Build(cat)
+	out, err := Build(cat, Options{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -51,7 +51,7 @@ func TestBuildEmitsMarketplaceManifest(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	out, err := Build(cat)
+	out, err := Build(cat, Options{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -84,7 +84,7 @@ func TestDivergenceBudgetCountsDiverged(t *testing.T) {
 			},
 		}},
 	}}}
-	out, err := Build(cat)
+	out, err := Build(cat, Options{})
 	if err != nil {
 		t.Fatal(err)
 	}

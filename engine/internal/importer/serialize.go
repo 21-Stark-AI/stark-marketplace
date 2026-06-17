@@ -166,6 +166,25 @@ func WriteBundle(res *ImportResult, dst string) error {
 	return writeFileAtomic(filepath.Join(root, "IMPORT-NOTES.md"), renderNotes(res))
 }
 
+// ArtifactFiles returns bundle-relative path -> content for every artifact,
+// WITHOUT bundle.yaml or IMPORT-NOTES.md. The generator (`stark sync`) uses this
+// to regenerate catalog skills/commands/mcp while preserving the curated,
+// hand-authored bundle.yaml (membership manifest + metadata).
+func ArtifactFiles(res *ImportResult) (map[string][]byte, error) {
+	out := map[string][]byte{}
+	for _, a := range res.Bundle.Artifacts {
+		if !slugRE.MatchString(a.Name) {
+			return nil, fmt.Errorf("refusing to serialize %s artifact: invalid name %q (must match %s)", a.Type, a.Name, slugRE)
+		}
+		data, err := serializeArtifact(a)
+		if err != nil {
+			return nil, err
+		}
+		out[artifactRelPath(a)] = data
+	}
+	return out, nil
+}
+
 // artifactRelPath returns the typed subdir + filename for an artifact.
 func artifactRelPath(a *model.Artifact) string {
 	ext := ".md"

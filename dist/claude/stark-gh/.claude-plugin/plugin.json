@@ -1,0 +1,15 @@
+{
+  "author": {
+    "email": "engineering@evinced.com",
+    "name": "Evinced"
+  },
+  "description": "GitHub workflow commands + MCP for stark.",
+  "homepage": "https://github.com/GetEvinced/stark-marketplace/tree/main/catalog/stark-gh",
+  "keywords": [
+    "github",
+    "pr",
+    "workflow"
+  ],
+  "name": "stark-gh",
+  "version": "0.1.1"
+}

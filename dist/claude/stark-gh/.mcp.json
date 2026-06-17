@@ -2,7 +2,7 @@
   "mcpServers": {
     "gh": {
       "args": [
-        "gh-mcp-server.js"
+        "${CLAUDE_PLUGIN_ROOT}/gh-mcp-server.js"
       ],
       "command": "node",
       "env": {

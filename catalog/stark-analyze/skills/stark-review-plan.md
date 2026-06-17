@@ -2,7 +2,7 @@
 name: stark-review-plan
 type: skill
 description: Multi-domain execution plan review with lead/wing fix loop. Codex (gpt-5.5, xhigh reasoning) reviews 4 adversarial domains in parallel; Claude (opus-4-8) wing fixes findings. Use for review plan, audit deployment plan.
-version: 0.1.0
+version: 0.1.1
 maturity: beta
 runtimes:
   - claude
@@ -52,8 +52,8 @@ For domain definitions and finding-classification criteria, see
 ## Constants
 
 ```bash
-TOOLS="${STARK_REVIEW_TOOLS:-$HOME/.claude/code-review/tools}"
-PROMPTS_BASE="${STARK_REVIEW_PROMPTS_BASE:-$HOME/.claude/code-review/prompts}"
+TOOLS="${STARK_REVIEW_TOOLS:-${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/code-review}/tools}"
+PROMPTS_BASE="${STARK_REVIEW_PROMPTS_BASE:-${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/code-review}/prompts}"
 ```
 
 ## Phase 1: Parse arguments + validate

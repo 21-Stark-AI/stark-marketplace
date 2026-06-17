@@ -15,7 +15,7 @@ func TestCheckReportsDriftOnTamper(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	out, err := Build(cat)
+	out, err := Build(cat, Options{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -46,7 +46,7 @@ func TestCheckReportsMissingAndExtra(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	out, err := Build(cat)
+	out, err := Build(cat, Options{})
 	if err != nil {
 		t.Fatal(err)
 	}
