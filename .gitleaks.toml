@@ -31,6 +31,14 @@ description = "Global allowlist — test fixtures and values that ARE a known pl
 paths = [
   '''engine/.*_test\.go$''',          # test fixtures use fake tokens deliberately
   '''engine/internal/.*/testdata/.*''',
+  # Vendored .ts tool scripts are GENERATED copies of stark-skills tools (the
+  # trusted source repo, where they are authored + reviewed). Re-scanning the
+  # copies here is redundant and trips code-pattern false positives such as
+  # `const apiKey = resolveOpenaiApiKey(process.env)`. The authored content this
+  # repo owns — catalog skills/commands/mcp, config.json, prompts, engine — stays
+  # fully scanned.
+  '''dist/claude/.*/tools/.*\.ts$''',
+  '''vendor/stark-skills/tools/.*\.ts$''',
 ]
 regexes = [
   '''\$\{[A-Z0-9_]+\}''',             # ${ENV_VAR} placeholders are not secrets
