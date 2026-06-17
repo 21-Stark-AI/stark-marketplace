@@ -4,12 +4,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repo is
 
-`stark-marketplace` is the **canonical, multi-runtime marketplace** for stark bundles. A bundle is the source of truth (`catalog/<bundle>/bundle.yaml` + artifacts) and the engine renders it into per-runtime trees (`dist/claude/`, `dist/codex/`, `dist/gemini/`) plus a signed `index.json` / `bundles/*.json` web registry. The repo doubles as a native **Claude Code marketplace** — `.claude-plugin/marketplace.json` at the repo root IS the manifest CC reads when you `/plugin marketplace add GetEvinced/stark-marketplace`.
+`stark-marketplace` is the **canonical, multi-runtime marketplace** for stark bundles. The engine renders each bundle into per-runtime trees (`dist/claude/`, `dist/codex/`, `dist/gemini/`) plus a signed `index.json` / `bundles/*.json` web registry. The repo doubles as a native **Claude Code marketplace** — `.claude-plugin/marketplace.json` at the repo root IS the manifest CC reads when you `/plugin marketplace add GetEvinced/stark-marketplace`.
+
+**Source of truth = stark-skills.** The catalog's `skills/` + `commands/` are **generated** from a stark-skills checkout by `stark sync` (driven by each `bundle.yaml`'s `skills:`/`commands:` membership manifest); do NOT hand-edit them. What IS curated in this repo: each `bundle.yaml` (metadata + membership), and `mcp/` artifacts (stark-skills defines no MCP servers). See "Generation pipeline" below.
+
+**Plugins are self-contained.** `stark build` vendors the stark-skills immutable assets (`tools/`, `prompts/`, `standards/`, `scripts/`, `config.json`, `forge_heuristics.json`) — from the committed `vendor/stark-skills/` snapshot — into every `dist/claude/<bundle>/`, and emits a per-bundle `.claude-plugin/plugin.json`. So `/plugin install <bundle>` works with **no install.sh** on the target machine. Skills resolve paths via `${CLAUDE_PLUGIN_ROOT}`. Runtime prereq: **Node ≥ 22.6** (`node --experimental-strip-types`).
 
 ## Layout
 
-- `catalog/<bundle>/bundle.yaml` + `skills/`, `commands/`, `agents/`, `prompts/`, `mcp/` — **source of truth**. Edit here.
-- `engine/` — Go CLI (`cmd/stark`) + libraries (`internal/{adapter,build,validate,importer,install,...}`). Per-runtime adapters live under `internal/adapter/{claude,codex,gemini}`.
+- `catalog/<bundle>/` — `bundle.yaml` + `mcp/` are **curated** (edit here); `skills/` + `commands/` are **generated** by `stark sync` from stark-skills (do not hand-edit).
+- `vendor/stark-skills/` — **generated** normalized snapshot of stark-skills' immutable assets (tools/prompts/standards/scripts/config), refreshed by `stark sync`, vendored into each plugin by `stark build`. Committed, `linguist-generated`.
+- `engine/` — Go CLI (`cmd/stark`) + libraries (`internal/{adapter,build,validate,importer,install,...}`). Per-runtime adapters live under `internal/adapter/{claude,codex,gemini}`. The generator lives in `cmd/stark/sync.go` + `internal/importer/{importer,vendor,serialize}.go`.
 - `dist/claude/` — **committed** rendered tree (CC consumes it directly). `dist/codex/` and `dist/gemini/` are **NOT committed** — built on `stark install`.
 - `bundles/*.json`, `index.json` — committed, signed web-registry payloads. Marked `linguist-generated`.
 - `schema/` — JSON Schemas (`bundle`, `artifact.{skill,command,agent,prompt,mcp}`). Fail-closed in CI.
@@ -23,9 +28,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Engine (run from `engine/`):
 - `go test ./... -count=1` — unit + golden + determinism + integration
 - `go vet ./...`
+- `go run ./cmd/stark sync --from <stark-skills> ../catalog` — **regenerate** catalog skills/commands + `vendor/` from the source repo (`--check` = drift gate)
 - `go run ./cmd/stark validate ../catalog` — fail-closed schema + cross-ref
-- `go run ./cmd/stark build --check ../catalog` — **drift gate**; rebuild must equal committed `dist/claude/` + registry
-- `go run ./cmd/stark check-bumps ../catalog` — version-bump immutability
+- `go run ./cmd/stark build --check ../catalog` — **drift gate**; rebuild must equal committed `dist/claude/` + registry (vendors `vendor/stark-skills` into each bundle)
+- `go run ./cmd/stark check-bumps ../catalog` — version-bump immutability (bump the **bundle** version to publish a content change)
 - `go run ./cmd/stark lint ../catalog` — body suspicious-pattern scan (non-blocking)
 - `go run ./cmd/stark install <bundle> --runtime claude|codex|gemini` — render into local config
 
@@ -39,6 +45,8 @@ CI mirrors these exactly (`.github/workflows/ci.yml`): validate → drift `build
 ## Architecture — the bits that need multiple files to understand
 
 **Source → adapter → output.** `internal/load` reads `catalog/`; `internal/adapter/{claude,codex,gemini}` each implement a `Target` that renders a `model.Bundle` into a runtime-specific file tree. `internal/build` drives a full render; `internal/install` consumes a per-runtime render to write into a user's CC/codex/gemini config. `cmd/stark` wires these together. The `catalogAdapter` in `engine/cmd/stark/` is the production `installplan.Adapter` — renders **one artifact at a time** in a single-artifact sub-bundle so a multi-MCP bundle doesn't collide on `config.toml`.
+
+**Generation pipeline (stark-skills → catalog → dist).** `stark sync` (`cmd/stark/sync.go`) reads a stark-skills checkout and, per each `bundle.yaml`'s `skills:`/`commands:` membership, writes `catalog/<bundle>/{skills,commands}` via `importer.ImportForGenerator` + `ArtifactFiles` (preserving the curated `bundle.yaml` + `mcp/`), and refreshes `vendor/stark-skills/` via `importer.VendorSnapshot`. Generated artifacts inherit their bundle's `version` + `runtimes`. `stark build` then vendors `vendor/stark-skills/` into each `dist/claude/<bundle>/` (`build.Options.AssetsSource`, defaulting to `<repo>/vendor/stark-skills`). Two drift gates: `sync --check` (catalog/vendor vs a fresh generation — cross-repo) and `build --check` (dist vs catalog). CI wires stark-skills → here automatically (auto-publish PR on stark-skills `main`).
 
 **Determinism is load-bearing.** `build --check` is the drift gate. Any change that re-renders bytes — adapter output, schema, canonicalization (`internal/canonjson`), aggregate index (`internal/aggregate`), digest (`internal/digest`) — will fail CI unless you also commit the regenerated `dist/claude/`, `index.json`, `bundles/*.json`. Workflow: edit catalog → `go run ./cmd/stark build ../catalog` → commit the diff.
 

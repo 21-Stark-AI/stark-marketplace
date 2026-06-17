@@ -2,11 +2,12 @@
 
 ## Project Structure & Module Organization
 
-`catalog/` is the source of truth for bundles and artifacts. Generated artifacts are `index.json`, `bundles/*.json`, `dist/claude/**`, and `.claude-plugin/**`; regenerate them instead of hand-editing. `dist/codex/` and `dist/gemini/` are ignored install outputs. `schema/` holds public JSON schemas. `engine/` is the main Go module: CLI code is in `engine/cmd/stark`, packages in `engine/internal`. `server/` is the static-origin Go module. `web/` is the TypeScript Vite SPA; code is in `web/src`, fixtures in `web/src/__fixtures__`.
+The **stark-skills** repo is the source of truth. Here, `catalog/<bundle>/bundle.yaml` (metadata + `skills:`/`commands:` membership) and `catalog/<bundle>/mcp/` are **curated**; `catalog/<bundle>/{skills,commands}` and `vendor/stark-skills/` are **generated** by `go run ./cmd/stark sync --from <stark-skills> ../catalog` (do not hand-edit). Generated artifacts also include `index.json`, `bundles/*.json`, `dist/claude/**`, and `.claude-plugin/**`; regenerate via `stark build` instead of hand-editing. `dist/codex/` and `dist/gemini/` are ignored install outputs. `schema/` holds public JSON schemas. `engine/` is the main Go module: CLI code is in `engine/cmd/stark`, packages in `engine/internal`. `server/` is the static-origin Go module. `web/` is the TypeScript Vite SPA; code is in `web/src`, fixtures in `web/src/__fixtures__`.
 
 ## Build, Test, and Development Commands
 
 - `cd engine && go test ./... -count=1 && go vet ./...`: engine test/vet.
+- `cd engine && go run ./cmd/stark sync --from ../../stark-skills ../catalog`: regenerate catalog skills/commands + vendor snapshot from stark-skills (`--check` = drift gate).
 - `cd engine && go run ./cmd/stark validate ../catalog`: catalog validation.
 - `cd engine && go run ./cmd/stark build --check ../catalog`: drift check.
 - `cd engine && go run ./cmd/stark build --fix ../catalog`: regenerate artifacts.
