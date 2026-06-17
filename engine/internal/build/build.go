@@ -34,14 +34,38 @@ type Output struct {
 	DivergenceBudget string // e.g. "diverged 0 / 2 = 0.0%"
 }
 
+// Options tunes the build.
+type Options struct {
+	// AssetsSource is a directory whose entire contents are vendored verbatim
+	// into every rendered Claude bundle (dist/claude/<bundle>/<relpath>), making
+	// each plugin self-contained. It is the normalized immutable-asset snapshot
+	// of stark-skills: tools/, prompts/, standards/, scripts/, config.json,
+	// forge_heuristics.json. Empty = skip vendoring (skills resolve from
+	// ~/.claude/code-review via install.sh instead). The snapshot is produced by
+	// the generator; filtering (tests/fixtures/node_modules) is its job, not the
+	// engine's — the engine copies byte-for-byte for determinism.
+	AssetsSource string
+}
+
 // generatedRoots are the repo-relative trees this build owns and fully regenerates.
 // .claude-plugin holds the repo-root CC marketplace manifest (spec §8).
 var generatedRoots = []string{"dist/claude", "index.json", "bundles", ".claude-plugin"}
 
 // Build runs the pipeline over a loaded catalog.
-func Build(cat *model.Catalog) (Output, error) {
+func Build(cat *model.Catalog, opts Options) (Output, error) {
 	out := Output{Files: map[string][]byte{}}
 	tgt := claude.New()
+
+	// Read the immutable-asset snapshot once; it is vendored identically into
+	// every bundle so each rendered plugin is self-contained.
+	var vendored map[string][]byte
+	if opts.AssetsSource != "" {
+		v, err := vendorAssets(opts.AssetsSource)
+		if err != nil {
+			return Output{}, fmt.Errorf("vendor assets from %s: %w", opts.AssetsSource, err)
+		}
+		vendored = v
+	}
 
 	totalArtifacts := 0
 	diverged := 0
@@ -50,6 +74,10 @@ func Build(cat *model.Catalog) (Output, error) {
 		files, findings, err := tgt.Render(b)
 		if err != nil {
 			return Output{}, fmt.Errorf("render %s: %w", b.Name, err)
+		}
+		// Vendored assets first; rendered artifacts win on any path collision.
+		for rel, content := range vendored {
+			out.Files["dist/claude/"+b.Name+"/"+rel] = toLF(content)
 		}
 		for _, f := range files {
 			out.Files["dist/claude/"+b.Name+"/"+f.Path] = toLF(f.Content)
@@ -175,6 +203,43 @@ func Check(repoRoot string, out Output) ([]string, error) {
 	}
 	sort.Strings(drift)
 	return drift, nil
+}
+
+// vendorAssets reads every regular file under src and returns a map of
+// slash-relative path -> content, to be copied verbatim into each bundle's dist
+// tree. Directories and non-regular files (symlinks) are skipped; the snapshot
+// is expected to be pre-filtered by the generator (no tests/fixtures/node_modules).
+func vendorAssets(src string) (map[string][]byte, error) {
+	info, err := os.Stat(src)
+	if err != nil {
+		return nil, err
+	}
+	if !info.IsDir() {
+		return nil, fmt.Errorf("assets source %q is not a directory", src)
+	}
+	out := map[string][]byte{}
+	err = filepath.WalkDir(src, func(p string, d os.DirEntry, walkErr error) error {
+		if walkErr != nil {
+			return walkErr
+		}
+		if d.IsDir() || !d.Type().IsRegular() {
+			return nil
+		}
+		rel, err := filepath.Rel(src, p)
+		if err != nil {
+			return err
+		}
+		content, err := os.ReadFile(p)
+		if err != nil {
+			return err
+		}
+		out[filepath.ToSlash(rel)] = content
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func sortedKeys(m map[string][]byte) []string {

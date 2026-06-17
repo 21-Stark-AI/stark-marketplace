@@ -71,17 +71,26 @@ type Artifact struct {
 
 // Bundle is the versioning + CC-plugin unit.
 type Bundle struct {
-	Name        string      `yaml:"name" json:"name"`
-	Version     string      `yaml:"version" json:"version"`
-	Description string      `yaml:"description" json:"description"`
-	Category    string      `yaml:"category,omitempty" json:"category,omitempty"`
-	Tags        []string    `yaml:"tags,omitempty" json:"tags,omitempty"`
-	Owner       Owner       `yaml:"owner" json:"owner"`
-	Maturity    Maturity    `yaml:"maturity,omitempty" json:"maturity,omitempty"`
-	Runtimes    []Runtime   `yaml:"runtimes,omitempty" json:"runtimes,omitempty"`
-	Homepage    string      `yaml:"homepage,omitempty" json:"homepage,omitempty"`
-	Artifacts   []*Artifact `yaml:"-" json:"artifacts,omitempty"`
-	SourcePath  string      `yaml:"-" json:"-"`
+	Name        string    `yaml:"name" json:"name"`
+	Version     string    `yaml:"version" json:"version"`
+	Description string    `yaml:"description" json:"description"`
+	Category    string    `yaml:"category,omitempty" json:"category,omitempty"`
+	Tags        []string  `yaml:"tags,omitempty" json:"tags,omitempty"`
+	Owner       Owner     `yaml:"owner" json:"owner"`
+	Maturity    Maturity  `yaml:"maturity,omitempty" json:"maturity,omitempty"`
+	Runtimes    []Runtime `yaml:"runtimes,omitempty" json:"runtimes,omitempty"`
+	Homepage    string    `yaml:"homepage,omitempty" json:"homepage,omitempty"`
+
+	// Skills / Commands declare bundle membership for the generator (`stark
+	// import`): the canonical artifact names pulled from a stark-skills checkout
+	// into catalog/<bundle>/. They are the source-of-truth mapping; the rendered
+	// catalog skill/command files are generated from them. Not used at render
+	// time (artifacts are still discovered from disk).
+	Skills   []string `yaml:"skills,omitempty" json:"skills,omitempty"`
+	Commands []string `yaml:"commands,omitempty" json:"commands,omitempty"`
+
+	Artifacts  []*Artifact `yaml:"-" json:"artifacts,omitempty"`
+	SourcePath string      `yaml:"-" json:"-"`
 }
 
 // Catalog is the whole loaded tree.

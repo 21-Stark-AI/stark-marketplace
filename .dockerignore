@@ -3,6 +3,11 @@
 # before `docker build`); do not exclude it.
 .git
 .github
+.claude
+.agents
+.codex
+.stark
+config.toml
 node_modules
 **/node_modules
 engine

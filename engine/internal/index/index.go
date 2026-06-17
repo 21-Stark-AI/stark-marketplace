@@ -142,6 +142,12 @@ func runtimeOutputs(a *model.Artifact) (map[string][]Output, map[string]string, 
 			return nil, nil, fmt.Errorf("render %s/%s on %s: %w", a.Bundle, a.Name, rt, err)
 		}
 		for _, f := range files {
+			// plugin.json is a bundle-level structural file (emitted once per
+			// bundle, not per artifact); it has no artifact attribution, so keep
+			// it out of the per-artifact output listing.
+			if f.Path == ".claude-plugin/plugin.json" {
+				continue
+			}
 			o := classifyOutput(a, f.Path)
 			o.Emulated = emulated
 			outputs[string(rt)] = append(outputs[string(rt)], o)

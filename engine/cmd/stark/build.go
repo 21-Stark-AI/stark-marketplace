@@ -19,16 +19,27 @@ import (
 // 0 ok, 1 validation/build error, 2 drift. When manifestPath is non-empty, the build manifest
 // (adapter target versions + content digests over the generated files) is written there — the
 // blob the sign-manifest workflow cosign-signs (spec §7.5).
-func runBuild(catalogDir, repoRoot, manifestPath string, check bool) int {
+func runBuild(catalogDir, repoRoot, manifestPath, assetsSource string, check bool) int {
 	cat, err := load.Load(catalogDir)
 	if err != nil {
 		fmt.Println("load error:", err)
 		return 1
 	}
-	out, err := build.Build(cat)
+	// Default the vendor snapshot to <repoRoot>/vendor/stark-skills when present,
+	// so committed builds are self-contained without an explicit flag.
+	if assetsSource == "" {
+		def := filepath.Join(repoRoot, "vendor", "stark-skills")
+		if fi, statErr := os.Stat(def); statErr == nil && fi.IsDir() {
+			assetsSource = def
+		}
+	}
+	out, err := build.Build(cat, build.Options{AssetsSource: assetsSource})
 	if err != nil {
 		fmt.Println("build error:", err)
 		return 1
+	}
+	if assetsSource != "" {
+		fmt.Println("vendored assets from", assetsSource)
 	}
 	for _, w := range out.Warnings {
 		fmt.Println("warn ", w)
@@ -74,7 +85,7 @@ func runBuild(catalogDir, repoRoot, manifestPath string, check bool) int {
 
 func newBuildCmd() *cobra.Command {
 	var check, fix bool
-	var manifest string
+	var manifest, assetsSource string
 	cmd := &cobra.Command{
 		Use:   "build [catalog-dir]",
 		Short: "Build dist/claude + index.json + bundles/*.json (--check = drift gate)",
@@ -89,7 +100,7 @@ func newBuildCmd() *cobra.Command {
 			if len(args) == 1 {
 				catalogDir = args[0]
 			}
-			code := runBuild(catalogDir, filepath.Dir(filepath.Clean(catalogDir)), manifest, check)
+			code := runBuild(catalogDir, filepath.Dir(filepath.Clean(catalogDir)), manifest, assetsSource, check)
 			switch code {
 			case 0:
 				return nil
@@ -103,6 +114,7 @@ func newBuildCmd() *cobra.Command {
 	cmd.Flags().BoolVar(&check, "check", false, "verify committed output matches a fresh build (CI drift gate)")
 	cmd.Flags().BoolVar(&fix, "fix", false, "regenerate committed output (default behavior)")
 	cmd.Flags().StringVar(&manifest, "manifest", "", "also write a signable build manifest (target versions + digests) to this path")
+	cmd.Flags().StringVar(&assetsSource, "assets-source", "", "directory vendored verbatim into each plugin (default: <repo>/vendor/stark-skills if present)")
 	return cmd
 }
 
