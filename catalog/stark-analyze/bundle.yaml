@@ -1,5 +1,5 @@
 name: stark-analyze
-version: 0.1.0
+version: 0.1.1
 description: Multi-domain review and adversarial red-team of designs, execution plans, and PRs, plus review-prompt improvement from assessment feedback. Maps to spec-kit's analyze phase.
 category: review
 tags:
@@ -13,3 +13,12 @@ owner:
 maturity: beta
 runtimes:
   - claude
+# Membership manifest consumed by the generator (`stark sync`): canonical skill
+# names pulled from a stark-skills checkout. The two internal review-improvement
+# skills are intentionally excluded from distribution.
+skills:
+  - stark-red-team-design
+  - stark-red-team-plan
+  - stark-review
+  - stark-review-design
+  - stark-review-plan

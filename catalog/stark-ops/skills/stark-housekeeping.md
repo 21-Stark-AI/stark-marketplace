@@ -2,11 +2,11 @@
 name: stark-housekeeping
 type: skill
 description: Audit and clean up stale issues, dead branches, and worktree remnants. Use for cleanup, housekeeping, close stale issues.
-version: 0.1.0
+version: 0.1.1
 maturity: beta
 runtimes:
   - claude
-model: claude-sonnet-4-6
+model: sonnet
 disable-model-invocation: true
 ---
 # stark-housekeeping
@@ -25,7 +25,7 @@ Audits and cleans up project state: closes stale issues, deletes merged branches
 
 ## Constants
 
-Detect repo (or use `--repo` override): parse `org/repo` from `git remote get-url origin`. The `TOOLS` path (`$HOME/.claude/code-review/tools`) is set locally in Phase 5 where it is used.
+Detect repo (or use `--repo` override): parse `org/repo` from `git remote get-url origin`. The `TOOLS` path (`${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/code-review}/tools`) is set locally in Phase 5 where it is used.
 
 ---
 
@@ -164,7 +164,7 @@ Unreleased commits: {N} since {last_tag}
 ## Phase 5: Infrastructure Cleanup
 
 ```bash
-TOOLS="$HOME/.claude/code-review/tools"
+TOOLS="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/code-review}/tools"
 INFRA_JSON=$(node --experimental-strip-types "$TOOLS/housekeeping_infra.ts" \
   ${DRY_RUN:+--dry-run} --json)
 ```

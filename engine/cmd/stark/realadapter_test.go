@@ -78,7 +78,7 @@ func TestRealAdapterRendersCommittedCatalog(t *testing.T) {
 		}
 		// real command body (codex !claude runtime variant), not a fake placeholder
 		skill, _ := os.ReadFile(filepath.Join(dest, ".agents/skills/pr-open/SKILL.md"))
-		if !strings.Contains(string(skill), "gh pr create") {
+		if !strings.Contains(string(skill), "Open or update a GitHub pull request") {
 			t.Fatalf("SKILL.md missing real body:\n%s", skill)
 		}
 		// real MCP merge: keyed table + env subtable + placeholder (never the secret value)

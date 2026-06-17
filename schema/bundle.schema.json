@@ -16,6 +16,8 @@
     },
     "maturity": { "enum": ["experimental", "beta", "stable", "deprecated"] },
     "runtimes": { "type": "array", "items": { "enum": ["claude", "codex", "gemini"] } },
-    "homepage": { "type": "string" }
+    "homepage": { "type": "string" },
+    "skills": { "type": "array", "items": { "type": "string" } },
+    "commands": { "type": "array", "items": { "type": "string" } }
   }
 }

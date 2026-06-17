@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "bundle": {
     "name": "stark-constitution",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "Project setup and session priming — scaffold a dev-docs/standards structure (template/backfill/upgrade modes) and assign a session persona. Maps to spec-kit's constitution phase.",
     "category": "setup",
     "tags": [
@@ -19,7 +19,7 @@
       "name": "stark-init-docs",
       "type": "skill",
       "description": "Scaffold dev docs structure (template/backfill/upgrade/clean modes). Use for init docs, setup docs, scaffold docs.",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "runtimes": [
         "claude"
       ],
@@ -43,7 +43,7 @@
       "name": "stark-persona",
       "type": "skill",
       "description": "Assign a famous character persona for the session with weighted random selection. Use for persona, character, voice. /stark-persona.",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "runtimes": [
         "claude"
       ],

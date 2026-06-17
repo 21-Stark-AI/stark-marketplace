@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "bundle": {
     "name": "stark-gh",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "GitHub workflow commands + MCP for stark.",
     "category": "productivity",
     "tags": [
@@ -16,10 +16,94 @@
   },
   "artifacts": [
     {
+      "name": "cleanup",
+      "type": "command",
+      "description": "Sweep the local + remote repo for merged-PR branches, stale tracking refs, worktree leftovers (including detached-HEAD review worktrees), merged-PR watcher state, stale stashes, and loose objects. Rebases the current branch onto upstream and applies linear-tree git config so the history stays sharp.",
+      "version": "0.1.1",
+      "runtimes": [
+        "claude",
+        "codex",
+        "gemini"
+      ],
+      "support": {
+        "claude": "native",
+        "codex": "native",
+        "gemini": "native"
+      },
+      "requires": [],
+      "diverged": false,
+      "outputs": {
+        "claude": [
+          {
+            "path": "commands/cleanup.md",
+            "kind": "file",
+            "emulated": false
+          }
+        ],
+        "codex": [
+          {
+            "path": ".agents/skills/cleanup/SKILL.md",
+            "kind": "file",
+            "emulated": false
+          }
+        ],
+        "gemini": [
+          {
+            "path": ".gemini/commands/cleanup.toml",
+            "kind": "file",
+            "emulated": false
+          }
+        ]
+      },
+      "fidelityNotes": {}
+    },
+    {
+      "name": "pr-merge",
+      "type": "command",
+      "description": "Rebase a PR, draft squash-commit prose + CHANGELOG bullet via Codex, force-push, and squash-merge once CI is green.",
+      "version": "0.1.1",
+      "runtimes": [
+        "claude",
+        "codex",
+        "gemini"
+      ],
+      "support": {
+        "claude": "native",
+        "codex": "native",
+        "gemini": "native"
+      },
+      "requires": [],
+      "diverged": false,
+      "outputs": {
+        "claude": [
+          {
+            "path": "commands/pr-merge.md",
+            "kind": "file",
+            "emulated": false
+          }
+        ],
+        "codex": [
+          {
+            "path": ".agents/skills/pr-merge/SKILL.md",
+            "kind": "file",
+            "emulated": false
+          }
+        ],
+        "gemini": [
+          {
+            "path": ".gemini/commands/pr-merge.toml",
+            "kind": "file",
+            "emulated": false
+          }
+        ]
+      },
+      "fidelityNotes": {}
+    },
+    {
       "name": "pr-open",
       "type": "command",
-      "description": "Open or update a PR with Codex-drafted prose.",
-      "version": "0.1.0",
+      "description": "Open or update a PR with Codex-drafted prose, stage-all commit (default), push, and CI watcher.",
+      "version": "0.1.1",
       "runtimes": [
         "claude",
         "codex",

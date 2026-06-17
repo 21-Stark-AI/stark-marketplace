@@ -34,8 +34,8 @@ gh pr list --json number,title,headRefName --jq '.[] | "#\(.number) \(.title) (\
 ## Constants
 
 ```bash
-SCRIPTS="${STARK_REVIEW_SCRIPTS:-$HOME/.claude/code-review/scripts}"
-TOOLS="${STARK_REVIEW_TOOLS:-$HOME/.claude/code-review/tools}"
+SCRIPTS="${STARK_REVIEW_SCRIPTS:-${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/code-review}/scripts}"
+TOOLS="${STARK_REVIEW_TOOLS:-${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/code-review}/tools}"
 ```
 
 ## Configuration

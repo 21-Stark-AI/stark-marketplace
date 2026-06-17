@@ -2,7 +2,7 @@
 name: stark-review-design
 type: skill
 description: Multi-domain design/spec review with lead/wing fix loop. Codex (gpt-5.5, xhigh reasoning) reviews 8 domains in parallel; Claude (opus-4-8) wing fixes findings. Use for review design, review spec, review architecture.
-version: 0.1.0
+version: 0.1.1
 maturity: beta
 runtimes:
   - claude
@@ -52,8 +52,8 @@ Answers the question: **"Is this the right system?"**
 ## Constants
 
 ```bash
-TOOLS="${STARK_REVIEW_TOOLS:-$HOME/.claude/code-review/tools}"
-PROMPTS_BASE="${STARK_REVIEW_PROMPTS_BASE:-$HOME/.claude/code-review/prompts}"
+TOOLS="${STARK_REVIEW_TOOLS:-${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/code-review}/tools}"
+PROMPTS_BASE="${STARK_REVIEW_PROMPTS_BASE:-${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/code-review}/prompts}"
 ```
 
 To call the dispatcher:

@@ -1,5 +1,5 @@
 name: stark-constitution
-version: 0.1.0
+version: 0.1.1
 description: Project setup and session priming — scaffold a dev-docs/standards structure (template/backfill/upgrade modes) and assign a session persona. Maps to spec-kit's constitution phase.
 category: setup
 tags:
@@ -13,3 +13,7 @@ owner:
 maturity: beta
 runtimes:
   - claude
+# Membership manifest consumed by the generator (`stark sync`).
+skills:
+  - stark-init-docs
+  - stark-persona

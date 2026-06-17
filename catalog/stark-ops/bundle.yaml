@@ -1,5 +1,5 @@
 name: stark-ops
-version: 0.1.0
+version: 0.1.1
 description: Repository operations beyond the spec-driven pipeline — cut releases, housekeep stale issues/branches/worktrees, run session start/end, and switch GitHub identities.
 category: ops
 tags:
@@ -13,3 +13,9 @@ owner:
 maturity: beta
 runtimes:
   - claude
+# Membership manifest consumed by the generator (`stark sync`).
+skills:
+  - stark-gh-user
+  - stark-housekeeping
+  - stark-release
+  - stark-session

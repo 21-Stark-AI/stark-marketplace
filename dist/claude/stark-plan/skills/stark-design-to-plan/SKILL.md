@@ -8,7 +8,7 @@ model: opus
 
 Run environment validation before proceeding:
 ```bash
-node --experimental-strip-types ~/.claude/code-review/tools/preflight.ts --workflow stark-design-to-plan --json
+node --experimental-strip-types ${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/code-review}/tools/preflight.ts --workflow stark-design-to-plan --json
 ```
 Parse the JSON result:
 - If `overall` is "blocked": print the failing checks and stop. Do not proceed.
@@ -49,9 +49,9 @@ If `--lead` and `--wing` resolve to the same agent, error and stop:
 ## Constants
 
 ```bash
-SCRIPTS="${STARK_REVIEW_SCRIPTS:-$HOME/.claude/code-review/scripts}"
-TOOLS="${STARK_REVIEW_TOOLS:-$HOME/.claude/code-review/tools}"
-PROMPTS="${STARK_REVIEW_PROMPTS:-$HOME/.claude/code-review/prompts}"
+SCRIPTS="${STARK_REVIEW_SCRIPTS:-${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/code-review}/scripts}"
+TOOLS="${STARK_REVIEW_TOOLS:-${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/code-review}/tools}"
+PROMPTS="${STARK_REVIEW_PROMPTS:-${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/code-review}/prompts}"
 ```
 
 ## Phase 1: Setup
@@ -90,7 +90,7 @@ Auth failure → warn, continue without PR posting.
 
 Before dispatching the lead/wing loop, confirm the approach:
 ```bash
-node --experimental-strip-types --no-warnings ~/.claude/code-review/tools/approach_contract.ts --plan-file <path> --force-confirm
+node --experimental-strip-types --no-warnings ${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/code-review}/tools/approach_contract.ts --plan-file <path> --force-confirm
 ```
 
 ## Phase 2: Lead/Wing Loop

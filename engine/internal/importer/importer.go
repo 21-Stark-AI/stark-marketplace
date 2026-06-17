@@ -7,6 +7,7 @@ package importer
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"strings"
 
 	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
@@ -55,6 +56,30 @@ func Import(opts Options) (*ImportResult, error) {
 	}
 	if len(res.Bundle.Artifacts) == 0 {
 		return nil, errors.New("import: nothing to import (no matching skill/ entries or plugins/" + opts.Bundle + " under --from)")
+	}
+	finalizeBundle(res)
+	return res, nil
+}
+
+// ImportForGenerator builds a bundle from an EXPLICIT skill membership list for
+// the generator (`stark sync`). Unlike Import, an empty `skills` slice means NO
+// skills (not "all") — required for command-only bundles like stark-gh. Commands
+// + MCP still come from plugins/<bundle> when present. Pure: no writes.
+func ImportForGenerator(from, bundle string, skills []string) (*ImportResult, error) {
+	if bundle == "" {
+		return nil, errors.New("import: bundle is required")
+	}
+	res := &ImportResult{Bundle: newBundle(bundle)}
+	if len(skills) > 0 {
+		if err := importSkills(from, bundle, skills, res); err != nil {
+			return nil, err
+		}
+	}
+	if err := importPlugin(from, bundle, res); err != nil {
+		return nil, err
+	}
+	if len(res.Bundle.Artifacts) == 0 {
+		return nil, fmt.Errorf("import %s: produced no artifacts (skills=%v, no plugins/%s)", bundle, skills, bundle)
 	}
 	finalizeBundle(res)
 	return res, nil

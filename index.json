@@ -21,14 +21,14 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "runtimes": [
         "claude"
       ],
       "support": {
         "claude": "native"
       },
-      "digest": "sha256:103678c7c69207a08737518373e1e84e61e4991bddf905e28ee1d95ad12ac02b"
+      "digest": "sha256:c91f3559148ada8e90c69dffb6c36eca9ef59de93adc3720458283175e761577"
     },
     {
       "name": "stark-red-team-plan",
@@ -43,36 +43,14 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "runtimes": [
         "claude"
       ],
       "support": {
         "claude": "native"
       },
-      "digest": "sha256:0a382990c5537c044683d538575e50570badccc92c7b4f15dfc355c491b525d8"
-    },
-    {
-      "name": "stark-review-design-improvement",
-      "type": "skill",
-      "bundle": "stark-analyze",
-      "description": "Improve design review prompts from assessment feedback. Wraps /stark-review-improvement for design-review prompts.",
-      "tags": [
-        "review",
-        "red-team",
-        "quality",
-        "analyze"
-      ],
-      "category": "review",
-      "maturity": "beta",
-      "version": "0.1.0",
-      "runtimes": [
-        "claude"
-      ],
-      "support": {
-        "claude": "native"
-      },
-      "digest": "sha256:73fce24bd523d8a649045673319107346e8fe301ce8810cc07cdc4b9b27f2ec0"
+      "digest": "sha256:8ab73fdfcfb829d8df08120cb1f58544c24fd21a8173a7c54508a04f41892c96"
     },
     {
       "name": "stark-review-design",
@@ -87,36 +65,14 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "runtimes": [
         "claude"
       ],
       "support": {
         "claude": "native"
       },
-      "digest": "sha256:4818a08273394d3996a08c834691f0ebf6f201b37a914ec1bb498a2540e6a852"
-    },
-    {
-      "name": "stark-review-improvement",
-      "type": "skill",
-      "bundle": "stark-analyze",
-      "description": "Improve review prompts based on Prompt Improvement Assessment from completed reviews. Use for fix review prompts.",
-      "tags": [
-        "review",
-        "red-team",
-        "quality",
-        "analyze"
-      ],
-      "category": "review",
-      "maturity": "beta",
-      "version": "0.1.0",
-      "runtimes": [
-        "claude"
-      ],
-      "support": {
-        "claude": "native"
-      },
-      "digest": "sha256:0321d4fc858b1481387d076c652c3dbf06b750ddd6edbeb83244a5ac3121858e"
+      "digest": "sha256:fb64d56d536baffe0d07044f8f3f581fcba3f3456bd942c040decda93b54a369"
     },
     {
       "name": "stark-review-plan",
@@ -131,14 +87,14 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "runtimes": [
         "claude"
       ],
       "support": {
         "claude": "native"
       },
-      "digest": "sha256:73553a40ff7257873c38e1ae3bfd4af8d9f30eb47b599c11384d5529efd04448"
+      "digest": "sha256:00ca53bb2ac6ee07de7fac546ed75a714b2177ff4c2b28835dc929342bcb9265"
     },
     {
       "name": "stark-review",
@@ -153,14 +109,14 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "runtimes": [
         "claude"
       ],
       "support": {
         "claude": "native"
       },
-      "digest": "sha256:a3dadb5cc7a8a7335a8cdfd9fb9c1f44d6625e2fd626ffd999d1412a9ac325d8"
+      "digest": "sha256:61331a01e908224c9f4d1216f8ca5dfd1f54fbfc01a1a66c61864abaa978a938"
     },
     {
       "name": "stark-init-docs",
@@ -175,14 +131,14 @@
       ],
       "category": "setup",
       "maturity": "beta",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "runtimes": [
         "claude"
       ],
       "support": {
         "claude": "native"
       },
-      "digest": "sha256:d80f8b40b54c6b70ab24cb88a36b7517ed8728cb03436aa9d6c6d8ccf7889120"
+      "digest": "sha256:1439f49cb5a3292085ce5db73446c9c3f6a916ec6483872f61d7ca3ca941f9b0"
     },
     {
       "name": "stark-persona",
@@ -197,20 +153,20 @@
       ],
       "category": "setup",
       "maturity": "beta",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "runtimes": [
         "claude"
       ],
       "support": {
         "claude": "native"
       },
-      "digest": "sha256:6a7dabcc8f98f094768b16f8fa52225e9dc30d3eed0df676ae60f44b4106e87d"
+      "digest": "sha256:98bff4ba9acaae68f8c62d21ca92f88cdb0b2f54d95eea2d5266ff2cf326d5ec"
     },
     {
-      "name": "pr-open",
+      "name": "cleanup",
       "type": "command",
       "bundle": "stark-gh",
-      "description": "Open or update a PR with Codex-drafted prose.",
+      "description": "Sweep the local + remote repo for merged-PR branches, stale tracking refs, worktree leftovers (including detached-HEAD review worktrees), merged-PR watcher state, stale stashes, and loose objects. Rebases the current branch onto upstream and applies linear-tree git config so the history stays sharp.",
       "tags": [
         "github",
         "pr",
@@ -218,7 +174,7 @@
       ],
       "category": "productivity",
       "maturity": "beta",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "runtimes": [
         "claude",
         "codex",
@@ -229,7 +185,57 @@
         "codex": "native",
         "gemini": "native"
       },
-      "digest": "sha256:6e71b670324cfb2e54f257be5090bdc42f2718b40776770bfb2bc6c99cfed2b5"
+      "digest": "sha256:9b441a45ba673f9248c8f485ecaeafd7aafcf0d8bab10a3a34fbc01f9c21cb33"
+    },
+    {
+      "name": "pr-merge",
+      "type": "command",
+      "bundle": "stark-gh",
+      "description": "Rebase a PR, draft squash-commit prose + CHANGELOG bullet via Codex, force-push, and squash-merge once CI is green.",
+      "tags": [
+        "github",
+        "pr",
+        "workflow"
+      ],
+      "category": "productivity",
+      "maturity": "beta",
+      "version": "0.1.1",
+      "runtimes": [
+        "claude",
+        "codex",
+        "gemini"
+      ],
+      "support": {
+        "claude": "native",
+        "codex": "native",
+        "gemini": "native"
+      },
+      "digest": "sha256:7d5d1fddb8eeeee7b45eb2fd131ca1b9b764df197ff1483592c56acdede5ce4b"
+    },
+    {
+      "name": "pr-open",
+      "type": "command",
+      "bundle": "stark-gh",
+      "description": "Open or update a PR with Codex-drafted prose, stage-all commit (default), push, and CI watcher.",
+      "tags": [
+        "github",
+        "pr",
+        "workflow"
+      ],
+      "category": "productivity",
+      "maturity": "beta",
+      "version": "0.1.1",
+      "runtimes": [
+        "claude",
+        "codex",
+        "gemini"
+      ],
+      "support": {
+        "claude": "native",
+        "codex": "native",
+        "gemini": "native"
+      },
+      "digest": "sha256:eecdce894f73757f3e9e741b785c818a43a2620e9c39bef1cf7fffbccd5e279c"
     },
     {
       "name": "gh",
@@ -269,14 +275,14 @@
       ],
       "category": "implementation",
       "maturity": "beta",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "runtimes": [
         "claude"
       ],
       "support": {
         "claude": "native"
       },
-      "digest": "sha256:9baa6a77a94809a157243f895d58b713acb49085629fa1fb33c6f0d91f57cc1d"
+      "digest": "sha256:707da7156bae12867c8ee9b9a67035f161c4944f9caa393a193ad0b9abfeefd4"
     },
     {
       "name": "stark-phase-execute",
@@ -291,14 +297,14 @@
       ],
       "category": "implementation",
       "maturity": "beta",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "runtimes": [
         "claude"
       ],
       "support": {
         "claude": "native"
       },
-      "digest": "sha256:e332e96fa82b8877aa3e97385e28dea3eb527874be39e1164964164571879695"
+      "digest": "sha256:f3314a905c8caa316825f937d813133134a9390d0489d8b9929f550a3ba6d710"
     },
     {
       "name": "stark-gh-user",
@@ -313,14 +319,14 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "runtimes": [
         "claude"
       ],
       "support": {
         "claude": "native"
       },
-      "digest": "sha256:77436378921214d5bed948ae98ea0b2cc385ea6acf110e4950780ed713bd61eb"
+      "digest": "sha256:58597eaf43483ffceaf3033c921d8b39a2a80f75677e2818402cba236b0c5cc0"
     },
     {
       "name": "stark-housekeeping",
@@ -335,14 +341,14 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "runtimes": [
         "claude"
       ],
       "support": {
         "claude": "native"
       },
-      "digest": "sha256:c0dae8ff4acd8c97a4992d3313825c5a97fed2d75aa2d03ee8c10e44bd587621"
+      "digest": "sha256:c60c4e27ef0f6a5dea4443fa7af992ae88de46bbff71ea7d0b7e94c5d0f383a4"
     },
     {
       "name": "stark-release",
@@ -357,14 +363,14 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "runtimes": [
         "claude"
       ],
       "support": {
         "claude": "native"
       },
-      "digest": "sha256:3671a6394303294891da8dad130cc7026671cd3a1e40e5909255ea5cd561e4a1"
+      "digest": "sha256:ce3320906b8e74b401ac4e65fa8fe29cd48dbc8472832dc9d59b40c2ce06dcc9"
     },
     {
       "name": "stark-session",
@@ -379,14 +385,14 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "runtimes": [
         "claude"
       ],
       "support": {
         "claude": "native"
       },
-      "digest": "sha256:b7a578b7f85b0c9d01e93261a6be22d21687fa71726225d3cfafaecccc50a2c6"
+      "digest": "sha256:ce9823d3e98154754a80304eb7b9c328507f8ed1d63b371682946f60001c0822"
     },
     {
       "name": "stark-design-to-plan",
@@ -401,14 +407,14 @@
       ],
       "category": "planning",
       "maturity": "beta",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "runtimes": [
         "claude"
       ],
       "support": {
         "claude": "native"
       },
-      "digest": "sha256:1f79f30fd3f1f45c5b3fde8c08958701e80c71c7ae19d4689f333a357c68f031"
+      "digest": "sha256:5ada522cdae4a80ab3376ad40dd685a63bb479fa4c9daa76a76a6246ebfd01a7"
     },
     {
       "name": "stark-plan-to-tasks",
@@ -423,14 +429,14 @@
       ],
       "category": "planning",
       "maturity": "beta",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "runtimes": [
         "claude"
       ],
       "support": {
         "claude": "native"
       },
-      "digest": "sha256:9091490e66d03286c3c8b6c9c2d82acb4c6b2455f85fce38274cdc32c1d5c58a"
+      "digest": "sha256:847c99660d726ececa12b09ecbaf4df75bc599a6e23b3ddf62242d188fd77a25"
     }
   ]
 }
