@@ -33,7 +33,14 @@ func runBuild(catalogDir, repoRoot, manifestPath, assetsSource string, check boo
 			assetsSource = def
 		}
 	}
-	out, err := build.Build(cat, build.Options{AssetsSource: assetsSource})
+	// Per-bundle plugin assets live under <repoRoot>/vendor/plugins/<bundle>
+	// (written by `stark sync`); default to it when present so the committed
+	// build layers each bundle's own plugin tools/config without an explicit flag.
+	pluginAssetsRoot := ""
+	if def := filepath.Join(repoRoot, "vendor", "plugins"); dirExists(def) {
+		pluginAssetsRoot = def
+	}
+	out, err := build.Build(cat, build.Options{AssetsSource: assetsSource, PluginAssetsRoot: pluginAssetsRoot})
 	if err != nil {
 		fmt.Println("build error:", err)
 		return 1
@@ -141,3 +148,9 @@ type exitError struct {
 
 func (e *exitError) Error() string { return e.msg }
 func (e *exitError) ExitCode() int { return e.code }
+
+// dirExists reports whether path is an existing directory.
+func dirExists(path string) bool {
+	fi, err := os.Stat(path)
+	return err == nil && fi.IsDir()
+}

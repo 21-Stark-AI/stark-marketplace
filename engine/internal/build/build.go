@@ -45,6 +45,15 @@ type Options struct {
 	// the generator; filtering (tests/fixtures/node_modules) is its job, not the
 	// engine's — the engine copies byte-for-byte for determinism.
 	AssetsSource string
+
+	// PluginAssetsRoot is a directory holding per-bundle plugin asset snapshots
+	// (<root>/<bundle>/<relpath>, produced by `stark sync` from plugins/<bundle>).
+	// For each bundle with a subdir here, those files are layered into THAT
+	// bundle's dist tree AFTER the shared AssetsSource — so a plugin's own
+	// config.json + its plugin-specific .ts tools (e.g. stark-gh's gh_*.ts /
+	// {draft} config) override the shared snapshot for that bundle only. Empty =
+	// no per-bundle layering. Like AssetsSource, copied byte-for-byte.
+	PluginAssetsRoot string
 }
 
 // generatedRoots are the repo-relative trees this build owns and fully regenerates.
@@ -67,6 +76,23 @@ func Build(cat *model.Catalog, opts Options) (Output, error) {
 		vendored = v
 	}
 
+	// Per-bundle plugin assets (vendor/plugins/<bundle>): read once, keyed by
+	// bundle name, layered over the shared snapshot for the owning bundle only.
+	pluginAssets := map[string]map[string][]byte{}
+	if opts.PluginAssetsRoot != "" {
+		for _, b := range cat.Bundles {
+			dir := filepath.Join(opts.PluginAssetsRoot, b.Name)
+			if fi, statErr := os.Stat(dir); statErr != nil || !fi.IsDir() {
+				continue
+			}
+			pa, err := vendorAssets(dir)
+			if err != nil {
+				return Output{}, fmt.Errorf("plugin assets from %s: %w", dir, err)
+			}
+			pluginAssets[b.Name] = pa
+		}
+	}
+
 	totalArtifacts := 0
 	diverged := 0
 	for _, b := range cat.Bundles {
@@ -75,8 +101,13 @@ func Build(cat *model.Catalog, opts Options) (Output, error) {
 		if err != nil {
 			return Output{}, fmt.Errorf("render %s: %w", b.Name, err)
 		}
-		// Vendored assets first; rendered artifacts win on any path collision.
+		// Shared vendored assets first, then this bundle's own plugin assets
+		// (overriding the shared snapshot — e.g. stark-gh's {draft} config.json +
+		// gh_*.ts tools), then rendered artifacts win on any remaining collision.
 		for rel, content := range vendored {
+			out.Files["dist/claude/"+b.Name+"/"+rel] = toLF(content)
+		}
+		for rel, content := range pluginAssets[b.Name] {
 			out.Files["dist/claude/"+b.Name+"/"+rel] = toLF(content)
 		}
 		for _, f := range files {

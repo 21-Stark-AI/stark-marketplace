@@ -39,6 +39,7 @@ paths = [
   # fully scanned.
   '''dist/claude/.*/tools/.*\.ts$''',
   '''vendor/stark-skills/tools/.*\.ts$''',
+  '''vendor/plugins/.*/tools/.*\.ts$''',  # per-bundle plugin tool copies (same trusted source as above)
 ]
 regexes = [
   '''\$\{[A-Z0-9_]+\}''',             # ${ENV_VAR} placeholders are not secrets

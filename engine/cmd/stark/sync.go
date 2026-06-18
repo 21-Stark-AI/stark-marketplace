@@ -61,6 +61,20 @@ func runSync(from, catalogDir, repoRoot string, check bool) int {
 		for _, sub := range []string{"skills", "commands"} {
 			managed = append(managed, "catalog/"+b.Name+"/"+sub)
 		}
+		// Per-bundle plugin assets (plugins/<bundle>/tools + its own config/package.json),
+		// captured into vendor/plugins/<bundle>/ and layered by `stark build` into THIS
+		// bundle's dist tree only. Empty for skills-only bundles (no plugins/<bundle> dir).
+		pv, err := importer.PluginVendorSnapshot(from, b.Name)
+		if err != nil {
+			fmt.Printf("plugin vendor %s: %v\n", b.Name, err)
+			return 1
+		}
+		for rel, content := range pv {
+			expected["vendor/plugins/"+b.Name+"/"+rel] = lfNormalize(content)
+		}
+		if len(pv) > 0 {
+			managed = append(managed, "vendor/plugins/"+b.Name)
+		}
 	}
 
 	vendor, err := importer.VendorSnapshot(from)

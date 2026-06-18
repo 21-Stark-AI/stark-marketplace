@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "bundle": {
     "name": "stark-gh",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "description": "GitHub workflow commands + MCP for stark.",
     "category": "productivity",
     "tags": [

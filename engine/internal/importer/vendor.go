@@ -62,6 +62,53 @@ func VendorSnapshot(from string) (map[string][]byte, error) {
 	return out, nil
 }
 
+// PluginVendorSnapshot reads a stark-skills checkout and returns the per-bundle
+// plugin asset snapshot (bundle-relative path -> content) for plugins/<bundle>,
+// which `stark build` layers into THAT bundle's dist tree only (winning over the
+// shared VendorSnapshot). It captures the plugin's own runtime files that the
+// shared snapshot does not provide and the adapter does not render:
+//
+//	tools/<f>.ts   <- plugins/<bundle>/tools  (.ts only; excl *.test.ts, __tests__/, fixtures/, node_modules/)
+//	config.json    <- plugins/<bundle>/config.json   (the plugin's OWN config, e.g. stark-gh's {draft};
+//	                  overrides the shared global config.json for this bundle)
+//	package.json   <- plugins/<bundle>/package.json   (e.g. {"type":"module"} — pins ESM resolution so the
+//	                  vendored .ts tools run under `node --experimental-strip-types` regardless of ancestor dirs)
+//
+// Returns an empty (non-nil) map when plugins/<bundle> is absent — a skills-only
+// bundle has no plugin assets, which is not an error. commands/ + mcp/ are NOT
+// captured here; they are imported as artifacts by importPlugin and rendered by
+// the adapter.
+func PluginVendorSnapshot(from, bundle string) (map[string][]byte, error) {
+	out := map[string][]byte{}
+	pluginDir := filepath.Join(from, "plugins", bundle)
+	if fi, err := os.Stat(pluginDir); err != nil || !fi.IsDir() {
+		return out, nil // absent plugin dir = no per-bundle assets (skills-only bundle)
+	}
+
+	// tools: runtime .ts only (same filter as the shared snapshot).
+	toolsDir := filepath.Join(pluginDir, "tools")
+	if fi, err := os.Stat(toolsDir); err == nil && fi.IsDir() {
+		if err := copyTree(toolsDir, "tools", out, vendorToolsSkipDirs, func(rel string) bool {
+			return strings.HasSuffix(rel, ".ts") && !strings.HasSuffix(rel, ".test.ts")
+		}); err != nil {
+			return nil, fmt.Errorf("plugin vendor tools (%s): %w", bundle, err)
+		}
+	}
+
+	// single seed files, when present.
+	for _, name := range []string{"config.json", "package.json"} {
+		b, err := os.ReadFile(filepath.Join(pluginDir, name))
+		if os.IsNotExist(err) {
+			continue
+		}
+		if err != nil {
+			return nil, fmt.Errorf("plugin vendor %s (%s): %w", name, bundle, err)
+		}
+		out[name] = b
+	}
+	return out, nil
+}
+
 // copyTree walks src and records each regular file into out under
 // "<dstPrefix>/<rel>". Directories whose base name is in skipDirs are pruned.
 // When keep is non-nil, only relative paths for which keep returns true are
