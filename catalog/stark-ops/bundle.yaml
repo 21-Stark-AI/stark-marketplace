@@ -1,5 +1,5 @@
 name: stark-ops
-version: 0.1.1
+version: 0.1.2
 description: Repository operations beyond the spec-driven pipeline — cut releases, housekeep stale issues/branches/worktrees, run session start/end, and switch GitHub identities.
 category: ops
 tags:

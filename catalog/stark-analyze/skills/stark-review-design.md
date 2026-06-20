@@ -2,7 +2,7 @@
 name: stark-review-design
 type: skill
 description: Multi-domain design/spec review with lead/wing fix loop. Codex (gpt-5.5, xhigh reasoning) reviews 8 domains in parallel; Claude (opus-4-8) wing fixes findings. Use for review design, review spec, review architecture.
-version: 0.1.3
+version: 0.1.4
 maturity: beta
 runtimes:
   - claude

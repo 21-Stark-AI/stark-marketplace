@@ -9,7 +9,7 @@
       "name": "stark-analyze",
       "source": "./dist/claude/stark-analyze",
       "description": "Multi-domain review and adversarial red-team of designs, execution plans, and PRs, plus review-prompt improvement from assessment feedback. Maps to spec-kit's analyze phase.",
-      "version": "0.1.3",
+      "version": "0.1.4",
       "author": {
         "name": "Evinced",
         "email": "engineering@evinced.com"
@@ -62,7 +62,7 @@
       "name": "stark-implement",
       "source": "./dist/claude/stark-implement",
       "description": "Autonomously execute a development phase end-to-end — implement, PR, review, fix, merge, release — via a paired lead/wing agent loop. Maps to spec-kit's implement phase.",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "author": {
         "name": "Evinced",
         "email": "engineering@evinced.com"
@@ -80,7 +80,7 @@
       "name": "stark-ops",
       "source": "./dist/claude/stark-ops",
       "description": "Repository operations beyond the spec-driven pipeline — cut releases, housekeep stale issues/branches/worktrees, run session start/end, and switch GitHub identities.",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "author": {
         "name": "Evinced",
         "email": "engineering@evinced.com"
@@ -98,7 +98,7 @@
       "name": "stark-plan",
       "source": "./dist/claude/stark-plan",
       "description": "Turn a design doc into a phased implementation plan, then decompose it into phased GitHub issues with story points and risk labels. Maps to spec-kit's plan + tasks phases.",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "author": {
         "name": "Evinced",
         "email": "engineering@evinced.com"

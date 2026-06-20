@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "bundle": {
     "name": "stark-ops",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "description": "Repository operations beyond the spec-driven pipeline — cut releases, housekeep stale issues/branches/worktrees, run session start/end, and switch GitHub identities.",
     "category": "ops",
     "tags": [
@@ -19,7 +19,7 @@
       "name": "stark-gh-user",
       "type": "skill",
       "description": "Switch the active GitHub user identity (primary ↔ secondary) for `gh` invocations to dodge per-user GraphQL/REST rate limits. Tokens live in macOS Keychain (service `stark-gh-token`).",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "runtimes": [
         "claude"
       ],
@@ -43,7 +43,7 @@
       "name": "stark-housekeeping",
       "type": "skill",
       "description": "Audit and clean up stale issues, dead branches, and worktree remnants. Use for cleanup, housekeeping, close stale issues.",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "runtimes": [
         "claude"
       ],
@@ -67,7 +67,7 @@
       "name": "stark-release",
       "type": "skill",
       "description": "Cut a release: changelog review (auto-generating from git log if [Unreleased] is empty), version bump, git tag, GitHub Release. Use for release, tag, bump version.",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "runtimes": [
         "claude"
       ],
@@ -91,7 +91,7 @@
       "name": "stark-session",
       "type": "skill",
       "description": "Session start (context, git state, briefing) and end (tests, merge, push). Use for session start/end, catch me up.",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "runtimes": [
         "claude"
       ],

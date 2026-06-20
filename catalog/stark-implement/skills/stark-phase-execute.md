@@ -2,7 +2,7 @@
 name: stark-phase-execute
 type: skill
 description: 'Autonomously execute a dev phase: implement tasks, PR, review, fix, merge, release. Use for execute phase, run plan.'
-version: 0.1.1
+version: 0.1.2
 maturity: beta
 runtimes:
   - claude

@@ -2,7 +2,7 @@
 name: stark-design-to-plan
 type: skill
 description: Convert design docs into phased implementation plans via paired lead/wing agents. Lead drafts, wing reviews, fix-loop until approved. Use for plan from design/spec.
-version: 0.1.1
+version: 0.1.2
 maturity: beta
 runtimes:
   - claude
