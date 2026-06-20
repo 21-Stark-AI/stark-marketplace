@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 )
 
 var update = flag.Bool("update", false, "update golden files")

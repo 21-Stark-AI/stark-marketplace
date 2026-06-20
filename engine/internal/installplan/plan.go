@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/indexio"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/indexio"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 )
 
 // Step is one artifact to install, in DAG order.

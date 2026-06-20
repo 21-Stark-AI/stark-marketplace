@@ -3,7 +3,7 @@ package indexio
 import (
 	"testing"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 )
 
 func TestLoadIndex(t *testing.T) {

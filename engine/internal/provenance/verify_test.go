@@ -39,7 +39,7 @@ func TestCosignVerifyCmd(t *testing.T) {
 	for _, want := range []string{
 		"cosign", "verify-blob",
 		// EXACT identity (not a prefix regexp): pins both the signing workflow and the main ref.
-		"--certificate-identity", "https://github.com/GetEvinced/stark-marketplace/.github/workflows/sign-manifest.yml@refs/heads/main",
+		"--certificate-identity", "https://github.com/21-Stark-AI/stark-marketplace/.github/workflows/sign-manifest.yml@refs/heads/main",
 		"--certificate-oidc-issuer", "token.actions.githubusercontent.com",
 		"--signature", "m.json.sig", "--certificate", "m.json.pem", "m.json",
 	} {

@@ -4,10 +4,10 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/indexio"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/install"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/installplan"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/indexio"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/install"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/installplan"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 )
 
 // TestE2EPlanInstallDoctorRemove drives the same code paths the cobra commands call,

@@ -1,6 +1,6 @@
 package validate
 
-import "github.com/GetEvinced/stark-marketplace/engine/internal/model"
+import "github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 
 // agentToolAllowlist is the known-safe set of agent tool grants (spec §7.4 "agent.tools
 // validated against an allowlist and surfaced in the index"). This file owns the VALIDATION

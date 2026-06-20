@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/load"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/load"
 )
 
 // TestPluginAssetsOverrideSharedSnapshot verifies that per-bundle plugin assets

@@ -6,14 +6,14 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/adapter"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/adapter/registry"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/aggregate"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/indexio"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/install"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/installplan"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/load"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/adapter"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/adapter/registry"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/aggregate"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/indexio"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/install"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/installplan"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/load"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 )
 
 // catalogAdapter is the production installplan.Adapter (Task 14). It renders a source bundle's

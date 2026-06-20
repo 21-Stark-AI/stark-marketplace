@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/importer"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/importer"
 	"github.com/spf13/cobra"
 )
 

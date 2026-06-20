@@ -3,7 +3,7 @@
 // native/emulated/unsupported badges and consumed by validation (§7.4).
 package capability
 
-import "github.com/GetEvinced/stark-marketplace/engine/internal/model"
+import "github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 
 // Version bumps whenever any cell changes; it is independent of adapter target
 // versions (§7.7) and lets the index communicate matrix revisions.

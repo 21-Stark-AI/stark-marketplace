@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/load"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/load"
 )
 
 func TestCheckReportsDriftOnTamper(t *testing.T) {

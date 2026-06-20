@@ -3,7 +3,7 @@ package index
 import (
 	"testing"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 )
 
 // Spec §7.4 requires agent.tools to be "surfaced in the index"; the surfacing home is the CC-3

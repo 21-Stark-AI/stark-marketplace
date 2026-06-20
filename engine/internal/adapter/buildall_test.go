@@ -4,10 +4,10 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/adapter"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/adapter/codex"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/adapter/gemini"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/load"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/adapter"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/adapter/codex"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/adapter/gemini"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/load"
 )
 
 // emitAll runs the canonical bundle-level Render (CC-1) over every catalog bundle.

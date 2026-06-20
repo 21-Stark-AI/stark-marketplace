@@ -3,7 +3,7 @@ package validate
 import (
 	"testing"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/load"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/load"
 )
 
 func TestSeedCatalogIsValid(t *testing.T) {

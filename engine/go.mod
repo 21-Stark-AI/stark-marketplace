@@ -1,4 +1,4 @@
-module github.com/GetEvinced/stark-marketplace/engine
+module github.com/21-Stark-AI/stark-marketplace/engine
 
 go 1.24.0
 

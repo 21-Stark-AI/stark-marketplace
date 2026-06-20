@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 )
 
 func TestManifestJSONShape(t *testing.T) {
@@ -55,7 +55,7 @@ func TestSourceStringForm(t *testing.T) {
 
 func TestSourceObjectForm(t *testing.T) {
 	// CC object sources are a discriminated union keyed by `source`.
-	b, err := json.Marshal(Source{Type: "github", Repo: "GetEvinced/stark-marketplace", Ref: "main"})
+	b, err := json.Marshal(Source{Type: "github", Repo: "21-Stark-AI/stark-marketplace", Ref: "main"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -63,7 +63,7 @@ func TestSourceObjectForm(t *testing.T) {
 	if !strings.Contains(s, `"source":"github"`) {
 		t.Fatalf("object source must carry the source discriminator: %s", s)
 	}
-	if !strings.Contains(s, `"repo":"GetEvinced/stark-marketplace"`) {
+	if !strings.Contains(s, `"repo":"21-Stark-AI/stark-marketplace"`) {
 		t.Fatalf("github source must carry repo: %s", s)
 	}
 	if !strings.Contains(s, `"ref":"main"`) {

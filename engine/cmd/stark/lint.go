@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/load"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/validate"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/load"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/validate"
 	"github.com/spf13/cobra"
 )
 

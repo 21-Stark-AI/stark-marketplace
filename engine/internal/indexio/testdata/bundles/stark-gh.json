@@ -8,7 +8,7 @@
     "tags": ["github","pr"],
     "owner": "stark",
     "maturity": "beta",
-    "homepage": "https://github.com/GetEvinced/stark-marketplace"
+    "homepage": "https://github.com/21-Stark-AI/stark-marketplace"
   },
   "artifacts": [
     { "name": "pr-open", "type": "command", "description": "Open a PR.", "version": "0.1.0",

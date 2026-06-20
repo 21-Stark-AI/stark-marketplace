@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repo is
 
-`stark-marketplace` is the **canonical, multi-runtime marketplace** for stark bundles. The engine renders each bundle into per-runtime trees (`dist/claude/`, `dist/codex/`, `dist/gemini/`) plus a signed `index.json` / `bundles/*.json` web registry. The repo doubles as a native **Claude Code marketplace** — `.claude-plugin/marketplace.json` at the repo root IS the manifest CC reads when you `/plugin marketplace add GetEvinced/stark-marketplace`.
+`stark-marketplace` is the **canonical, multi-runtime marketplace** for stark bundles. The engine renders each bundle into per-runtime trees (`dist/claude/`, `dist/codex/`, `dist/gemini/`) plus a signed `index.json` / `bundles/*.json` web registry. The repo doubles as a native **Claude Code marketplace** — `.claude-plugin/marketplace.json` at the repo root IS the manifest CC reads when you `/plugin marketplace add 21-Stark-AI/stark-marketplace`.
 
 **Source of truth = stark-skills.** The catalog's `skills/` + `commands/` are **generated** from a stark-skills checkout by `stark sync` (driven by each `bundle.yaml`'s `skills:`/`commands:` membership manifest); do NOT hand-edit them. What IS curated in this repo: each `bundle.yaml` (metadata + membership), and `mcp/` artifacts (stark-skills defines no MCP servers). See "Generation pipeline" below.
 
@@ -61,7 +61,7 @@ CI mirrors these exactly (`.github/workflows/ci.yml`): validate → drift `build
 
 ## Conventions
 
-- **Go 1.24**, module `github.com/GetEvinced/stark-marketplace/engine`. Standard layout (`cmd/`, `internal/`), small packages.
+- **Go 1.24**, module `github.com/21-Stark-AI/stark-marketplace/engine`. Standard layout (`cmd/`, `internal/`), small packages.
 - **TypeScript strict** in `web/`. ESM, narrow types.
 - **Never hand-edit `dist/`, `index.json`, or `bundles/*.json`.** Regenerate via `stark build`.
 - **CODEOWNERS** gates schema, adapters, governance, signing, deploy — respect the gates; don't try to route around them.

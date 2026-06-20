@@ -7,10 +7,10 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/bumps"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/digest"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/index"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/load"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/bumps"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/digest"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/index"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/load"
 	"github.com/spf13/cobra"
 )
 

@@ -31,7 +31,7 @@ describe('BundleDetailPage', () => {
     expect(screen.getByText('skills/stark-review/SKILL.md')).toBeInTheDocument();
     // deep link to GitHub source (derived from bundle.homepage — the engine emits no per-artifact sourcePath)
     const link = screen.getByRole('link', { name: /stark-review source on GitHub/ });
-    expect(link).toHaveAttribute('href', expect.stringContaining('github.com/GetEvinced/stark-marketplace'));
+    expect(link).toHaveAttribute('href', expect.stringContaining('github.com/21-Stark-AI/stark-marketplace'));
     // dependency edge derived from per-artifact requires (no engine `dependencyClosure`)
     expect(screen.getByText(/stark-review\/stark-review → stark-review\/stark-session/)).toBeInTheDocument();
   });

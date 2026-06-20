@@ -8,11 +8,11 @@
 package registry
 
 import (
-	"github.com/GetEvinced/stark-marketplace/engine/internal/adapter"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/adapter/claude"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/adapter/codex"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/adapter/gemini"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/adapter"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/adapter/claude"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/adapter/codex"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/adapter/gemini"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 )
 
 // All returns every runtime target keyed by runtime (claude + codex + gemini).

@@ -6,7 +6,7 @@ tags: [github, pr, workflow]
 owner: { name: Evinced, email: engineering@evinced.com }
 maturity: beta
 runtimes: [claude, codex, gemini]
-homepage: https://github.com/GetEvinced/stark-marketplace/tree/main/catalog/stark-gh
+homepage: https://github.com/21-Stark-AI/stark-marketplace/tree/main/catalog/stark-gh
 # Membership manifest consumed by the generator (`stark sync`): commands pulled
 # from stark-skills plugins/stark-gh.
 commands:

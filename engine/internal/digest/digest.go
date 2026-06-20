@@ -11,8 +11,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/canonjson"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/canonjson"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 )
 
 // Source returns the version-bump-gate digest. Only identity, type-specific

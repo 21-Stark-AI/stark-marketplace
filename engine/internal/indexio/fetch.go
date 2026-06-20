@@ -17,7 +17,7 @@ import (
 // so every request carries a token. APIBase defaults to https://api.github.com when empty.
 type Fetcher struct {
 	APIBase  string // e.g. https://api.github.com (overridden by tests)
-	Owner    string // GetEvinced
+	Owner    string // 21-Stark-AI
 	Repo     string // stark-marketplace
 	Ref      string // branch/tag/sha, e.g. "main"
 	BasePath string // path to the published index dir, e.g. "dist/claude"
@@ -34,7 +34,7 @@ func DefaultFetcher() (*Fetcher, error) {
 	}
 	return &Fetcher{
 		APIBase:  "https://api.github.com",
-		Owner:    "GetEvinced",
+		Owner:    "21-Stark-AI",
 		Repo:     "stark-marketplace",
 		Ref:      "main",
 		BasePath: "dist/claude",

@@ -15,7 +15,7 @@ import (
 	"encoding/json"
 	"sort"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 )
 
 // ManifestRelPath is the manifest's location relative to the Claude dist root

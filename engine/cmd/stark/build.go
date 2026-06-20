@@ -7,10 +7,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/adapter/registry"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/build"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/load"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/provenance"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/adapter/registry"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/build"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/load"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/provenance"
 	"github.com/spf13/cobra"
 )
 

@@ -4,7 +4,7 @@ import type { LeanIndex } from '../types/registry';
 // plus a link to the latest signed build manifest on the GitHub release. The cryptographic
 // verification itself is a CLI concern (`stark verify-manifest`); the SPA's job is to
 // surface the trust anchor so a curious user can pivot to verification with one click.
-const RELEASE_LATEST = 'https://github.com/GetEvinced/stark-marketplace/releases/latest';
+const RELEASE_LATEST = 'https://github.com/21-Stark-AI/stark-marketplace/releases/latest';
 
 export function ProvenanceBadge({ index }: { readonly index: LeanIndex }): JSX.Element | null {
   const av = index.generatedBy?.adapterVersions;

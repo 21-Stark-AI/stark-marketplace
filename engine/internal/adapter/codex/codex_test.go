@@ -4,8 +4,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/adapter"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/adapter"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 )
 
 func contains(s, sub string) bool { return strings.Contains(s, sub) }

@@ -6,7 +6,7 @@ import {
 } from '../types/registry';
 import { negotiate, type Negotiation } from './schema';
 
-const GITHUB_SOURCE = 'https://github.com/GetEvinced/stark-marketplace';
+const GITHUB_SOURCE = 'https://github.com/21-Stark-AI/stark-marketplace';
 
 export type DegradeReason =
   | Exclude<Extract<Negotiation, { ok: false }>['reason'], never>

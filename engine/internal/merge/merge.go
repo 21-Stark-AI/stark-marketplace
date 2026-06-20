@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/fence"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/fence"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 )
 
 // deepMerge returns base with patch applied. Both inputs are treated as

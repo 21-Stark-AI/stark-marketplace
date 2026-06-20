@@ -4,9 +4,9 @@
 # matching pattern wins for a given path.
 #
 # Roles:
-#   @GetEvinced/stark-maintainers  — engine, generated dist, schema, governance
-#   @GetEvinced/stark-reviewers    — second reviewer for high-trust artifact bodies
-#   @aryeh-evinced                 — required on the most sensitive surfaces
+#   @aryeh-stark  — engine, generated dist, schema, governance
+#   @aryeh-stark    — second reviewer for high-trust artifact bodies
+#   @aryeh-stark                 — required on the most sensitive surfaces
 #
 # Trust model: every artifact BODY is instruction text injected into a developer's
 # agent, and every mcp/ entry is a command spawned on a developer's machine.
@@ -17,31 +17,31 @@
 # the count=2 setting is what forces a genuine second pair of eyes on these paths.
 
 # ── Default: a maintainer reviews anything not matched below ──
-*                               @GetEvinced/stark-maintainers
+*                               @aryeh-stark
 
 # ── High-trust artifact BODIES (skills/commands/agents) — second reviewer ──
-catalog/**/skills/**            @GetEvinced/stark-maintainers @GetEvinced/stark-reviewers
-catalog/**/commands/**          @GetEvinced/stark-maintainers @GetEvinced/stark-reviewers
-catalog/**/agents/**            @GetEvinced/stark-maintainers @GetEvinced/stark-reviewers
+catalog/**/skills/**            @aryeh-stark @aryeh-stark
+catalog/**/commands/**          @aryeh-stark @aryeh-stark
+catalog/**/agents/**            @aryeh-stark @aryeh-stark
 
 # ── MCP = code execution on the developer's machine — highest trust ──
-**/mcp/**                       @GetEvinced/stark-maintainers @GetEvinced/stark-reviewers @aryeh-evinced
+**/mcp/**                       @aryeh-stark @aryeh-stark @aryeh-stark
 
 # ── Engine + generated output + schema + provenance — maintainer review ──
-engine/**                       @GetEvinced/stark-maintainers @aryeh-evinced
-schema/**                       @GetEvinced/stark-maintainers @aryeh-evinced
+engine/**                       @aryeh-stark @aryeh-stark
+schema/**                       @aryeh-stark @aryeh-stark
 
 # ── MCP command-allowlist source — additions gated by maintainer (§15.4 governance) ──
 # Listed AFTER engine/** so it wins (last match) and is unmistakably called out:
 # every entry added here widens the set of binaries an MCP server may spawn.
-engine/internal/validate/allowlist.go     @GetEvinced/stark-maintainers @aryeh-evinced
-engine/internal/validate/toolsallow.go    @GetEvinced/stark-maintainers @aryeh-evinced
-dist/claude/**                  @GetEvinced/stark-maintainers @aryeh-evinced
-index.json                      @GetEvinced/stark-maintainers @aryeh-evinced
-bundles/**                      @GetEvinced/stark-maintainers @aryeh-evinced
+engine/internal/validate/allowlist.go     @aryeh-stark @aryeh-stark
+engine/internal/validate/toolsallow.go    @aryeh-stark @aryeh-stark
+dist/claude/**                  @aryeh-stark @aryeh-stark
+index.json                      @aryeh-stark @aryeh-stark
+bundles/**                      @aryeh-stark @aryeh-stark
 
 # ── Security/CI governance — Aryeh required ──
-.github/workflows/**            @GetEvinced/stark-maintainers @aryeh-evinced
-CODEOWNERS                      @aryeh-evinced
-docs/SECURITY.md                @aryeh-evinced
-.gitleaks.toml                  @GetEvinced/stark-maintainers @aryeh-evinced
+.github/workflows/**            @aryeh-stark @aryeh-stark
+CODEOWNERS                      @aryeh-stark
+docs/SECURITY.md                @aryeh-stark
+.gitleaks.toml                  @aryeh-stark @aryeh-stark

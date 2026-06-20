@@ -22,7 +22,7 @@ export class ErrorBoundary extends Component<Props, State> {
   override render(): ReactNode {
     if (this.state.failed) {
       return (
-        <DegradedPage reason="malformed" githubUrl="https://github.com/GetEvinced/stark-marketplace" />
+        <DegradedPage reason="malformed" githubUrl="https://github.com/21-Stark-AI/stark-marketplace" />
       );
     }
     return this.props.children;

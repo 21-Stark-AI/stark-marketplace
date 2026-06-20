@@ -15,12 +15,12 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/adapter"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/adapter/emulate"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/aggregate"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/fieldmap"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/merge"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/adapter"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/adapter/emulate"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/aggregate"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/fieldmap"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/merge"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 	"github.com/pelletier/go-toml/v2"
 )
 

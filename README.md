@@ -18,7 +18,7 @@ The repo is also a **native Claude Code marketplace**: `.claude-plugin/marketpla
 ## Install (Claude Code)
 
 ```
-/plugin marketplace add GetEvinced/stark-marketplace
+/plugin marketplace add 21-Stark-AI/stark-marketplace
 /plugin install stark-gh@stark-marketplace
 ```
 
@@ -35,7 +35,7 @@ See [`docs/native-install-loop.md`](docs/native-install-loop.md) for the full in
 
 ## Develop
 
-**Source of truth is the [stark-skills](https://github.com/GetEvinced/stark-skills) repo**, not this one. The catalog's `skills/` + `commands/` and the `vendor/stark-skills/` snapshot are **generated** from a stark-skills checkout — never hand-edit them, `dist/`, `index.json`, or `bundles/*.json`. What you DO edit here: each `catalog/<bundle>/bundle.yaml` (metadata + the `skills:`/`commands:` membership manifest) and curated `catalog/<bundle>/mcp/` artifacts.
+**Source of truth is the [stark-skills](https://github.com/21-Stark-AI/stark-skills) repo**, not this one. The catalog's `skills/` + `commands/` and the `vendor/stark-skills/` snapshot are **generated** from a stark-skills checkout — never hand-edit them, `dist/`, `index.json`, or `bundles/*.json`. What you DO edit here: each `catalog/<bundle>/bundle.yaml` (metadata + the `skills:`/`commands:` membership manifest) and curated `catalog/<bundle>/mcp/` artifacts.
 
 Standard loop:
 
@@ -78,7 +78,7 @@ More detail in [`CLAUDE.md`](CLAUDE.md).
 This distributes code that runs inside developer agents and, for `mcp/` entries, spawns commands on developer machines. Integrity rests on:
 
 1. Protected, linear `main` (no force-push, no bypass).
-2. CI-signed build manifest (GitHub OIDC → sigstore/cosign keyless, signer `repo:GetEvinced/stark-marketplace@refs/heads/main`).
+2. CI-signed build manifest (GitHub OIDC → sigstore/cosign keyless, signer `repo:21-Stark-AI/stark-marketplace@refs/heads/main`).
 3. Commit SHA, which the manifest binds digests to.
 
 `stark verify-manifest` checks all three. Self-computed digests alone are only an anti-drift signal.

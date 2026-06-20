@@ -6,11 +6,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/aggregate"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/indexio"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/install"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/installplan"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/aggregate"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/indexio"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/install"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/installplan"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 )
 
 // The real adapter renders sentinel emulation blocks with digest-bearing markers

@@ -10,7 +10,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 )
 
 // MetaNote records one field that was defaulted, guessed, or dropped during import,

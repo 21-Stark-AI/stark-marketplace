@@ -3,8 +3,8 @@ package registry_test
 import (
 	"testing"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/adapter/registry"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/adapter/registry"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 )
 
 func TestAllHasEveryRuntimeWithDistinctVersions(t *testing.T) {

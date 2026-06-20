@@ -1,8 +1,8 @@
 package validate
 
 import (
-	"github.com/GetEvinced/stark-marketplace/engine/internal/fence"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/fence"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 )
 
 // checkFences strips the body for each targeted runtime; any parse error is reported.

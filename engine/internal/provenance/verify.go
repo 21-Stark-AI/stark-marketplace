@@ -11,7 +11,7 @@ import (
 // which also holds id-token: write — and no non-main ref can mint an accepted signature.
 // The OIDC issuer additionally pins GitHub Actions as the token source.
 const (
-	signerIdentity = "https://github.com/GetEvinced/stark-marketplace/.github/workflows/sign-manifest.yml@refs/heads/main"
+	signerIdentity = "https://github.com/21-Stark-AI/stark-marketplace/.github/workflows/sign-manifest.yml@refs/heads/main"
 	oidcIssuer     = "https://token.actions.githubusercontent.com"
 )
 

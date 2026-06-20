@@ -8,10 +8,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/adapter"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/canonjson"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/merge"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/adapter"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/canonjson"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/merge"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 	"gopkg.in/yaml.v3"
 )
 

@@ -6,7 +6,7 @@ package adapter
 import (
 	"sort"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 )
 
 // OutputFile is one generated file. Path uses `/` separators and is relative to

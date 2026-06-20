@@ -3,8 +3,8 @@ package main
 import (
 	"testing"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/indexio"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/indexio"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 )
 
 func testIndex(t *testing.T) *indexio.Index {

@@ -4,7 +4,7 @@
 // into prose, or block.
 package fieldmap
 
-import "github.com/GetEvinced/stark-marketplace/engine/internal/model"
+import "github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 
 type Action string
 

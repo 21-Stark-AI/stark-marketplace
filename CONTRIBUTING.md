@@ -6,7 +6,7 @@ This repo distributes code that runs inside developer agents (and, for `mcp/` en
 
 - Go 1.24 (pinned via `engine/go.mod`)
 - Node 20+ (for `web/`)
-- Repo access to `GetEvinced/stark-marketplace`
+- Repo access to `21-Stark-AI/stark-marketplace`
 
 ## The standard loop
 
@@ -54,7 +54,7 @@ CI (`.github/workflows/ci.yml`) runs the same steps plus `gitleaks`. Anything bl
 
 - `command` values must be present in `engine/internal/validate/allowlist.go`.
 - `agent.tools` entries must be present in `engine/internal/validate/toolsallow.go`.
-- To widen either list: PR touching **only** the allowlist file with a one-paragraph justification (what the binary/tool does, why it is needed, who maintains it). Requires `@GetEvinced/stark-maintainers` **and** `@aryeh-evinced` approval (CODEOWNERS-enforced).
+- To widen either list: PR touching **only** the allowlist file with a one-paragraph justification (what the binary/tool does, why it is needed, who maintains it). Requires `@aryeh-stark` **and** `@aryeh-stark` approval (CODEOWNERS-enforced).
 - Prefer pinned, well-known binaries (`node`, `uvx`) and first-party `stark-*-mcp` servers over ad-hoc tools.
 
 ## Adapters & schemas
@@ -94,4 +94,4 @@ Data contract: `web/src/types/registry.ts` mirrors the engine's emitted JSON. Un
 
 ## Reporting security issues
 
-Don't open a public issue. Email engineering@evinced.com or contact `@aryeh-evinced` directly.
+Don't open a public issue. Email engineering@evinced.com or contact `@aryeh-stark` directly.

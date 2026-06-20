@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"sort"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/importer"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/load"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/importer"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/load"
 	"github.com/spf13/cobra"
 )
 

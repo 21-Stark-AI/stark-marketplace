@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/provenance"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/provenance"
 )
 
 func TestBuildCheckExitCodes(t *testing.T) {

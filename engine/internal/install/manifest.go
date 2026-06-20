@@ -5,7 +5,7 @@ import (
 	"os"
 	"sort"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 )
 
 // Action records how a path was mutated so --remove can excise precisely (spec §9.2).
