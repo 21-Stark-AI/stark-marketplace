@@ -1,0 +1,12 @@
+name: demo-mcp
+type: mcp
+description: Demo MCP server exercised only by the claude adapter seed-bundle golden fixture.
+version: 9.9.9
+runtimes:
+  - claude
+mcp:
+  transport: stdio
+  command: node
+  args: ["demo-mcp-server.js"]
+  env:
+    DEMO_TOKEN: { secretRef: demo-token }

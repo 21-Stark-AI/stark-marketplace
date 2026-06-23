@@ -1,13 +1,13 @@
 {
   "mcpServers": {
-    "gh": {
+    "demo-mcp": {
       "args": [
-        "gh-mcp-server.js"
+        "${CLAUDE_PLUGIN_ROOT}/demo-mcp-server.js"
       ],
       "command": "node",
       "env": {
-        "GITHUB_TOKEN": {
-          "secretRef": "stark-gh-token"
+        "DEMO_TOKEN": {
+          "secretRef": "demo-token"
         }
       },
       "transport": "stdio"

@@ -10,16 +10,24 @@ import (
 	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 )
 
-// TestGoldenSeedBundle renders the committed catalog's stark-gh bundle and
-// compares each file to a checked-in golden. Run with UPDATE_GOLDEN=1 to regenerate.
 var update = os.Getenv("UPDATE_GOLDEN") == "1"
 
+// TestGoldenSeedBundle renders a FROZEN fixture bundle (testdata/seed-catalog)
+// end-to-end through the loader + claude adapter and byte-compares each rendered
+// file to a checked-in golden. It deliberately does NOT load the live
+// ../../../../catalog: coupling the golden to a live bundle meant every skill
+// edit and every version bump (the marketplace-sync auto-bump) drifted this test
+// and could merge the catalog red (issue #38). The live catalog's rendering is
+// still gated by `stark sync --check` / `build --check` in CI; this test guards
+// the adapter's output FORMAT (plugin.json, .mcp.json, skills/, commands/) against
+// a fixture that only changes when someone deliberately edits it. Run with
+// UPDATE_GOLDEN=1 to regenerate after an intentional format change.
 func TestGoldenSeedBundle(t *testing.T) {
-	cat, err := load.Load("../../../../catalog")
+	cat, err := load.Load(filepath.Join("testdata", "seed-catalog"))
 	if err != nil {
 		t.Fatal(err)
 	}
-	bundle := cat.Bundles[0] // sorted: stark-gh
+	bundle := cat.Bundles[0] // sole fixture bundle: seed-fixture
 	files, _, err := New().Render(bundle)
 	if err != nil {
 		t.Fatal(err)

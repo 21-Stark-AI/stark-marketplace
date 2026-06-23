@@ -1,0 +1,22 @@
+name: seed-fixture
+version: 9.9.9
+description: Frozen fixture bundle for the claude adapter seed-bundle golden. Exercises plugin.json, .mcp.json, skills/, and commands/ rendering end-to-end without coupling the golden to any live catalog bundle's release version or prose. Bump deliberately, and only when the rendering format itself changes.
+category: review
+tags:
+  - fixture
+  - golden
+  - render
+owner:
+  name: Evinced
+  email: engineering@evinced.com
+maturity: stable
+runtimes:
+  - claude
+homepage: https://github.com/21-Stark-AI/stark-marketplace
+# Membership manifest (consumed by `stark sync` for live bundles). This fixture
+# is authored by hand and never synced, so these lists are cosmetic — the loader
+# discovers artifacts from the skills/ commands/ mcp/ dirs on disk.
+skills:
+  - demo-skill
+commands:
+  - demo-command
