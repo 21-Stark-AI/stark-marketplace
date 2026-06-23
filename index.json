@@ -21,14 +21,14 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.1.4",
+      "version": "0.1.5",
       "runtimes": [
         "claude"
       ],
       "support": {
         "claude": "native"
       },
-      "digest": "sha256:c91f3559148ada8e90c69dffb6c36eca9ef59de93adc3720458283175e761577"
+      "digest": "sha256:916370d388c2ca2b5ad1891dfe3c24535a0e9e9446fe5a5652e42df7b04b0919"
     },
     {
       "name": "stark-red-team-plan",
@@ -43,14 +43,14 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.1.4",
+      "version": "0.1.5",
       "runtimes": [
         "claude"
       ],
       "support": {
         "claude": "native"
       },
-      "digest": "sha256:8ab73fdfcfb829d8df08120cb1f58544c24fd21a8173a7c54508a04f41892c96"
+      "digest": "sha256:fc8848745af0dc7fb43520293afe685d43c6a7d78152ae12c7456e9de4bcfb9c"
     },
     {
       "name": "stark-refactor-plan",
@@ -65,7 +65,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.1.4",
+      "version": "0.1.5",
       "runtimes": [
         "claude"
       ],
@@ -87,7 +87,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.1.4",
+      "version": "0.1.5",
       "runtimes": [
         "claude"
       ],
@@ -109,7 +109,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.1.4",
+      "version": "0.1.5",
       "runtimes": [
         "claude"
       ],
@@ -131,7 +131,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.1.4",
+      "version": "0.1.5",
       "runtimes": [
         "claude"
       ],
@@ -153,7 +153,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.1.4",
+      "version": "0.1.5",
       "runtimes": [
         "claude"
       ],
@@ -175,14 +175,14 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.1.4",
+      "version": "0.1.5",
       "runtimes": [
         "claude"
       ],
       "support": {
         "claude": "native"
       },
-      "digest": "sha256:61331a01e908224c9f4d1216f8ca5dfd1f54fbfc01a1a66c61864abaa978a938"
+      "digest": "sha256:33c66978032542da0ee5979f72efc61aff6af25d51a72b8e9dc798700475a533"
     },
     {
       "name": "stark-init-docs",

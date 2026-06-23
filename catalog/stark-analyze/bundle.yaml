@@ -1,5 +1,5 @@
 name: stark-analyze
-version: 0.1.4
+version: 0.1.5
 description: Multi-domain review and adversarial red-team of designs, execution plans, and PRs, plus review-prompt improvement from assessment feedback. Maps to spec-kit's analyze phase.
 category: review
 tags:
