@@ -1,6 +1,6 @@
 name: stark-analyze
-version: 0.1.5
-description: Multi-domain review and adversarial red-team of designs, execution plans, and PRs, plus review-prompt improvement from assessment feedback. Maps to spec-kit's analyze phase.
+version: 0.1.6
+description: Multi-domain review and adversarial red-team of designs, execution plans, and PRs, multi-agent Terraform/Terragrunt (IaC) review, plus review-prompt improvement from assessment feedback. Maps to spec-kit's analyze phase.
 category: review
 tags:
   - review
@@ -24,3 +24,5 @@ skills:
   - stark-review-design-improvement
   - stark-review-improvement
   - stark-review-plan
+  - stark-terraform-review
+  - stark-terragrunt-review

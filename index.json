@@ -21,7 +21,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.1.5",
+      "version": "0.1.6",
       "runtimes": [
         "claude"
       ],
@@ -43,7 +43,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.1.5",
+      "version": "0.1.6",
       "runtimes": [
         "claude"
       ],
@@ -65,7 +65,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.1.5",
+      "version": "0.1.6",
       "runtimes": [
         "claude"
       ],
@@ -87,7 +87,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.1.5",
+      "version": "0.1.6",
       "runtimes": [
         "claude"
       ],
@@ -109,7 +109,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.1.5",
+      "version": "0.1.6",
       "runtimes": [
         "claude"
       ],
@@ -131,7 +131,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.1.5",
+      "version": "0.1.6",
       "runtimes": [
         "claude"
       ],
@@ -153,7 +153,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.1.5",
+      "version": "0.1.6",
       "runtimes": [
         "claude"
       ],
@@ -175,7 +175,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.1.5",
+      "version": "0.1.6",
       "runtimes": [
         "claude"
       ],
@@ -183,6 +183,50 @@
         "claude": "native"
       },
       "digest": "sha256:33c66978032542da0ee5979f72efc61aff6af25d51a72b8e9dc798700475a533"
+    },
+    {
+      "name": "stark-terraform-review",
+      "type": "skill",
+      "bundle": "stark-analyze",
+      "description": "Multi-agent code review of Terraform / OpenTofu (HCL) — modules, root configs, .tf/.tfvars/.tftest.hcl — for security, correctness, state safety, module-contract quality, and testing gaps. Runs the review across one or more configurable LLMs (claude/codex/gemini), each as its own subagent, then merges + cross-validates findings. Use whenever the user wants to review, audit, or sanity-check Terraform/OpenTofu code, asks \"is this .tf safe/correct/idiomatic\", or points at a module/directory and wants findings. Review-only. For Terragrunt orchestration use stark-terragrunt-review.",
+      "tags": [
+        "review",
+        "red-team",
+        "quality",
+        "analyze"
+      ],
+      "category": "review",
+      "maturity": "beta",
+      "version": "0.1.6",
+      "runtimes": [
+        "claude"
+      ],
+      "support": {
+        "claude": "native"
+      },
+      "digest": "sha256:72f32bb49048b4950ea1978e16b2ab62e77acec98791bcc8110369f32ecd8245"
+    },
+    {
+      "name": "stark-terragrunt-review",
+      "type": "skill",
+      "bundle": "stark-analyze",
+      "description": "Multi-agent code review of Terragrunt orchestration — terragrunt.hcl, root.hcl, terragrunt.stack.hcl, units, includes, dependency/generate/remote_state blocks, the DRY values pattern, multi-account/multi-env live repos — for dependency correctness, state isolation, mock-output safety, and HCL pitfalls. Runs across one or more configurable LLMs (claude/codex/gemini), each as its own subagent, then merges + cross-validates findings. Use whenever the user wants to review, audit, or sanity-check a Terragrunt repo/catalog/live tree, or asks about dependency ordering / mock outputs / state keys / include hierarchy. Review-only; defers resource/module HCL to stark-terraform-review.",
+      "tags": [
+        "review",
+        "red-team",
+        "quality",
+        "analyze"
+      ],
+      "category": "review",
+      "maturity": "beta",
+      "version": "0.1.6",
+      "runtimes": [
+        "claude"
+      ],
+      "support": {
+        "claude": "native"
+      },
+      "digest": "sha256:fb8bcfea859c8769dd1b0eea48cca82fe5dc6c9e28e47beb653a9121b92cd808"
     },
     {
       "name": "stark-init-docs",
