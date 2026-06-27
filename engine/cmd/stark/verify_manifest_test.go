@@ -74,7 +74,7 @@ func TestVerifyManifestSignatureFailureExits3(t *testing.T) {
 // Round-trip: a manifest produced by `stark build --manifest` verifies clean against the same
 // committed tree (digest layer). Pins the build↔verify format contract the signing flow relies on.
 func TestVerifyManifestRoundTripFromBuild(t *testing.T) {
-	root := repoRoot(t)
+	root := tempRepoRoot(t)
 	mp := filepath.Join(t.TempDir(), "build-manifest.json")
 	if code := runBuild(filepath.Join(root, "catalog"), root, mp, "", false); code != 0 {
 		t.Fatalf("build --manifest want 0, got %d", code)

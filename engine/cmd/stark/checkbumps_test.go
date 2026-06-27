@@ -14,7 +14,7 @@ import (
 // On a clean repo (committed index matches the catalog with no un-bumped source
 // edits), check-bumps must exit 0.
 func TestCheckBumpsCleanRepoExitsZero(t *testing.T) {
-	root := repoRoot(t)
+	root := tempRepoRoot(t)
 	// ensure committed output is current so the previous index is coherent
 	if code := runBuild(filepath.Join(root, "catalog"), root, "", "", false); code != 0 {
 		t.Fatalf("pre-build want 0, got %d", code)
@@ -125,7 +125,7 @@ func TestCheckBumpsKeysByArtifactType(t *testing.T) {
 // unit tests pass repoRoot explicitly and never exercise it. Drive the command with a trailing-slash
 // arg against the real repo: a correctly-derived repoRoot yields a clean gate (exit 0 → nil).
 func TestCheckBumpsCmdDerivesRepoRootFromCatalogArg(t *testing.T) {
-	root := repoRoot(t)
+	root := tempRepoRoot(t)
 	if code := runBuild(filepath.Join(root, "catalog"), root, "", "", false); code != 0 {
 		t.Fatalf("pre-build want 0, got %d", code)
 	}

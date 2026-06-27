@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"testing"
@@ -10,7 +11,7 @@ import (
 )
 
 func TestBuildCheckExitCodes(t *testing.T) {
-	root := repoRoot(t)
+	root := tempRepoRoot(t)
 	// write a fresh build, then --check must be clean (exit 0)
 	if code := runBuild(filepath.Join(root, "catalog"), root, "", "", false); code != 0 {
 		t.Fatalf("build write want 0, got %d", code)
@@ -33,7 +34,7 @@ func TestBuildCheckExitCodes(t *testing.T) {
 // regression in the derivation — including the trailing-slash case — is caught. Against the real
 // repo, a correctly-derived repoRoot makes --check clean (exit 0 → RunE returns nil).
 func TestBuildCmdDerivesRepoRootFromCatalogArg(t *testing.T) {
-	root := repoRoot(t)
+	root := tempRepoRoot(t)
 	if code := runBuild(filepath.Join(root, "catalog"), root, "", "", false); code != 0 {
 		t.Fatalf("pre-build want 0, got %d", code)
 	}
@@ -54,7 +55,7 @@ func TestBuildCmdDerivesRepoRootFromCatalogArg(t *testing.T) {
 // sign-manifest.yml depends on it (and only runs post-merge). Pin it: a valid, deterministic,
 // signable manifest is produced.
 func TestBuildWritesManifest(t *testing.T) {
-	root := repoRoot(t)
+	root := tempRepoRoot(t)
 	mp := filepath.Join(t.TempDir(), "build-manifest.json")
 	if code := runBuild(filepath.Join(root, "catalog"), root, mp, "", false); code != 0 {
 		t.Fatalf("build --manifest want 0, got %d", code)
@@ -97,4 +98,48 @@ func repoRoot(t *testing.T) string {
 	}
 	t.Fatal("repo root not found")
 	return ""
+}
+
+// tempRepoRoot returns an isolated repo root in a t.TempDir, seeded with copies
+// of the real catalog/ + vendor/ (the only inputs runBuild reads). Tests that
+// run a *write* build (check=false) MUST use this, not repoRoot: build.Write
+// does os.RemoveAll(repoRoot/index.json) before rewriting it, so building into
+// the live working tree (a) mutates committed files mid-test and (b) races the
+// internal/index test reading the committed index.json — `go test ./...` runs
+// those packages in parallel, yielding intermittent "index.json: no such file".
+// Building into a private temp tree removes both hazards.
+func tempRepoRoot(t *testing.T) string {
+	t.Helper()
+	src := repoRoot(t)
+	dst := t.TempDir()
+	for _, sub := range []string{"catalog", "vendor"} {
+		if err := copyTree(filepath.Join(src, sub), filepath.Join(dst, sub)); err != nil {
+			t.Fatalf("seed temp repo root (%s): %v", sub, err)
+		}
+	}
+	return dst
+}
+
+func copyTree(src, dst string) error {
+	return filepath.WalkDir(src, func(p string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		rel, err := filepath.Rel(src, p)
+		if err != nil {
+			return err
+		}
+		target := filepath.Join(dst, rel)
+		if d.IsDir() {
+			return os.MkdirAll(target, 0o755)
+		}
+		b, err := os.ReadFile(p)
+		if err != nil {
+			return err
+		}
+		if err := os.MkdirAll(filepath.Dir(target), 0o755); err != nil {
+			return err
+		}
+		return os.WriteFile(target, b, 0o644)
+	})
 }
