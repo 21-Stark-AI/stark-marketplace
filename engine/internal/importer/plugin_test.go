@@ -26,7 +26,7 @@ func TestImportPluginCommandsAndMCP(t *testing.T) {
 		t.Fatalf("mcp payload wrong: %+v", gh.MCP)
 	}
 	// bundle metadata seeded from plugin.json
-	if res.Bundle.Owner.Name != "Evinced" || res.Bundle.Description == "" {
+	if res.Bundle.Owner.Name != "21 Stark AI" || res.Bundle.Description == "" {
 		t.Fatalf("bundle meta from plugin.json missing: %+v", res.Bundle)
 	}
 }

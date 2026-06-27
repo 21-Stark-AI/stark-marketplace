@@ -5,8 +5,8 @@ import "github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 const (
 	defaultVersion    = "0.1.0"
 	defaultMaturity   = model.MaturityBeta
-	defaultOwnerName  = "Evinced"
-	defaultOwnerEmail = "engineering@evinced.com"
+	defaultOwnerName  = "21 Stark AI"
+	defaultOwnerEmail = "engineering@21stark.com"
 )
 
 // defaultRuntimes is the conservative single-runtime default for imported artifacts.

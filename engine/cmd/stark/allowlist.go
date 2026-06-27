@@ -21,7 +21,7 @@ func renderAllowlistDoc() []byte {
 	b.WriteString("# MCP command + agent.tools allowlists\n\n")
 	b.WriteString("Auto-generated from `engine/internal/validate/allowlist.go` and `engine/internal/validate/toolsallow.go`. **Do not hand-edit** — run `stark allowlist > docs/allowlist.md` after touching either source file (CI fails closed otherwise).\n\n")
 
-	b.WriteString("Governance: adding an entry requires a CODEOWNERS-gated PR with maintainer + `@aryeh-evinced` approval. See [`SECURITY.md` §2](SECURITY.md).\n\n")
+	b.WriteString("Governance: adding an entry requires a CODEOWNERS-gated PR with maintainer + `@aryeh-stark` approval. See [`SECURITY.md` §2](SECURITY.md).\n\n")
 
 	b.WriteString("## MCP `command` allowlist\n\n")
 	b.WriteString("MCP `command` values must be a basename present here. Every entry widens the set of binaries an MCP server may spawn on a developer's machine.\n\n")

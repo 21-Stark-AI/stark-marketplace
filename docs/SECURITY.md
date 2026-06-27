@@ -12,7 +12,7 @@ Integrity rests on **three things together**, not on self-computed digests:
 1. **Protected, linear `main`** — no force-push, no admin bypass, no deletions.
 2. **A CI-signed build manifest** — produced on merge by `sign-manifest.yml` via
    GitHub OIDC → sigstore/cosign **keyless** (Fulcio cert + Rekor transparency log).
-   The signer identity is `repo:GetEvinced/stark-marketplace` on the `main` ref.
+   The signer identity is `repo:21-Stark-AI/stark-marketplace` on the `main` ref.
 3. **The commit SHA** — installs may pin it; the manifest binds digests to that SHA.
 
 `stark verify-manifest` checks the cosign signature, the signer identity/issuer, and
@@ -31,7 +31,7 @@ End-to-end client verify:
 ```bash
 # 1. Pull the signed bundle for a specific release (private repo → gh auth)
 gh release download v0.1.0 \
-  --repo GetEvinced/stark-marketplace \
+  --repo 21-Stark-AI/stark-marketplace \
   --pattern 'build-manifest.json*'
 
 # 2. Verify signature (cosign keyless) + content digests against the local checkout
@@ -49,13 +49,13 @@ MCP `command` values must be on the positive allowlist in
 `engine/internal/validate/toolsallow.go`. Every entry in `allowlist.go` widens the set of
 binaries an MCP server may spawn on a developer's machine, so additions are explicitly
 gated (spec §15.4): both files have a dedicated, last-match-wins **CODEOWNERS** entry
-(`@GetEvinced/stark-maintainers @aryeh-evinced`) on top of the `engine/**` rule. To add an
+(`@21-Stark-AI/stark-maintainers @aryeh-stark`) on top of the `engine/**` rule. To add an
 entry:
 
 - Open a PR touching only the allowlist file with a one-paragraph justification
   (what the binary/tool does, why it is needed, who maintains it).
-- Requires **maintainer approval** (`@GetEvinced/stark-maintainers`) **and**
-  `@aryeh-evinced` — CODEOWNERS marks both required on
+- Requires **maintainer approval** (`@21-Stark-AI/stark-maintainers`) **and**
+  `@aryeh-stark` — CODEOWNERS marks both required on
   `engine/internal/validate/allowlist.go` and `engine/internal/validate/toolsallow.go`.
 - Keep the list minimal; prefer pinned, well-known binaries (`node`, `uvx`) and
   first-party `stark-*-mcp` servers over ad-hoc tools.
@@ -78,8 +78,8 @@ merge on a single approval, which is insufficient for instruction-text/code-exec
 The count is repo-wide (GitHub has no per-path count), so every PR clears 2 approvals; the
 strictest path governs.
 
-Prerequisite: the org teams `@GetEvinced/stark-maintainers` and
-`@GetEvinced/stark-reviewers` must exist with write access for CODEOWNERS to bind.
+Prerequisite: the org teams `@21-Stark-AI/stark-maintainers` and
+`@21-Stark-AI/stark-reviewers` must exist with write access for CODEOWNERS to bind.
 
 ## 4. CI gates (required, non-bypassable)
 
@@ -107,7 +107,7 @@ artifact's canonical-source digest changed without a `version` bump),
 
 ```bash
 # Require the CI status checks + linear history + code-owner review + 2 approvals, no bypass.
-gh api -X PUT repos/GetEvinced/stark-marketplace/branches/main/protection \
+gh api -X PUT repos/21-Stark-AI/stark-marketplace/branches/main/protection \
   --input - <<'JSON'
 {
   "required_status_checks": {
@@ -133,7 +133,7 @@ gh api -X PUT repos/GetEvinced/stark-marketplace/branches/main/protection \
 JSON
 
 # Verify it took.
-gh api repos/GetEvinced/stark-marketplace/branches/main/protection | \
+gh api repos/21-Stark-AI/stark-marketplace/branches/main/protection | \
   jq '{linear: .required_linear_history.enabled, force: .allow_force_pushes.enabled,
        admins: .enforce_admins.enabled, checks: .required_status_checks.contexts,
        codeowners: .required_pull_request_reviews.require_code_owner_reviews,
@@ -152,5 +152,5 @@ Expected verify output: `linear: true`, `force: false`, `admins: true`,
 ## 6. Reporting
 
 Suspected catalog tampering or a leaked credential: open a private security advisory
-on the repo and ping `@aryeh-evinced`. Rotate any exposed secret immediately — values
+on the repo and ping `@aryeh-stark`. Rotate any exposed secret immediately — values
 never live in the catalog (only `secretRef` names), so rotation is in the secret store.

@@ -14,13 +14,13 @@ import (
 func TestManifestJSONShape(t *testing.T) {
 	m := Manifest{
 		Name:  "stark-marketplace",
-		Owner: Owner{Name: "Evinced", Email: "engineering@evinced.com"},
+		Owner: Owner{Name: "21 Stark AI", Email: "engineering@21stark.com"},
 		Plugins: []Plugin{{
 			Name:        "stark-gh",
 			Source:      Source{Path: "./dist/claude/stark-gh"},
 			Description: "GitHub workflow commands.",
 			Version:     "0.1.0",
-			Author:      Owner{Name: "Evinced", Email: "engineering@evinced.com"},
+			Author:      Owner{Name: "21 Stark AI", Email: "engineering@21stark.com"},
 			Category:    "productivity",
 			Tags:        []string{"github", "pr"},
 			Strict:      true,
@@ -84,12 +84,12 @@ func twoBundleCatalog() *model.Catalog {
 		{
 			Name: "stark-gh", Version: "0.1.0", Description: "GitHub workflow.",
 			Category: "productivity", Tags: []string{"github", "pr"},
-			Owner: model.Owner{Name: "GH Team", Email: "gh@evinced.com"},
+			Owner: model.Owner{Name: "GH Team", Email: "gh@21stark.com"},
 		},
 		{
 			Name: "alpha-bundle", Version: "1.2.0", Description: "Alpha tools.",
 			Category: "examples", Tags: []string{"demo"},
-			Owner: model.Owner{Name: "Alpha Team", Email: "alpha@evinced.com"},
+			Owner: model.Owner{Name: "Alpha Team", Email: "alpha@21stark.com"},
 		},
 	}}
 }
@@ -97,7 +97,7 @@ func twoBundleCatalog() *model.Catalog {
 func defaultOpts() Options {
 	return Options{
 		Name:     "stark-marketplace",
-		Owner:    Owner{Name: "Evinced Platform", Email: "platform@evinced.com"},
+		Owner:    Owner{Name: "21 Stark AI Platform", Email: "platform@21stark.com"},
 		DistRoot: "./dist/claude",
 	}
 }
@@ -124,7 +124,7 @@ func TestGenerateOneEntryPerBundleSorted(t *testing.T) {
 	if p.Author.Name != "GH Team" {
 		t.Fatalf("entry author must derive from the bundle owner, got %+v", p.Author)
 	}
-	if m.Owner.Name != "Evinced Platform" {
+	if m.Owner.Name != "21 Stark AI Platform" {
 		t.Fatalf("root owner must be the Options owner, got %+v", m.Owner)
 	}
 	if p.Author.Name == m.Owner.Name {

@@ -4,7 +4,7 @@ This runbook covers three rollback scenarios. Read [`SECURITY.md`](../SECURITY.m
 
 ## 1. Cloud Run revision rollback (web origin)
 
-The static origin at `marketplace.evinced-infra.group` is a Cloud Run service.
+The static origin at `marketplace.21stark.com` is a Cloud Run service.
 Bad deploys are rolled back by traffic-flipping to a known-good revision — the
 service itself is never deleted.
 
@@ -29,7 +29,7 @@ gcloud run services update-traffic stark-marketplace \
 - The `web-deploy.yml` workflow is idempotent and won't auto-deploy until the next push that touches `web/**`, `server/**`, `index.json`, `bundles/**`, or `Dockerfile`. Once the underlying issue is fixed, re-push will deploy a new revision; the rollback gets superseded automatically.
 
 **Verify the rollback:**
-- `curl -s -o /dev/null -w '%{http_code}\n' https://marketplace.evinced-infra.group/healthz` (expect `200`).
+- `curl -s -o /dev/null -w '%{http_code}\n' https://marketplace.21stark.com/healthz` (expect `200`).
 - The `stark-marketplace uptime` and `stark-marketplace 5xx from LB backend` alert policies (`ev-infra-group/infra/stark-marketplace.tf`) should clear within one alignment window (5 min).
 
 ## 2. Bad-bundle yank (catalog)
@@ -58,7 +58,7 @@ Cosign keyless signatures have **no native revocation**. The transparency log is
 
 The cosign signer identity is pinned exactly in `engine/internal/provenance/verify.go`:
 ```
-https://github.com/GetEvinced/stark-marketplace/.github/workflows/sign-manifest.yml@refs/heads/main
+https://github.com/21-Stark-AI/stark-marketplace/.github/workflows/sign-manifest.yml@refs/heads/main
 ```
 A signature from any other workflow, ref, or repo fails `stark verify-manifest`.
 
@@ -66,7 +66,7 @@ A signature from any other workflow, ref, or repo fails `stark verify-manifest`.
 
 - **Cloud Run / LB / 5xx**: GCP Monitoring alerts route to the `email` notification channel defined in `ev-infra-group/infra/monitoring.tf` (currently the email used to bootstrap the alerting). Alerts auto-close at 30 min.
 - **Catalog / signing pipeline failure**: CI failures on `sign-manifest.yml` block the release but don't page. Watch via `gh run watch` or set up a personal GitHub notification on workflow failures.
-- **For incident escalation**: notify `@aryeh-evinced` (CODEOWNERS-required on `engine/internal/validate/allowlist.go` and `engine/internal/provenance/`).
+- **For incident escalation**: notify `@aryeh-stark` (CODEOWNERS-required on `engine/internal/validate/allowlist.go` and `engine/internal/provenance/`).
 
 ## 5. Drills
 

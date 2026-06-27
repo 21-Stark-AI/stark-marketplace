@@ -8,8 +8,8 @@ tags:
   - quality
   - analyze
 owner:
-  name: Evinced
-  email: engineering@evinced.com
+  name: 21 Stark AI
+  email: engineering@21stark.com
 maturity: beta
 runtimes:
   - claude

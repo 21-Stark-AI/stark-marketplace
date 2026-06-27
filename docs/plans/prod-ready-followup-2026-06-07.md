@@ -1,15 +1,15 @@
 # /goal prompt — stark-marketplace prod-ready follow-up (2026-06-07)
 
 > Hosting update, 2026-06-23: the live web registry moved to
-> `https://marketplace.evinced-infra.group` in the `ev-infra-group` GCP project.
-> The old `infra-ai-platform` / `marketplace.evinced.rocks` / IAP references in
+> `https://marketplace.21stark.com` in the `ev-infra-group` GCP project.
+> The old `infra-ai-platform` / `marketplace.21stark.com` / IAP references in
 > this historical prompt are retained only where they describe old context.
 
 Single self-contained prompt to feed into `/goal`. Each numbered item is independent — work them in any order, commit in slices, push to `main` (worktree → ff-only → push), and re-verify CI green before moving on.
 
 ---
 
-You are continuing prod-readiness work on `GetEvinced/stark-marketplace` after v0.1.3 closed the signed-release + binary-distribution loop. The remaining items below are all small, mechanical, high-leverage. Ship them as separate commits on `main` (this repo is allowed direct-to-main per session convention), bumping `VERSION` + `CHANGELOG.md` at the end so a single new tag (`v0.1.4`) cuts a release covering all of them.
+You are continuing prod-readiness work on `21-Stark-AI/stark-marketplace` after v0.1.3 closed the signed-release + binary-distribution loop. The remaining items below are all small, mechanical, high-leverage. Ship them as separate commits on `main` (this repo is allowed direct-to-main per session convention), bumping `VERSION` + `CHANGELOG.md` at the end so a single new tag (`v0.1.4`) cuts a release covering all of them.
 
 The repo root for stark-marketplace is `/Users/aryeh/Code/Playground/stark-marketplace`. Work in the active worktree, fast-forward `main`, push. CI must pass for every push.
 
@@ -87,7 +87,7 @@ Generate `docs/allowlist.md` deterministically from `engine/internal/validate/al
 ## 7. Surfaced cleanup
 
 - Annotate `v0.1.0`, `v0.1.1`, `v0.1.2` releases with a "superseded by v0.1.3 — do not use" note. Don't delete the tags or releases (destructive — they're referenced by the manifests already cosign-signed and any external consumer could pin them).
-- Trigger a manual `web-deploy.yml` run so the live SPA at `marketplace.evinced-infra.group` picks up the `ProvenanceBadge` shipped in 0.1.0. Verify in the browser that the badge renders.
+- Trigger a manual `web-deploy.yml` run so the live SPA at `marketplace.21stark.com` picks up the `ProvenanceBadge` shipped in 0.1.0. Verify in the browser that the badge renders.
 - Verify in GCP Monitoring that the new `stark-marketplace uptime` and `stark-marketplace 5xx from LB backend` policies are green / active. If the uptime probe is flapping, debug — the `STATUS_CLASS_3XX` acceptance may need adjusting for IAP's exact response.
 
 ## Wrap-up

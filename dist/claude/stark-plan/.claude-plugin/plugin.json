@@ -1,7 +1,7 @@
 {
   "author": {
-    "email": "engineering@evinced.com",
-    "name": "Evinced"
+    "email": "engineering@21stark.com",
+    "name": "21 Stark AI"
   },
   "description": "Turn a design doc into a phased implementation plan, then decompose it into phased GitHub issues with story points and risk labels. Maps to spec-kit's plan + tasks phases.",
   "keywords": [

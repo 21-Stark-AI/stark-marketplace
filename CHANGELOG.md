@@ -101,17 +101,17 @@ First tagged release. Spec slices 1–8 complete (catalog → engine → web →
 - Go engine (`engine/cmd/stark`) with `validate`, `build`, `check-bumps`, `lint`, `install`, `import`, `verify-manifest`, `doctor`, `info`, `search`, `version`.
 - Per-runtime adapters for Claude Code, Codex, Gemini under `engine/internal/adapter/`.
 - Web registry (`web/`) — strict-TS Vite SPA over signed `index.json` + `bundles/*.json`.
-- IAP-gated Cloud Run static origin at `marketplace.evinced.rocks` (`server/`, `web-deploy.yml`).
+- IAP-gated Cloud Run static origin at `marketplace.21stark.com` (`server/`, `web-deploy.yml`).
 - Native Claude Code marketplace via repo-root `.claude-plugin/marketplace.json`.
 - CI gates: schema validate, drift `build --check`, version-bump immutability, gitleaks (fail-closed); body lint (advisory).
 - Cosign-keyless signed build manifest via GitHub OIDC → Fulcio + Rekor.
 - Top-level docs: `CLAUDE.md`, `AGENTS.md`, `README.md`, `CONTRIBUTING.md`, `docs/SECURITY.md`, `docs/native-install-loop.md`, `docs/web-hosting.md`.
 
-[Unreleased]: https://github.com/GetEvinced/stark-marketplace/compare/v0.1.6...HEAD
-[0.1.6]: https://github.com/GetEvinced/stark-marketplace/releases/tag/v0.1.6
-[0.1.5]: https://github.com/GetEvinced/stark-marketplace/releases/tag/v0.1.5
-[0.1.4]: https://github.com/GetEvinced/stark-marketplace/releases/tag/v0.1.4
-[0.1.3]: https://github.com/GetEvinced/stark-marketplace/releases/tag/v0.1.3
-[0.1.2]: https://github.com/GetEvinced/stark-marketplace/releases/tag/v0.1.2
-[0.1.1]: https://github.com/GetEvinced/stark-marketplace/releases/tag/v0.1.1
-[0.1.0]: https://github.com/GetEvinced/stark-marketplace/releases/tag/v0.1.0
+[Unreleased]: https://github.com/21-Stark-AI/stark-marketplace/compare/v0.1.6...HEAD
+[0.1.6]: https://github.com/21-Stark-AI/stark-marketplace/releases/tag/v0.1.6
+[0.1.5]: https://github.com/21-Stark-AI/stark-marketplace/releases/tag/v0.1.5
+[0.1.4]: https://github.com/21-Stark-AI/stark-marketplace/releases/tag/v0.1.4
+[0.1.3]: https://github.com/21-Stark-AI/stark-marketplace/releases/tag/v0.1.3
+[0.1.2]: https://github.com/21-Stark-AI/stark-marketplace/releases/tag/v0.1.2
+[0.1.1]: https://github.com/21-Stark-AI/stark-marketplace/releases/tag/v0.1.1
+[0.1.0]: https://github.com/21-Stark-AI/stark-marketplace/releases/tag/v0.1.0

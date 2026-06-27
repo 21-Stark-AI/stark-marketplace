@@ -2,8 +2,8 @@
 //
 // It serves the Vite SPA shell plus the engine-generated index.json and
 // bundles/*.json from WEBROOT. It is sized to run on Cloud Run behind the
-// IAP-gated platform load balancer (marketplace.evinced.rocks): IAP terminates
-// SSO at the edge, so this process does no auth — it only serves files.
+// platform load balancer (marketplace.21stark.com): the LB terminates TLS at the
+// edge, so this process does no auth — it only serves files.
 //
 // The SPA uses HashRouter with relative data fetches (./index.json,
 // ./bundles/<name>.json), so the document is always served at "/". There is no
@@ -15,8 +15,9 @@
 // a new deploy is picked up immediately.
 //
 // Every response carries a baseline of security headers (HSTS, CSP, frame
-// blockers, nosniff, Referrer-Policy, Permissions-Policy). IAP gates identity
-// at the edge; these headers are the app-layer defense the proxy doesn't add.
+// blockers, nosniff, Referrer-Policy, Permissions-Policy). The platform LB
+// fronts identity at the edge; these headers are the app-layer defense the
+// proxy doesn't add.
 package main
 
 import (
@@ -75,7 +76,7 @@ const contentSecurityPolicy = "default-src 'self'; " +
 // state.
 func securityHeaders(h http.Header) {
 	// HSTS: 2 years, include subdomains, preload-eligible. The Cloud Run +
-	// platform LB front this origin behind a managed *.evinced.rocks cert, so
+	// platform LB front this origin behind a managed *.21stark.com cert, so
 	// every real request is TLS — clients can safely cache HSTS.
 	h.Set("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload")
 	h.Set("Content-Security-Policy", contentSecurityPolicy)

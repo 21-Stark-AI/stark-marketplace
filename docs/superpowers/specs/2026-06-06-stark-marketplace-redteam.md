@@ -1,7 +1,7 @@
 # stark-marketplace spec — red-team findings & resolutions
 
 > Historical note, 2026-06-23: current hosting is public at
-> `https://marketplace.evinced-infra.group` in `ev-infra-group` without IAP.
+> `https://marketplace.21stark.com` in `ev-infra-group` without IAP.
 > See `docs/web-hosting.md` for live hosting. This file preserves the original
 > red-team context.
 

@@ -1,6 +1,6 @@
 # stark-marketplace — Web registry hosting
 
-> **Live.** Host = `marketplace.evinced-infra.group`, served on Cloud Run behind
+> **Live.** Host = `marketplace.21stark.com`, served on Cloud Run behind
 > the `ev-infra-group` shared platform LB. Infra primitives
 > (SAs/IAM/GAR/NEG/host-rule/DNS) live in Terraform
 > (`ev-infra-group/infra/stark-marketplace.tf`) — no ad-hoc `gcloud`. The Cloud
@@ -12,7 +12,7 @@
 - **Origin:** the atomic content-hashed `web/dist` bundle (SPA shell + hashed assets +
   `index.json` + `bundles/*.json`), produced by `.github/workflows/web-deploy.yml`.
 - **Public edge:** the shared external HTTPS LB serves
-  `marketplace.evinced-infra.group`; there is no IAP block on the marketplace
+  `marketplace.21stark.com`; there is no IAP block on the marketplace
   backend.
 - **Origin posture:** Cloud Run deploys with
   `--ingress internal-and-cloud-load-balancing`, so the public `*.run.app` URL is
@@ -50,8 +50,8 @@ the SPA shows the degraded view rather than blank-failing (`src/data/schema.ts`,
 ## Provisioned implementation
 
 ```
-browser → marketplace.evinced-infra.group
-        → platform HTTPS LB (host rule, *.evinced-infra.group wildcard cert)
+browser → marketplace.21stark.com
+        → platform HTTPS LB (host rule, *.21stark.com wildcard cert)
         → serverless NEG → Cloud Run `stark-marketplace` (server/)
 ```
 
@@ -85,7 +85,7 @@ runtime SA are fixed in the workflow `env:` block.
 2. Repo variables were set from the Terraform outputs.
 3. This repo's `web-deploy` workflow deployed Cloud Run revision `stark-marketplace-00001-7gk`.
 4. `marketplace_lb_enabled=true` was applied in `ev-infra-group`, wiring DNS/LB/alerts.
-5. `https://marketplace.evinced-infra.group/` returns `HTTP/2 200`; `/healthz` returns `ok`.
+5. `https://marketplace.21stark.com/` returns `HTTP/2 200`; `/healthz` returns `ok`.
 
 Future deploys are push-to-main through `.github/workflows/web-deploy.yml`; no
 manual `gcloud run deploy` is needed for normal updates.

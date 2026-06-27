@@ -4,7 +4,7 @@
 
 **Goal:** Generate `dist/claude/.claude-plugin/marketplace.json` in the **native** Claude Code marketplace format — one `plugins[]` entry per bundle, root `owner`, entry-level `author`, correct `source` — wire it into `stark build` so it is produced and drift-checked alongside `dist/claude/` and `index.json`, and document + verify the end-to-end native install loop (`/plugin marketplace add` → `/plugin install <bundle>`).
 
-**Architecture:** A pure Go package `engine/internal/marketplace` projects the loaded `model.Catalog` (slice 1) and the lean index (slice 2) into the CC marketplace manifest. Generation is a deterministic projection: one entry per bundle, `source` pointing at the bundle's committed `dist/claude/<bundle>/` tree (relative path within the repo, so `/plugin marketplace add GetEvinced/stark-marketplace` resolves locally). `stark build` calls the generator after emitting the Claude dist tree + index, writes the manifest into the committed tree, and `stark build --check` fails on drift. A schema-shape test asserts the manifest matches the real CC marketplace contract (root `owner`, entry `author`, required `source`/`version`).
+**Architecture:** A pure Go package `engine/internal/marketplace` projects the loaded `model.Catalog` (slice 1) and the lean index (slice 2) into the CC marketplace manifest. Generation is a deterministic projection: one entry per bundle, `source` pointing at the bundle's committed `dist/claude/<bundle>/` tree (relative path within the repo, so `/plugin marketplace add 21-Stark-AI/stark-marketplace` resolves locally). `stark build` calls the generator after emitting the Claude dist tree + index, writes the manifest into the committed tree, and `stark build --check` fails on drift. A schema-shape test asserts the manifest matches the real CC marketplace contract (root `owner`, entry `author`, required `source`/`version`).
 
 **Tech Stack:** Go 1.23 (pinned `toolchain`), standard `encoding/json` (ordered struct encoding → deterministic), `gopkg.in/yaml.v3` (already a dep), standard `testing`.
 
@@ -37,14 +37,14 @@ The native CC marketplace contract this slice targets (corrected per spec §8 / 
 ```jsonc
 {
   "name": "stark-marketplace",
-  "owner": { "name": "Evinced", "email": "engineering@evinced.com" },   // ROOT uses owner
+  "owner": { "name": "21 Stark AI", "email": "engineering@21stark.com" },   // ROOT uses owner
   "plugins": [
     {
       "name": "stark-gh",
       "source": "./dist/claude/stark-gh",   // string form OR object {github|url|git-subdir}
       "description": "GitHub workflow commands + MCP for stark.",
       "version": "0.1.0",
-      "author": { "name": "Evinced", "email": "engineering@evinced.com" }, // ENTRY uses author
+      "author": { "name": "21 Stark AI", "email": "engineering@21stark.com" }, // ENTRY uses author
       "category": "productivity",
       "tags": ["github", "pr", "workflow"],
       "strict": true
@@ -78,13 +78,13 @@ import (
 func TestManifestJSONShape(t *testing.T) {
 	m := Manifest{
 		Name:  "stark-marketplace",
-		Owner: Owner{Name: "Evinced", Email: "engineering@evinced.com"},
+		Owner: Owner{Name: "21 Stark AI", Email: "engineering@21stark.com"},
 		Plugins: []Plugin{{
 			Name:        "stark-gh",
 			Source:      Source{Path: "./dist/claude/stark-gh"},
 			Description: "GitHub workflow commands.",
 			Version:     "0.1.0",
-			Author:      Owner{Name: "Evinced", Email: "engineering@evinced.com"},
+			Author:      Owner{Name: "21 Stark AI", Email: "engineering@21stark.com"},
 			Category:    "productivity",
 			Tags:        []string{"github", "pr"},
 			Strict:      true,
@@ -120,13 +120,13 @@ func TestSourceStringForm(t *testing.T) {
 }
 
 func TestSourceObjectForm(t *testing.T) {
-	b, err := json.Marshal(Source{GitHub: "GetEvinced/stark-marketplace", GitSubdir: "dist/claude/stark-gh"})
+	b, err := json.Marshal(Source{GitHub: "21-Stark-AI/stark-marketplace", GitSubdir: "dist/claude/stark-gh"})
 	if err != nil {
 		t.Fatal(err)
 	}
 	s := string(b)
-	if !strings.Contains(s, `"source":"GetEvinced/stark-marketplace"`) &&
-		!strings.Contains(s, `"github":"GetEvinced/stark-marketplace"`) {
+	if !strings.Contains(s, `"source":"21-Stark-AI/stark-marketplace"`) &&
+		!strings.Contains(s, `"github":"21-Stark-AI/stark-marketplace"`) {
 		t.Fatalf("object source must carry github field: %s", s)
 	}
 }
@@ -229,7 +229,7 @@ Append to `engine/internal/marketplace/marketplace_test.go`:
 ```go
 import (
 	// add to the existing import block:
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 )
 
 func twoBundleCatalog() *model.Catalog {
@@ -238,12 +238,12 @@ func twoBundleCatalog() *model.Catalog {
 		{
 			Name: "stark-gh", Version: "0.1.0", Description: "GitHub workflow.",
 			Category: "productivity", Tags: []string{"github", "pr"},
-			Owner: model.Owner{Name: "Evinced", Email: "engineering@evinced.com"},
+			Owner: model.Owner{Name: "21 Stark AI", Email: "engineering@21stark.com"},
 		},
 		{
 			Name: "alpha-bundle", Version: "1.2.0", Description: "Alpha tools.",
 			Category: "examples", Tags: []string{"demo"},
-			Owner: model.Owner{Name: "Evinced", Email: "engineering@evinced.com"},
+			Owner: model.Owner{Name: "21 Stark AI", Email: "engineering@21stark.com"},
 		},
 	}}
 }
@@ -251,7 +251,7 @@ func twoBundleCatalog() *model.Catalog {
 func TestGenerateOneEntryPerBundleSorted(t *testing.T) {
 	m := Generate(twoBundleCatalog(), Options{
 		Name:     "stark-marketplace",
-		Owner:    Owner{Name: "Evinced", Email: "engineering@evinced.com"},
+		Owner:    Owner{Name: "21 Stark AI", Email: "engineering@21stark.com"},
 		DistRoot: "./dist/claude",
 	})
 	if len(m.Plugins) != 2 {
@@ -265,13 +265,13 @@ func TestGenerateOneEntryPerBundleSorted(t *testing.T) {
 	if p.Source.Path != "./dist/claude/stark-gh" {
 		t.Fatalf("source path = %q", p.Source.Path)
 	}
-	if p.Author.Name != "Evinced" || p.Version != "0.1.0" || p.Category != "productivity" {
+	if p.Author.Name != "21 Stark AI" || p.Version != "0.1.0" || p.Category != "productivity" {
 		t.Fatalf("entry fields wrong: %+v", p)
 	}
 	if !p.Strict {
 		t.Fatal("strict must default to true")
 	}
-	if m.Owner.Name != "Evinced" {
+	if m.Owner.Name != "21 Stark AI" {
 		t.Fatalf("root owner = %+v", m.Owner)
 	}
 }
@@ -291,7 +291,7 @@ import (
 	"path"
 	"sort"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 )
 
 // Options configures manifest generation. Pure inputs only — no clock/env.
@@ -372,7 +372,7 @@ import (
 func TestGoldenMarshal(t *testing.T) {
 	m := Generate(twoBundleCatalog(), Options{
 		Name:     "stark-marketplace",
-		Owner:    Owner{Name: "Evinced", Email: "engineering@evinced.com"},
+		Owner:    Owner{Name: "21 Stark AI", Email: "engineering@21stark.com"},
 		DistRoot: "./dist/claude",
 	})
 	got, err := Marshal(m)
@@ -435,8 +435,8 @@ Expected (byte-exact — root `owner`, entries sorted `alpha-bundle` then `stark
 {
   "name": "stark-marketplace",
   "owner": {
-    "name": "Evinced",
-    "email": "engineering@evinced.com"
+    "name": "21 Stark AI",
+    "email": "engineering@21stark.com"
   },
   "plugins": [
     {
@@ -445,8 +445,8 @@ Expected (byte-exact — root `owner`, entries sorted `alpha-bundle` then `stark
       "description": "Alpha tools.",
       "version": "1.2.0",
       "author": {
-        "name": "Evinced",
-        "email": "engineering@evinced.com"
+        "name": "21 Stark AI",
+        "email": "engineering@21stark.com"
       },
       "category": "examples",
       "tags": [
@@ -460,8 +460,8 @@ Expected (byte-exact — root `owner`, entries sorted `alpha-bundle` then `stark
       "description": "GitHub workflow.",
       "version": "0.1.0",
       "author": {
-        "name": "Evinced",
-        "email": "engineering@evinced.com"
+        "name": "21 Stark AI",
+        "email": "engineering@21stark.com"
       },
       "category": "productivity",
       "tags": [
@@ -497,7 +497,7 @@ Append to `engine/internal/marketplace/marketplace_test.go`:
 func TestSchemaShapeContract(t *testing.T) {
 	m := Generate(twoBundleCatalog(), Options{
 		Name:     "stark-marketplace",
-		Owner:    Owner{Name: "Evinced", Email: "engineering@evinced.com"},
+		Owner:    Owner{Name: "21 Stark AI", Email: "engineering@21stark.com"},
 		DistRoot: "./dist/claude",
 	})
 	raw, err := Marshal(m)
@@ -596,7 +596,7 @@ func TestWriteManifestRoundTrips(t *testing.T) {
 	dir := t.TempDir()
 	m := Generate(twoBundleCatalog(), Options{
 		Name:     "stark-marketplace",
-		Owner:    Owner{Name: "Evinced", Email: "engineering@evinced.com"},
+		Owner:    Owner{Name: "21 Stark AI", Email: "engineering@21stark.com"},
 		DistRoot: "./dist/claude",
 	})
 	if err := WriteManifest(dir, m); err != nil {
@@ -719,8 +719,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/load"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/marketplace"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/load"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/marketplace"
 )
 
 // buildMarketplace is the helper this task adds; it must produce the manifest
@@ -781,15 +781,15 @@ import (
 	// extend the existing import block:
 	"bytes"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/marketplace"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/marketplace"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 )
 
 // marketplaceOptions are the fixed root attributes for this repo's manifest.
 func marketplaceOptions() marketplace.Options {
 	return marketplace.Options{
 		Name:     "stark-marketplace",
-		Owner:    marketplace.Owner{Name: "Evinced", Email: "engineering@evinced.com"},
+		Owner:    marketplace.Owner{Name: "21 Stark AI", Email: "engineering@21stark.com"},
 		DistRoot: "./dist/claude",
 	}
 }
@@ -901,9 +901,9 @@ committed `dist/claude/` tree IS the marketplace; CC reads
 
 ## End-to-end loop
 
-1. Add the marketplace (private repo; you must have Evinced repo access):
+1. Add the marketplace (private repo; you must have 21 Stark AI repo access):
    ```
-   /plugin marketplace add GetEvinced/stark-marketplace
+   /plugin marketplace add 21-Stark-AI/stark-marketplace
    ```
    CC resolves `dist/claude/.claude-plugin/marketplace.json` and lists every
    bundle as an installable plugin.
@@ -917,7 +917,7 @@ committed `dist/claude/` tree IS the marketplace; CC reads
 
 3. Update after a marketplace change:
    ```
-   /plugin marketplace update GetEvinced/stark-marketplace
+   /plugin marketplace update 21-Stark-AI/stark-marketplace
    /plugin install stark-gh
    ```
 

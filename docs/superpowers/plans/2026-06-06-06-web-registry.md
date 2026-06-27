@@ -1,13 +1,13 @@
 # stark-marketplace — Slice 6: Web registry (SSO-gated static SPA) Implementation Plan
 
 > Historical note, 2026-06-23: current hosting is public at
-> `https://marketplace.evinced-infra.group` in `ev-infra-group` without IAP.
+> `https://marketplace.21stark.com` in `ev-infra-group` without IAP.
 > See `docs/web-hosting.md` for live hosting. This plan preserves the original
 > SSO-gated implementation context.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Ship a strict-TypeScript + Vite static SPA under `web/` that reads the **lean `index.json`** for faceted search and per-bundle **`bundles/<name>.json`** for detail-on-demand, renders bundle/artifact detail with per-surface install instructions + native/emulated badges + dependency graph + GitHub deep links, **degrades gracefully** on `schemaVersion`/`version` skew, and deploys as one atomic content-hashed unit behind an Evinced-standard SSO identity-aware proxy.
+**Goal:** Ship a strict-TypeScript + Vite static SPA under `web/` that reads the **lean `index.json`** for faceted search and per-bundle **`bundles/<name>.json`** for detail-on-demand, renders bundle/artifact detail with per-surface install instructions + native/emulated badges + dependency graph + GitHub deep links, **degrades gracefully** on `schemaVersion`/`version` skew, and deploys as one atomic content-hashed unit behind an 21 Stark AI-standard SSO identity-aware proxy.
 
 **Architecture:** No app server for data — **the index IS the API**. The SPA fetches `index.json` once at boot (cache-busted by the SPA build hash), builds an in-memory faceted search over the lean records, and lazy-fetches `bundles/<name>.json` only when a detail route is opened. A thin `registry` data layer owns schema-version negotiation and treats every JSON read as untrusted/forward-compatible (unknown fields ignored; a `schemaVersion` outside the supported range routes to a graceful-degrade view, never a blank screen). React + React Router render search and detail; pure functions (search filter, install-snippet generation, dep-graph layout) are unit-tested with vitest; a jsdom smoke test boots the app against a fixture index. CI builds SPA + index together and an infra note documents the gated-static hosting pattern (no ad-hoc provisioning).
 
@@ -72,7 +72,7 @@ Every step runs from `web/` unless noted. The repo root is the parent of `web/`.
 
 ```json
 {
-  "name": "@getevinced/stark-marketplace-web",
+  "name": "@21stark-ai/stark-marketplace-web",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -375,9 +375,9 @@ Expected: FAIL — cannot resolve `./registry` / fixtures.
     "category": "code-review",
     "tags": ["pr", "review"],
     "maturity": "stable",
-    "owner": { "name": "Evinced", "email": "engineering@evinced.com" },
+    "owner": { "name": "21 Stark AI", "email": "engineering@21stark.com" },
     "runtimes": ["claude", "codex", "gemini"],
-    "homepage": "https://github.com/GetEvinced/stark-marketplace/tree/main/catalog/stark-review"
+    "homepage": "https://github.com/21-Stark-AI/stark-marketplace/tree/main/catalog/stark-review"
   },
   "artifacts": [
     {
@@ -756,7 +756,7 @@ import {
 } from '../types/registry';
 import { negotiate, type Negotiation } from './schema';
 
-const GITHUB_SOURCE = 'https://github.com/GetEvinced/stark-marketplace';
+const GITHUB_SOURCE = 'https://github.com/21-Stark-AI/stark-marketplace';
 
 export type DegradeReason =
   | Exclude<Extract<Negotiation, { ok: false }>['reason'], never>
@@ -1001,7 +1001,7 @@ describe('installSnippets', () => {
   it('claude native uses /plugin marketplace add + /plugin install', () => {
     const s = installSnippets({ bundle: 'stark-review', runtime: 'claude', support: 'native' });
     expect(s.surface).toBe('claude-code');
-    expect(s.commands.join('\n')).toContain('/plugin marketplace add GetEvinced/stark-marketplace');
+    expect(s.commands.join('\n')).toContain('/plugin marketplace add 21-Stark-AI/stark-marketplace');
     expect(s.commands.join('\n')).toContain('/plugin install stark-review');
   });
 
@@ -1053,7 +1053,7 @@ export interface InstallSnippet {
   readonly note?: string;
 }
 
-const MARKETPLACE = 'GetEvinced/stark-marketplace';
+const MARKETPLACE = '21-Stark-AI/stark-marketplace';
 
 const target = (t: InstallTarget): string =>
   t.artifact ? `${t.bundle}/${t.artifact}` : t.bundle;
@@ -1413,7 +1413,7 @@ describe('BundleDetailPage', () => {
     expect(screen.getByText('skills/stark-review/SKILL.md')).toBeInTheDocument();
     // deep link to GitHub source for an artifact
     const link = screen.getByRole('link', { name: /catalog\/stark-review\/skills\/stark-review.md/ });
-    expect(link).toHaveAttribute('href', expect.stringContaining('github.com/GetEvinced/stark-marketplace'));
+    expect(link).toHaveAttribute('href', expect.stringContaining('github.com/21-Stark-AI/stark-marketplace'));
   });
 
   it('shows the degraded view on a fetch failure', async () => {
@@ -1513,7 +1513,7 @@ function OutputPaths({ artifact }: { readonly artifact: DetailArtifact }): JSX.E
   );
 }
 
-const SOURCE_TREE = 'https://github.com/GetEvinced/stark-marketplace/tree/main/';
+const SOURCE_TREE = 'https://github.com/21-Stark-AI/stark-marketplace/tree/main/';
 
 export function BundleDetailPage(): JSX.Element {
   const { name } = useParams<{ name: string }>();
@@ -1888,7 +1888,7 @@ jobs:
           name: web-dist
           path: web/dist
           if-no-files-found: error
-      # Publish step is environment-specific and runs against the Evinced-standard
+      # Publish step is environment-specific and runs against the 21 Stark AI-standard
       # gated-static origin behind the identity-aware proxy. It is intentionally a
       # single atomic sync of web/dist (assets + index.html + index.json + bundles/)
       # — long-cache the hashed assets, no-cache index.html + index.json.
@@ -1908,7 +1908,7 @@ jobs:
 # stark-marketplace — Web registry hosting (gated-static behind SSO)
 
 > **No ad-hoc provisioning.** This documents the target pattern. Provisioning lands
-> through the standard Evinced IaC path (Terraform), not from this repo's CI.
+> through the standard 21 Stark AI IaC path (Terraform), not from this repo's CI.
 
 ## Pattern: identity-aware proxy in front of static content
 
@@ -1917,7 +1917,7 @@ jobs:
 - **Gate:** an **identity-aware proxy enforcing Google Workspace SSO** sits in front of
   the origin. Options that satisfy the spec:
   - **GCP Cloud Run + IAP** (Cloud Run serves the static bundle via a tiny static
-    file server image; IAP enforces the Evinced Workspace org). Recommended.
+    file server image; IAP enforces the 21 Stark AI Workspace org). Recommended.
   - Equivalent: GCLB + IAP in front of a GCS backend bucket.
 - **Critical invariant (spec §10):** the proxy gates **ALL data files**, not just HTML —
   `index.json`, every `bundles/<name>.json`, and any served Claude tree are behind the
@@ -1978,7 +1978,7 @@ ignored (forward compatible); `schemaVersion` skew degrades gracefully (`src/dat
 
 `.github/workflows/web-deploy.yml` builds the SPA, stages `index.json` + `bundles/` into
 `dist/`, and uploads the whole thing as one atomic content-hashed unit. The publish step is
-gated on the Evinced-standard hosting origin (`../docs/web-hosting.md`).
+gated on the 21 Stark AI-standard hosting origin (`../docs/web-hosting.md`).
 ```
 
 - [ ] **Step 4: Validate the workflow YAML + docs build cleanly**

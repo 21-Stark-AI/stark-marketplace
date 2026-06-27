@@ -3,7 +3,7 @@ version: 0.1.3
 description: GitHub workflow commands + MCP for stark.
 category: productivity
 tags: [github, pr, workflow]
-owner: { name: Evinced, email: engineering@evinced.com }
+owner: { name: 21 Stark AI, email: engineering@21stark.com }
 maturity: beta
 runtimes: [claude, codex, gemini]
 homepage: https://github.com/21-Stark-AI/stark-marketplace/tree/main/catalog/stark-gh

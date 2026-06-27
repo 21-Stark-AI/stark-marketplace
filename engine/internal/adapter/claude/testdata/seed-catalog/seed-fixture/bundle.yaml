@@ -7,8 +7,8 @@ tags:
   - golden
   - render
 owner:
-  name: Evinced
-  email: engineering@evinced.com
+  name: 21 Stark AI
+  email: engineering@21stark.com
 maturity: stable
 runtimes:
   - claude

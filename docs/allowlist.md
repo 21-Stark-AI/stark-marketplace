@@ -2,7 +2,7 @@
 
 Auto-generated from `engine/internal/validate/allowlist.go` and `engine/internal/validate/toolsallow.go`. **Do not hand-edit** — run `stark allowlist > docs/allowlist.md` after touching either source file (CI fails closed otherwise).
 
-Governance: adding an entry requires a CODEOWNERS-gated PR with maintainer + `@aryeh-evinced` approval. See [`SECURITY.md` §2](SECURITY.md).
+Governance: adding an entry requires a CODEOWNERS-gated PR with maintainer + `@aryeh-stark` approval. See [`SECURITY.md` §2](SECURITY.md).
 
 ## MCP `command` allowlist
 

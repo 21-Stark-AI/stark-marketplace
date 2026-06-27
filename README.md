@@ -1,6 +1,6 @@
 # stark-marketplace
 
-Canonical, multi-runtime marketplace for **stark** bundles. One source of truth (`catalog/`) renders into per-runtime trees for **Claude Code**, **Codex**, and **Gemini CLI**, plus a signed web registry served at [marketplace.evinced-infra.group](https://marketplace.evinced-infra.group).
+Canonical, multi-runtime marketplace for **stark** bundles. One source of truth (`catalog/`) renders into per-runtime trees for **Claude Code**, **Codex**, and **Gemini CLI**, plus a signed web registry served at [marketplace.21stark.com](https://marketplace.21stark.com).
 
 The repo is also a **native Claude Code marketplace**: `.claude-plugin/marketplace.json` at the repo root is the manifest CC reads directly — no custom client.
 
@@ -84,7 +84,7 @@ This distributes code that runs inside developer agents and, for `mcp/` entries,
 
 `stark verify-manifest` checks all three. Self-computed digests alone are only an anti-drift signal.
 
-MCP `command` values and `agent.tools` must be on positive allowlists (`engine/internal/validate/{allowlist,toolsallow}.go`). Adding an entry requires a CODEOWNERS-gated PR with maintainer + `@aryeh-evinced` approval.
+MCP `command` values and `agent.tools` must be on positive allowlists (`engine/internal/validate/{allowlist,toolsallow}.go`). Adding an entry requires a CODEOWNERS-gated PR with maintainer + `@aryeh-stark` approval.
 
 Full threat model and controls: [`docs/SECURITY.md`](docs/SECURITY.md).
 
@@ -95,9 +95,9 @@ Full threat model and controls: [`docs/SECURITY.md`](docs/SECURITY.md).
 - [`CONTRIBUTING.md`](CONTRIBUTING.md) — how to add or change a bundle/artifact.
 - [`docs/native-install-loop.md`](docs/native-install-loop.md) — end-to-end install via CC native marketplace.
 - [`docs/SECURITY.md`](docs/SECURITY.md) — trust model, signing, allowlist process, branch protection.
-- [`docs/web-hosting.md`](docs/web-hosting.md) — Cloud Run + LB wiring for `marketplace.evinced-infra.group`.
+- [`docs/web-hosting.md`](docs/web-hosting.md) — Cloud Run + LB wiring for `marketplace.21stark.com`.
 - [`web/README.md`](web/README.md) — SPA-specific dev notes.
 
 ## License & ownership
 
-Internal Evinced project. See [`CODEOWNERS`](CODEOWNERS) for review gates.
+Internal 21 Stark AI project. See [`CODEOWNERS`](CODEOWNERS) for review gates.

@@ -1,12 +1,12 @@
 # stark-marketplace — Design Spec (v2, post red-team)
 
 > Historical note, 2026-06-23: current hosting is public at
-> `https://marketplace.evinced-infra.group` in `ev-infra-group` without IAP.
+> `https://marketplace.21stark.com` in `ev-infra-group` without IAP.
 > See `docs/web-hosting.md` for live hosting. This spec preserves the original
 > SSO-gated design context.
 
 **Status:** Draft (autopilot) · **Date:** 2026-06-06 · **Owner:** Aryeh Kiovetsky
-**Audience:** Evinced engineering (internal)
+**Audience:** 21 Stark AI engineering (internal)
 **Changelog:** v2 incorporates the four-lens red-team
 (`2026-06-06-stark-marketplace-redteam.md`).
 
@@ -14,9 +14,9 @@
 
 ## 1. Summary
 
-`stark-marketplace` is an **Evinced-internal marketplace** for sharing reusable agent
+`stark-marketplace` is an **21 Stark AI-internal marketplace** for sharing reusable agent
 artifacts — **skills, prompts, slash commands, agents, and MCP servers** — across the
-three agent runtimes Evinced uses: **Claude Code, Codex (OpenAI), and Gemini CLI**.
+three agent runtimes 21 Stark AI uses: **Claude Code, Codex (OpenAI), and Gemini CLI**.
 
 Each artifact is authored **once** in a canonical, runtime-agnostic format. A
 deterministic Go build pipeline transpiles it into each runtime's native shape, produces
@@ -47,7 +47,7 @@ CLI (`stark`), and an SSO-gated internal web registry.
 
 ### Non-goals ("what this is not")
 
-- **Not public/open.** Evinced-internal only, SSO-gated. No anonymous publish, no external
+- **Not public/open.** 21 Stark AI-internal only, SSO-gated. No anonymous publish, no external
   contributor moderation.
 - **Not a server-side package registry.** Source of truth is the git monorepo; "publish" =
   merge to `main`. No upload API, no artifact object store. `stark new`/`import` are
@@ -62,9 +62,9 @@ CLI (`stark`), and an SSO-gated internal web registry.
 
 ## 2. Constraints & assumptions
 
-- **Audience:** Evinced engineers. Read/browse requires Evinced SSO (Google Workspace).
+- **Audience:** 21 Stark AI engineers. Read/browse requires 21 Stark AI SSO (Google Workspace).
   Publish requires repo write + PR + CODEOWNERS review.
-- **Hosting:** Private `GetEvinced/stark-marketplace`. Web registry on Evinced-controlled
+- **Hosting:** Private `21-Stark-AI/stark-marketplace`. Web registry on 21 Stark AI-controlled
   infra behind an identity-aware proxy (§10). All catalog-data surfaces (SPA, index,
   Claude dist tree, CLI fetch) sit behind SSO or private-repo auth — no anonymous origin.
 - **Languages (workspace conventions):** Go for the engine + CLI (single static binary);
@@ -282,10 +282,10 @@ version: 0.7.0
 description: Multi-agent PR review toolkit.
 category: code-review
 tags: [pr, review]
-owner: { name: Evinced, email: engineering@evinced.com }
+owner: { name: 21 Stark AI, email: engineering@21stark.com }
 maturity: stable
 runtimes: [claude, codex, gemini]
-homepage: https://github.com/GetEvinced/stark-marketplace/tree/main/catalog/stark-review
+homepage: https://github.com/21-Stark-AI/stark-marketplace/tree/main/catalog/stark-review
 ```
 
 - **Inheritable fields** (artifact inherits when unset): `category`, `tags`, `owner`,
@@ -453,7 +453,7 @@ Emits `dist/claude/.claude-plugin/marketplace.json` in the **native** Claude Cod
 - One entry per bundle; `source` points at the bundle's committed `dist/claude/<bundle>/`.
 Because the catalog layout is isomorphic to CC's plugin layout, generation is a projection
 of the index + a copy of each bundle's Claude tree. Users:
-`/plugin marketplace add GetEvinced/stark-marketplace` → `/plugin install <bundle>`. No
+`/plugin marketplace add 21-Stark-AI/stark-marketplace` → `/plugin install <bundle>`. No
 server. (Corrects red-team Part B: `author` vs `owner`.)
 
 ---
@@ -543,8 +543,8 @@ stderr + exit code.
 
 - **Shape:** static SPA (TypeScript, Vite) over the **lean index** (search) + per-bundle
   **detail files** (on demand). No app server for data.
-- **Auth:** behind an identity-aware proxy enforcing Evinced Google Workspace SSO (GCP
-  Cloud Run + IAP or the Evinced-standard gated-static pattern). The proxy gates **all**
+- **Auth:** behind an identity-aware proxy enforcing 21 Stark AI Google Workspace SSO (GCP
+  Cloud Run + IAP or the 21 Stark AI-standard gated-static pattern). The proxy gates **all**
   data files (index, detail, any served Claude tree), not just HTML routes. No app-level
   user store.
 - **Deploy:** CI builds SPA + index on merge and publishes as **one atomic,
@@ -633,7 +633,7 @@ stderr + exit code.
 3. **Emulation fidelity bar** per (type, runtime) — define acceptance criteria; surface
    limits in `info`/web; the fidelity header (§6.1) is the stopgap.
 4. **Command allowlist governance** — who approves additions; start minimal.
-5. **Web hosting pattern** — pick the Evinced-standard gated-static pattern; no ad-hoc
+5. **Web hosting pattern** — pick the 21 Stark AI-standard gated-static pattern; no ad-hoc
    provisioning.
 6. **Aggregate telemetry** — deferred to post-v1; must stay internal-only if added.
 7. **`stark` name collision** with any existing internal binary — confirm before
@@ -657,7 +657,7 @@ stderr + exit code.
 5. **CLI** — search/info/install (safe-merge, consent, atomic+journal, doctor) + exit-code
    contract + distribution/self-update. Deliverable: safe parity install for Codex/Gemini.
 6. **Web registry** — SSO-gated atomic static SPA over index + detail. Deliverable:
-   browse/search behind Evinced SSO with graceful degrade.
+   browse/search behind 21 Stark AI SSO with graceful degrade.
 7. **Migration** — `stark import` + move `stark-skills` artifacts bundle-by-bundle.
 8. **Security hardening pass** — CI-signed build manifest (sigstore/OIDC), command-allowlist
    governance, gitleaks, branch protection + CODEOWNERS wiring verified end-to-end.

@@ -1,8 +1,8 @@
 {
   "name": "stark-marketplace",
   "owner": {
-    "name": "Evinced",
-    "email": "engineering@evinced.com"
+    "name": "21 Stark AI",
+    "email": "engineering@21stark.com"
   },
   "plugins": [
     {
@@ -11,8 +11,8 @@
       "description": "Multi-domain review and adversarial red-team of designs, execution plans, and PRs, multi-agent Terraform/Terragrunt (IaC) review, plus review-prompt improvement from assessment feedback. Maps to spec-kit's analyze phase.",
       "version": "0.1.6",
       "author": {
-        "name": "Evinced",
-        "email": "engineering@evinced.com"
+        "name": "21 Stark AI",
+        "email": "engineering@21stark.com"
       },
       "category": "review",
       "tags": [
@@ -29,8 +29,8 @@
       "description": "Project setup and session priming — scaffold a dev-docs/standards structure (template/backfill/upgrade modes) and assign a session persona. Maps to spec-kit's constitution phase.",
       "version": "0.1.1",
       "author": {
-        "name": "Evinced",
-        "email": "engineering@evinced.com"
+        "name": "21 Stark AI",
+        "email": "engineering@21stark.com"
       },
       "category": "setup",
       "tags": [
@@ -47,8 +47,8 @@
       "description": "GitHub workflow commands + MCP for stark.",
       "version": "0.1.3",
       "author": {
-        "name": "Evinced",
-        "email": "engineering@evinced.com"
+        "name": "21 Stark AI",
+        "email": "engineering@21stark.com"
       },
       "category": "productivity",
       "tags": [
@@ -64,8 +64,8 @@
       "description": "Autonomously execute a development phase end-to-end — implement, PR, review, fix, merge, release — via a paired lead/wing agent loop. Maps to spec-kit's implement phase.",
       "version": "0.1.2",
       "author": {
-        "name": "Evinced",
-        "email": "engineering@evinced.com"
+        "name": "21 Stark AI",
+        "email": "engineering@21stark.com"
       },
       "category": "implementation",
       "tags": [
@@ -82,8 +82,8 @@
       "description": "Repository operations beyond the spec-driven pipeline — cut releases, housekeep stale issues/branches/worktrees, run session start/end, and switch GitHub identities.",
       "version": "0.1.2",
       "author": {
-        "name": "Evinced",
-        "email": "engineering@evinced.com"
+        "name": "21 Stark AI",
+        "email": "engineering@21stark.com"
       },
       "category": "ops",
       "tags": [
@@ -100,8 +100,8 @@
       "description": "Turn a design doc into a phased implementation plan, then decompose it into phased GitHub issues with story points and risk labels. Maps to spec-kit's plan + tasks phases.",
       "version": "0.1.2",
       "author": {
-        "name": "Evinced",
-        "email": "engineering@evinced.com"
+        "name": "21 Stark AI",
+        "email": "engineering@21stark.com"
       },
       "category": "planning",
       "tags": [

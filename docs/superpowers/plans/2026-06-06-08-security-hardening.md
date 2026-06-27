@@ -183,7 +183,7 @@ package validate
 import (
 	"testing"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 )
 
 func lintArtifact(typ model.ArtifactType, body string) *model.Catalog {
@@ -218,7 +218,7 @@ Expected: FAIL — undefined `LintBodies`.
 package validate
 
 import (
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 )
 
 // LintBodies runs an informational content scan over skill/command/agent bodies.
@@ -267,8 +267,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/load"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/validate"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/load"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/validate"
 	"github.com/spf13/cobra"
 )
 
@@ -403,7 +403,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 )
 
 var lintPatterns = []struct {
@@ -561,7 +561,7 @@ package validate
 import (
 	"testing"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 )
 
 func agentWithTools(tools ...string) *model.Artifact {
@@ -600,7 +600,7 @@ Expected: FAIL — undefined `checkAgentTools`.
 ```go
 package validate
 
-import "github.com/GetEvinced/stark-marketplace/engine/internal/model"
+import "github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 
 // agentToolAllowlist is the known-safe set of agent tool grants surfaced in the
 // index (spec §7.4 "agent.tools validated against an allowlist and surfaced").
@@ -658,9 +658,9 @@ git commit -m "feat(engine): agent.tools allowlist validation (warn + surface un
 # matching pattern wins for a given path.
 #
 # Roles:
-#   @GetEvinced/stark-maintainers  — engine, generated dist, schema, governance
-#   @GetEvinced/stark-reviewers    — second reviewer for high-trust artifact bodies
-#   @aryeh-evinced                 — required on the most sensitive surfaces
+#   @21-Stark-AI/stark-maintainers  — engine, generated dist, schema, governance
+#   @21-Stark-AI/stark-reviewers    — second reviewer for high-trust artifact bodies
+#   @aryeh-stark                 — required on the most sensitive surfaces
 #
 # Trust model: every artifact BODY is instruction text injected into a developer's
 # agent, and every mcp/ entry is a command spawned on a developer's machine.
@@ -671,38 +671,38 @@ git commit -m "feat(engine): agent.tools allowlist validation (warn + surface un
 # the count=2 setting is what forces a genuine second pair of eyes on these paths.
 
 # ── Default: a maintainer reviews anything not matched below ──
-*                               @GetEvinced/stark-maintainers
+*                               @21-Stark-AI/stark-maintainers
 
 # ── High-trust artifact BODIES (skills/commands/agents) — second reviewer ──
-catalog/**/skills/**            @GetEvinced/stark-maintainers @GetEvinced/stark-reviewers
-catalog/**/commands/**          @GetEvinced/stark-maintainers @GetEvinced/stark-reviewers
-catalog/**/agents/**            @GetEvinced/stark-maintainers @GetEvinced/stark-reviewers
+catalog/**/skills/**            @21-Stark-AI/stark-maintainers @21-Stark-AI/stark-reviewers
+catalog/**/commands/**          @21-Stark-AI/stark-maintainers @21-Stark-AI/stark-reviewers
+catalog/**/agents/**            @21-Stark-AI/stark-maintainers @21-Stark-AI/stark-reviewers
 
 # ── MCP = code execution on the developer's machine — highest trust ──
-**/mcp/**                       @GetEvinced/stark-maintainers @GetEvinced/stark-reviewers @aryeh-evinced
+**/mcp/**                       @21-Stark-AI/stark-maintainers @21-Stark-AI/stark-reviewers @aryeh-stark
 
 # ── Engine + generated output + schema + provenance — maintainer review ──
-engine/**                       @GetEvinced/stark-maintainers @aryeh-evinced
-schema/**                       @GetEvinced/stark-maintainers @aryeh-evinced
+engine/**                       @21-Stark-AI/stark-maintainers @aryeh-stark
+schema/**                       @21-Stark-AI/stark-maintainers @aryeh-stark
 
 # ── MCP command-allowlist source — additions gated by maintainer (§15.4 governance) ──
 # Listed AFTER engine/** so it wins (last match) and is unmistakably called out:
 # every entry added here widens the set of binaries an MCP server may spawn.
-engine/internal/validate/allowlist.go     @GetEvinced/stark-maintainers @aryeh-evinced
-engine/internal/validate/toolsallow.go    @GetEvinced/stark-maintainers @aryeh-evinced
-dist/claude/**                  @GetEvinced/stark-maintainers @aryeh-evinced
-index.json                      @GetEvinced/stark-maintainers @aryeh-evinced
-bundles/**                      @GetEvinced/stark-maintainers @aryeh-evinced
+engine/internal/validate/allowlist.go     @21-Stark-AI/stark-maintainers @aryeh-stark
+engine/internal/validate/toolsallow.go    @21-Stark-AI/stark-maintainers @aryeh-stark
+dist/claude/**                  @21-Stark-AI/stark-maintainers @aryeh-stark
+index.json                      @21-Stark-AI/stark-maintainers @aryeh-stark
+bundles/**                      @21-Stark-AI/stark-maintainers @aryeh-stark
 
 # ── Security/CI governance — Aryeh required ──
-.github/workflows/**            @GetEvinced/stark-maintainers @aryeh-evinced
-CODEOWNERS                      @aryeh-evinced
-docs/SECURITY.md                @aryeh-evinced
-.gitleaks.toml                  @GetEvinced/stark-maintainers @aryeh-evinced
+.github/workflows/**            @21-Stark-AI/stark-maintainers @aryeh-stark
+CODEOWNERS                      @aryeh-stark
+docs/SECURITY.md                @aryeh-stark
+.gitleaks.toml                  @21-Stark-AI/stark-maintainers @aryeh-stark
 ```
 
 > **Note:** GitHub honors `CODEOWNERS` at repo root, `.github/`, or `docs/`. Root is used
-> here. The teams `@GetEvinced/stark-maintainers` and `@GetEvinced/stark-reviewers` must
+> here. The teams `@21-Stark-AI/stark-maintainers` and `@21-Stark-AI/stark-reviewers` must
 > exist in the org and have write access for the rule to take effect — documented as a
 > prerequisite in `docs/SECURITY.md` (Task 9).
 
@@ -710,7 +710,7 @@ docs/SECURITY.md                @aryeh-evinced
 
 Run from repo root (requires `gh` + repo pushed; otherwise this is the documented manual step):
 ```bash
-gh api repos/GetEvinced/stark-marketplace/codeowners/errors 2>/dev/null || \
+gh api repos/21-Stark-AI/stark-marketplace/codeowners/errors 2>/dev/null || \
   echo "NOTE: validate via GitHub after push — gh api .../codeowners/errors must return empty errors[]"
 ```
 Expected: empty `errors[]` (no unknown owners / bad patterns) once teams exist + repo is pushed.
@@ -850,7 +850,7 @@ jobs:
 ```
 
 > **Why keyless (preferred):** GitHub OIDC mints a short-lived identity; Fulcio issues an
-> ephemeral signing cert bound to the workflow identity (`repo:GetEvinced/stark-marketplace`
+> ephemeral signing cert bound to the workflow identity (`repo:21-Stark-AI/stark-marketplace`
 > + ref); Rekor logs it. There is **no long-lived private key to leak**. The signer identity
 > is the trust anchor — `stark verify-manifest` (Task 11/12) checks the cert's
 > `--certificate-identity` + `--certificate-oidc-issuer`.
@@ -906,7 +906,7 @@ Integrity rests on **three things together**, not on self-computed digests:
 1. **Protected, linear `main`** — no force-push, no admin bypass, no deletions.
 2. **A CI-signed build manifest** — produced on merge by `sign-manifest.yml` via
    GitHub OIDC → sigstore/cosign **keyless** (Fulcio cert + Rekor transparency log).
-   The signer identity is `repo:GetEvinced/stark-marketplace` on the `main` ref.
+   The signer identity is `repo:21-Stark-AI/stark-marketplace` on the `main` ref.
 3. **The commit SHA** — installs may pin it; the manifest binds digests to that SHA.
 
 `stark verify-manifest` checks the cosign signature, the signer identity/issuer, and
@@ -921,13 +921,13 @@ MCP `command` values must be on the positive allowlist in
 `engine/internal/validate/toolsallow.go`. Every entry in `allowlist.go` widens the set of
 binaries an MCP server may spawn on a developer's machine, so additions are explicitly
 gated (spec §15.4): both files have a dedicated, last-match-wins **CODEOWNERS** entry
-(`@GetEvinced/stark-maintainers @aryeh-evinced`) on top of the `engine/**` rule. To add an
+(`@21-Stark-AI/stark-maintainers @aryeh-stark`) on top of the `engine/**` rule. To add an
 entry:
 
 - Open a PR touching only the allowlist file with a one-paragraph justification
   (what the binary/tool does, why it is needed, who maintains it).
-- Requires **maintainer approval** (`@GetEvinced/stark-maintainers`) **and**
-  `@aryeh-evinced` — CODEOWNERS marks both required on
+- Requires **maintainer approval** (`@21-Stark-AI/stark-maintainers`) **and**
+  `@aryeh-stark` — CODEOWNERS marks both required on
   `engine/internal/validate/allowlist.go` and `engine/internal/validate/toolsallow.go`.
 - Keep the list minimal; prefer pinned, well-known binaries (`node`, `uvx`) and
   first-party `stark-*-mcp` servers over ad-hoc tools.
@@ -950,8 +950,8 @@ merge on a single approval, which is insufficient for instruction-text/code-exec
 The count is repo-wide (GitHub has no per-path count), so every PR clears 2 approvals; the
 strictest path governs.
 
-Prerequisite: the org teams `@GetEvinced/stark-maintainers` and
-`@GetEvinced/stark-reviewers` must exist with write access for CODEOWNERS to bind.
+Prerequisite: the org teams `@21-Stark-AI/stark-maintainers` and
+`@21-Stark-AI/stark-reviewers` must exist with write access for CODEOWNERS to bind.
 
 ## 4. CI gates (required, non-bypassable)
 
@@ -979,7 +979,7 @@ artifact's canonical-source digest changed without a `version` bump),
 
 ```bash
 # Require the CI status checks + linear history + code-owner review + 2 approvals, no bypass.
-gh api -X PUT repos/GetEvinced/stark-marketplace/branches/main/protection \
+gh api -X PUT repos/21-Stark-AI/stark-marketplace/branches/main/protection \
   --input - <<'JSON'
 {
   "required_status_checks": {
@@ -1005,7 +1005,7 @@ gh api -X PUT repos/GetEvinced/stark-marketplace/branches/main/protection \
 JSON
 
 # Verify it took.
-gh api repos/GetEvinced/stark-marketplace/branches/main/protection | \
+gh api repos/21-Stark-AI/stark-marketplace/branches/main/protection | \
   jq '{linear: .required_linear_history.enabled, force: .allow_force_pushes.enabled,
        admins: .enforce_admins.enabled, checks: .required_status_checks.contexts,
        codeowners: .required_pull_request_reviews.require_code_owner_reviews,
@@ -1024,7 +1024,7 @@ Expected verify output: `linear: true`, `force: false`, `admins: true`,
 ## 6. Reporting
 
 Suspected catalog tampering or a leaked credential: open a private security advisory
-on the repo and ping `@aryeh-evinced`. Rotate any exposed secret immediately — values
+on the repo and ping `@aryeh-stark`. Rotate any exposed secret immediately — values
 never live in the catalog (only `secretRef` names), so rotation is in the secret store.
 ```
 
@@ -1236,7 +1236,7 @@ func TestCosignVerifyCmd(t *testing.T) {
 	}
 	for _, want := range []string{
 		"cosign", "verify-blob",
-		"--certificate-identity-regexp", "GetEvinced/stark-marketplace",
+		"--certificate-identity-regexp", "21-Stark-AI/stark-marketplace",
 		"--certificate-oidc-issuer", "token.actions.githubusercontent.com",
 		"--signature", "m.json.sig", "--certificate", "m.json.pem", "m.json",
 	} {
@@ -1275,7 +1275,7 @@ import (
 // signerIdentityRegexp matches the keyless signer identity bound to this repo's
 // Actions workflows. Used by CosignVerifyCmd; the OIDC issuer pins GitHub.
 const (
-	signerIdentityRegexp = "^https://github.com/GetEvinced/stark-marketplace/"
+	signerIdentityRegexp = "^https://github.com/21-Stark-AI/stark-marketplace/"
 	oidcIssuer           = "https://token.actions.githubusercontent.com"
 )
 
@@ -1345,7 +1345,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/provenance"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/provenance"
 )
 
 func TestVerifyManifestDigestsOnly(t *testing.T) {
@@ -1397,7 +1397,7 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/provenance"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/provenance"
 	"github.com/spf13/cobra"
 )
 

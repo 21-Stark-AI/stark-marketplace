@@ -21,7 +21,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `dist/claude/` — **committed** rendered tree (CC consumes it directly). `dist/codex/` and `dist/gemini/` are **NOT committed** — built on `stark install`.
 - `bundles/*.json`, `index.json` — committed, signed web-registry payloads. Marked `linguist-generated`.
 - `schema/` — JSON Schemas (`bundle`, `artifact.{skill,command,agent,prompt,mcp}`). Fail-closed in CI.
-- `server/` — small Go static origin for the web registry (Cloud Run behind the ev-infra-group platform LB at `marketplace.evinced-infra.group`). No auth in-process.
+- `server/` — small Go static origin for the web registry (Cloud Run behind the ev-infra-group platform LB at `marketplace.21stark.com`). No auth in-process.
 - `web/` — strict-TS Vite/React SPA shell over `index.json` (HashRouter, relative fetches).
 - `.claude-plugin/marketplace.json` — repo-root CC marketplace manifest (must stay at repo root; CC resolves plugin `source` paths relative to it).
 - `docs/` — `native-install-loop.md`, `web-hosting.md`, `SECURITY.md`. Read these before changing install/deploy/governance behavior.

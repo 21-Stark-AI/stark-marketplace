@@ -11,7 +11,7 @@ permissions:
   id-token: write   # keyless WIF auth to deploy the Cloud Run origin
 
 # Deploy target — the static origin behind the ev-infra-group shared platform LB
-# (marketplace.evinced-infra.group). Provisioned in ev-infra-group; see
+# (marketplace.21stark.com). Provisioned in ev-infra-group; see
 # docs/web-hosting.md. Repo-level vars carry the env-specific WIF identity.
 env:
   GCP_PROJECT_ID: ev-infra-group

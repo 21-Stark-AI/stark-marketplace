@@ -1,8 +1,8 @@
 {
   "name": "stark-marketplace",
   "owner": {
-    "name": "Evinced Platform",
-    "email": "platform@evinced.com"
+    "name": "21 Stark AI Platform",
+    "email": "platform@21stark.com"
   },
   "plugins": [
     {
@@ -12,7 +12,7 @@
       "version": "1.2.0",
       "author": {
         "name": "Alpha Team",
-        "email": "alpha@evinced.com"
+        "email": "alpha@21stark.com"
       },
       "category": "examples",
       "tags": [
@@ -27,7 +27,7 @@
       "version": "0.1.0",
       "author": {
         "name": "GH Team",
-        "email": "gh@evinced.com"
+        "email": "gh@21stark.com"
       },
       "category": "productivity",
       "tags": [

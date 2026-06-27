@@ -1,7 +1,7 @@
 {
   "author": {
-    "email": "engineering@evinced.com",
-    "name": "Evinced"
+    "email": "engineering@21stark.com",
+    "name": "21 Stark AI"
   },
   "description": "Multi-domain review and adversarial red-team of designs, execution plans, and PRs, multi-agent Terraform/Terragrunt (IaC) review, plus review-prompt improvement from assessment feedback. Maps to spec-kit's analyze phase.",
   "keywords": [

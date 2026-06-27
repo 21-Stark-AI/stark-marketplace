@@ -156,7 +156,7 @@ func Build(cat *model.Catalog, opts Options) (Output, error) {
 	// source of "./dist/claude/<bundle>" resolves to the committed bundle tree.
 	mani, err := marketplace.Marshal(marketplace.Generate(cat, marketplace.Options{
 		Name:     "stark-marketplace",
-		Owner:    marketplace.Owner{Name: "Evinced", Email: "engineering@evinced.com"},
+		Owner:    marketplace.Owner{Name: "21 Stark AI", Email: "engineering@21stark.com"},
 		DistRoot: "./dist/claude",
 	}))
 	if err != nil {

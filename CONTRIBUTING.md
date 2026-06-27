@@ -94,4 +94,4 @@ Data contract: `web/src/types/registry.ts` mirrors the engine's emitted JSON. Un
 
 ## Reporting security issues
 
-Don't open a public issue. Email engineering@evinced.com or contact `@aryeh-stark` directly.
+Don't open a public issue. Email engineering@21stark.com or contact `@aryeh-stark` directly.

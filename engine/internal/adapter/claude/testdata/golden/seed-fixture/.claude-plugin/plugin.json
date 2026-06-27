@@ -1,7 +1,7 @@
 {
   "author": {
-    "email": "engineering@evinced.com",
-    "name": "Evinced"
+    "email": "engineering@21stark.com",
+    "name": "21 Stark AI"
   },
   "description": "Frozen fixture bundle for the claude adapter seed-bundle golden. Exercises plugin.json, .mcp.json, skills/, and commands/ rendering end-to-end without coupling the golden to any live catalog bundle's release version or prose. Bump deliberately, and only when the rendering format itself changes.",
   "homepage": "https://github.com/21-Stark-AI/stark-marketplace",

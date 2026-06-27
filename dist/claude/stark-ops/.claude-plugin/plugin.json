@@ -1,7 +1,7 @@
 {
   "author": {
-    "email": "engineering@evinced.com",
-    "name": "Evinced"
+    "email": "engineering@21stark.com",
+    "name": "21 Stark AI"
   },
   "description": "Repository operations beyond the spec-driven pipeline — cut releases, housekeep stale issues/branches/worktrees, run session start/end, and switch GitHub identities.",
   "keywords": [

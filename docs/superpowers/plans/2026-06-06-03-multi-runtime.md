@@ -120,7 +120,7 @@ package capability
 import (
 	"testing"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 )
 
 func TestLevelsPerCorrectedMatrix(t *testing.T) {
@@ -179,7 +179,7 @@ Expected: FAIL — undefined `Level`, `Version`.
 // native/emulated/unsupported badges and consumed by validation (§7.4).
 package capability
 
-import "github.com/GetEvinced/stark-marketplace/engine/internal/model"
+import "github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 
 // Version bumps whenever any cell changes; it is independent of adapter target
 // versions (§7.7) and lets the index communicate matrix revisions.
@@ -336,7 +336,7 @@ package fieldmap
 import (
 	"testing"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 )
 
 func TestActionsMatchSpec62(t *testing.T) {
@@ -386,7 +386,7 @@ Expected: FAIL — undefined `Action`, `ActionCarry`, `actionFor`.
 // into prose, or block.
 package fieldmap
 
-import "github.com/GetEvinced/stark-marketplace/engine/internal/model"
+import "github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 
 type Action string
 
@@ -462,7 +462,7 @@ package fieldmap
 import (
 	"testing"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 )
 
 func TestApplyDropsAndWarns(t *testing.T) {
@@ -629,8 +629,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/adapter"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/adapter"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 )
 
 func contains(s, sub string) bool { return strings.Contains(s, sub) }
@@ -722,11 +722,11 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/adapter"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/adapter/emulate"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/fieldmap"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/merge"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/adapter"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/adapter/emulate"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/fieldmap"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/merge"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 )
 
 // version is the independently-versioned target identity (spec §7.7).
@@ -874,7 +874,7 @@ package codex
 import (
 	"testing"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 )
 
 func TestCodexEmitsMCPConfigToml(t *testing.T) {
@@ -1001,7 +1001,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 )
 
 var update = flag.Bool("update", false, "update golden files")
@@ -1091,8 +1091,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/adapter"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/adapter"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 )
 
 func find(files []adapter.OutputFile, suffix string) (string, bool) {
@@ -1167,11 +1167,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/adapter"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/adapter/emulate"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/fieldmap"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/merge"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/adapter"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/adapter/emulate"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/fieldmap"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/merge"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 	"github.com/pelletier/go-toml/v2"
 )
 
@@ -1296,7 +1296,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 )
 
 func TestGeminiEmulatesSkillIntoGeminiMd(t *testing.T) {
@@ -1424,7 +1424,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 )
 
 var update = flag.Bool("update", false, "update golden files")
@@ -1828,7 +1828,7 @@ package validate
 import (
 	"testing"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 )
 
 func TestCapabilityWarnsOnEmulated(t *testing.T) {
@@ -1879,8 +1879,8 @@ Expected: FAIL — undefined `checkCapability`.
 package validate
 
 import (
-	"github.com/GetEvinced/stark-marketplace/engine/internal/adapter/capability"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/adapter/capability"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 )
 
 // checkCapability enforces the §6 matrix: warn on emulated targets (counted +
@@ -1931,10 +1931,10 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/adapter"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/adapter/codex"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/adapter/gemini"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/load"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/adapter"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/adapter/codex"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/adapter/gemini"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/load"
 )
 
 // emitAll runs the canonical bundle-level Render (CC-1) over every catalog bundle.
@@ -2022,8 +2022,8 @@ package adapter_test
 import (
 	"testing"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/adapter"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/adapter"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 )
 
 func TestRegistryHasAllNonClaudeTargets(t *testing.T) {
@@ -2053,9 +2053,9 @@ Expected: FAIL — undefined `Targets`.
 package adapter
 
 import (
-	"github.com/GetEvinced/stark-marketplace/engine/internal/adapter/codex"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/adapter/gemini"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/adapter/codex"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/adapter/gemini"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 )
 
 // Targets returns the non-Claude runtime targets keyed by runtime. The Claude
@@ -2231,7 +2231,7 @@ package index
 import (
 	"testing"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 )
 
 // targetedRuntimes is the set of runtimes the engine builds for (claude+codex+gemini).
@@ -2300,7 +2300,7 @@ Expected: FAIL — `supportFor` only populates claude; `buildDetailArtifact` lea
 In `engine/internal/index/index.go`, replace the claude-only `supportFor` with a
 matrix-driven version over all targeted runtimes:
 ```go
-import "github.com/GetEvinced/stark-marketplace/engine/internal/adapter/capability"
+import "github.com/21-Stark-AI/stark-marketplace/engine/internal/adapter/capability"
 
 // supportFor returns the per-runtime support level for an artifact across every
 // targeted runtime (CC-4), sourced from the versioned capability matrix (§6).
@@ -2320,9 +2320,9 @@ In `engine/internal/index/detail.go`, fill the detail artifact's `Outputs` and
 `FidelityNotes` by rendering each targeted runtime's target and recording its output files:
 ```go
 import (
-	"github.com/GetEvinced/stark-marketplace/engine/internal/adapter"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/adapter/capability"
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/adapter"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/adapter/capability"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 )
 
 // Output is one emitted-file descriptor surfaced in bundles/<name>.json (CC-3).
@@ -2430,7 +2430,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/GetEvinced/stark-marketplace/engine/internal/model"
+	"github.com/21-Stark-AI/stark-marketplace/engine/internal/model"
 )
 
 // TestCommittedIndexSupportFullyPopulated asserts the committed dist index has a

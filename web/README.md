@@ -31,4 +31,4 @@ ignored (forward compatible); `schemaVersion` skew degrades gracefully (`src/dat
 
 `.github/workflows/web-deploy.yml` builds the SPA, stages `index.json` + `bundles/` into
 `dist/`, and uploads the whole thing as one atomic content-hashed unit. The publish step is
-gated on the Evinced-standard hosting origin (`../docs/web-hosting.md`).
+gated on the 21 Stark-standard hosting origin (`../docs/web-hosting.md`).

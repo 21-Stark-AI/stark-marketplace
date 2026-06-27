@@ -1,5 +1,5 @@
 // Inline SVG schematics for the MCP-vs-Skills decision page. Brand hexes hard-coded
-// (navy/blue/pink/yellow from Evinced/BRAND.md) so the drawings are self-contained and
+// (navy/blue/pink/yellow from the 21 Stark brand) so the drawings are self-contained and
 // theme-stable. viewBox + width:100% keeps them crisp and responsive; aria-labelled for SR.
 
 const NAVY = '#1b3050';
