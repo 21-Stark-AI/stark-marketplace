@@ -3,13 +3,14 @@
     "email": "engineering@21stark.com",
     "name": "21 Stark AI"
   },
-  "description": "Project setup and session priming — scaffold a dev-docs/standards structure (template/backfill/upgrade modes) and assign a session persona. Maps to spec-kit's constitution phase.",
+  "description": "Project setup, decision records, and session priming — scaffold a dev-docs/standards structure (template/backfill/upgrade modes), record architecture decisions (ADRs) under docs/adr/, and assign a session persona. Maps to spec-kit's constitution phase.",
   "keywords": [
     "setup",
     "docs",
+    "adr",
     "persona",
     "constitution"
   ],
   "name": "stark-constitution",
-  "version": "0.1.1"
+  "version": "0.2.0"
 }

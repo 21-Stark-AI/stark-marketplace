@@ -229,6 +229,29 @@
       "digest": "sha256:fb8bcfea859c8769dd1b0eea48cca82fe5dc6c9e28e47beb653a9121b92cd808"
     },
     {
+      "name": "stark-adr",
+      "type": "skill",
+      "bundle": "stark-constitution",
+      "description": "Record and manage Architecture Decision Records (ADRs) under a repo's docs/adr/. Use for: new ADR, log/record a decision, \"create an ADR\", supersede an ADR, list ADRs, \"why did we decide X\". Wraps `brain adr` — MADR-lite, auto-numbered, repo-relative.",
+      "tags": [
+        "setup",
+        "docs",
+        "adr",
+        "persona",
+        "constitution"
+      ],
+      "category": "setup",
+      "maturity": "beta",
+      "version": "0.2.0",
+      "runtimes": [
+        "claude"
+      ],
+      "support": {
+        "claude": "native"
+      },
+      "digest": "sha256:101aa987e78b88476bab3f4c3789c65c3c1cac0a83efad6b09b7877144d3b396"
+    },
+    {
       "name": "stark-init-docs",
       "type": "skill",
       "bundle": "stark-constitution",
@@ -236,19 +259,20 @@
       "tags": [
         "setup",
         "docs",
+        "adr",
         "persona",
         "constitution"
       ],
       "category": "setup",
       "maturity": "beta",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "runtimes": [
         "claude"
       ],
       "support": {
         "claude": "native"
       },
-      "digest": "sha256:1439f49cb5a3292085ce5db73446c9c3f6a916ec6483872f61d7ca3ca941f9b0"
+      "digest": "sha256:0544c3ca2a7576c6732e4cad2181d3ea4998a01e1b266c7eb84dfa464fb803d1"
     },
     {
       "name": "stark-persona",
@@ -258,12 +282,13 @@
       "tags": [
         "setup",
         "docs",
+        "adr",
         "persona",
         "constitution"
       ],
       "category": "setup",
       "maturity": "beta",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "runtimes": [
         "claude"
       ],

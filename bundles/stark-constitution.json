@@ -2,12 +2,13 @@
   "schemaVersion": 1,
   "bundle": {
     "name": "stark-constitution",
-    "version": "0.1.1",
-    "description": "Project setup and session priming — scaffold a dev-docs/standards structure (template/backfill/upgrade modes) and assign a session persona. Maps to spec-kit's constitution phase.",
+    "version": "0.2.0",
+    "description": "Project setup, decision records, and session priming — scaffold a dev-docs/standards structure (template/backfill/upgrade modes), record architecture decisions (ADRs) under docs/adr/, and assign a session persona. Maps to spec-kit's constitution phase.",
     "category": "setup",
     "tags": [
       "setup",
       "docs",
+      "adr",
       "persona",
       "constitution"
     ],
@@ -16,10 +17,34 @@
   },
   "artifacts": [
     {
+      "name": "stark-adr",
+      "type": "skill",
+      "description": "Record and manage Architecture Decision Records (ADRs) under a repo's docs/adr/. Use for: new ADR, log/record a decision, \"create an ADR\", supersede an ADR, list ADRs, \"why did we decide X\". Wraps `brain adr` — MADR-lite, auto-numbered, repo-relative.",
+      "version": "0.2.0",
+      "runtimes": [
+        "claude"
+      ],
+      "support": {
+        "claude": "native"
+      },
+      "requires": [],
+      "diverged": false,
+      "outputs": {
+        "claude": [
+          {
+            "path": "skills/stark-adr/SKILL.md",
+            "kind": "file",
+            "emulated": false
+          }
+        ]
+      },
+      "fidelityNotes": {}
+    },
+    {
       "name": "stark-init-docs",
       "type": "skill",
       "description": "Scaffold dev docs structure (template/backfill/upgrade/clean modes). Use for init docs, setup docs, scaffold docs.",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "runtimes": [
         "claude"
       ],
@@ -43,7 +68,7 @@
       "name": "stark-persona",
       "type": "skill",
       "description": "Assign a famous character persona for the session with weighted random selection. Use for persona, character, voice. /stark-persona.",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "runtimes": [
         "claude"
       ],
