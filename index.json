@@ -241,14 +241,14 @@
       ],
       "category": "setup",
       "maturity": "beta",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "runtimes": [
         "claude"
       ],
       "support": {
         "claude": "native"
       },
-      "digest": "sha256:1439f49cb5a3292085ce5db73446c9c3f6a916ec6483872f61d7ca3ca941f9b0"
+      "digest": "sha256:0544c3ca2a7576c6732e4cad2181d3ea4998a01e1b266c7eb84dfa464fb803d1"
     },
     {
       "name": "stark-persona",
@@ -263,7 +263,7 @@
       ],
       "category": "setup",
       "maturity": "beta",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "runtimes": [
         "claude"
       ],

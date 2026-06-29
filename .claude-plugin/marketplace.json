@@ -27,7 +27,7 @@
       "name": "stark-constitution",
       "source": "./dist/claude/stark-constitution",
       "description": "Project setup and session priming — scaffold a dev-docs/standards structure (template/backfill/upgrade modes) and assign a session persona. Maps to spec-kit's constitution phase.",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "author": {
         "name": "21 Stark AI",
         "email": "engineering@21stark.com"
