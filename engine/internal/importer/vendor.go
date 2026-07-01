@@ -17,6 +17,21 @@ var vendorToolsSkipDirs = map[string]bool{
 	"node_modules": true,
 }
 
+// alwaysSkipDirs are junk/VCS/build-cache dirs pruned from EVERY vendored tree
+// (including the verbatim scripts/standards/prompts copies), regardless of the
+// per-call skipDirs. Prevents e.g. stray Python __pycache__/ from a source
+// checkout leaking .pyc into the committed snapshot.
+var alwaysSkipDirs = map[string]bool{
+	"__pycache__": true,
+	".git":        true,
+}
+
+// alwaysSkipFile reports junk files pruned from every vendored tree.
+func alwaysSkipFile(rel string) bool {
+	base := filepath.Base(rel)
+	return strings.HasSuffix(base, ".pyc") || base == ".DS_Store"
+}
+
 // VendorSnapshot reads a stark-skills checkout and returns the normalized
 // immutable-asset snapshot (vendor-relative path -> content) that `stark build`
 // vendors verbatim into every plugin. Layout:
@@ -134,7 +149,7 @@ func copyTree(src, dstPrefix string, out map[string][]byte, skipDirs map[string]
 			return err
 		}
 		if d.IsDir() {
-			if skipDirs != nil && skipDirs[d.Name()] && p != src {
+			if p != src && (alwaysSkipDirs[d.Name()] || (skipDirs != nil && skipDirs[d.Name()])) {
 				return fs.SkipDir
 			}
 			return nil
@@ -147,6 +162,9 @@ func copyTree(src, dstPrefix string, out map[string][]byte, skipDirs map[string]
 			return err
 		}
 		rel = filepath.ToSlash(rel)
+		if alwaysSkipFile(rel) {
+			return nil
+		}
 		if keep != nil && !keep(rel) {
 			return nil
 		}

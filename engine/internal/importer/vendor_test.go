@@ -131,6 +131,42 @@ func TestPluginVendorSnapshotSkillReferences(t *testing.T) {
 	}
 }
 
+// TestVendorSnapshotSkipsJunk verifies the shared snapshot prunes VCS/build-cache
+// junk from the verbatim trees (scripts/**): stray Python __pycache__/*.pyc from a
+// source checkout must never leak into the committed vendor snapshot, while the
+// real script files are still captured.
+func TestVendorSnapshotSkipsJunk(t *testing.T) {
+	from := t.TempDir()
+	writeFile(t, filepath.Join(from, "scripts", "register_triggers.sh"), "#!/bin/bash\n")
+	writeFile(t, filepath.Join(from, "scripts", "__pycache__", "session_id.cpython-313.pyc"), "junk")
+	writeFile(t, filepath.Join(from, "scripts", "emit_queue.pyc"), "junk")
+	writeFile(t, filepath.Join(from, "scripts", ".DS_Store"), "junk")
+	// the other verbatim/tool trees VendorSnapshot walks must exist.
+	writeFile(t, filepath.Join(from, "tools", "x.ts"), "export const x = 1\n")
+	writeFile(t, filepath.Join(from, "global", "prompts", "p.md"), "prompt\n")
+	writeFile(t, filepath.Join(from, "standards", "s.md"), "standard\n")
+	// minimal seed files VendorSnapshot requires.
+	writeFile(t, filepath.Join(from, "global", "config.json"), "{}")
+	writeFile(t, filepath.Join(from, "global", "forge_heuristics.json"), "{}")
+
+	got, err := VendorSnapshot(from)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, ok := got["scripts/register_triggers.sh"]; !ok {
+		t.Fatalf("real script missing; got %v", keysOf(got))
+	}
+	for _, junk := range []string{
+		"scripts/__pycache__/session_id.cpython-313.pyc",
+		"scripts/emit_queue.pyc",
+		"scripts/.DS_Store",
+	} {
+		if _, ok := got[junk]; ok {
+			t.Errorf("junk unexpectedly vendored: %q", junk)
+		}
+	}
+}
+
 func keysOf(m map[string][]byte) []string {
 	ks := make([]string, 0, len(m))
 	for k := range m {
