@@ -2,7 +2,7 @@
 name: stark-review-improvement
 type: skill
 description: Improve review prompts based on Prompt Improvement Assessment from completed reviews. Use for fix review prompts.
-version: 0.1.6
+version: 0.1.7
 maturity: beta
 runtimes:
   - claude
@@ -56,7 +56,7 @@ HISTORY_SUB  = (org/repo/pr structure)
 
 Look in the **current conversation context** for either:
 
-- A "Prompt Improvement Assessment" section (from a `/stark-review` or `/stark-review-design` run)
+- A "Prompt Improvement Assessment" section (from a `/stark-review` or `/stark-review-spec` run)
 - A `prompt-assessment.md` or `*.design-review.md` file path referenced in conversation
 
 If neither exists, check the most recent history directory for the matching review type:

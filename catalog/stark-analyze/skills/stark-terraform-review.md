@@ -2,7 +2,7 @@
 name: stark-terraform-review
 type: skill
 description: Multi-agent code review of Terraform / OpenTofu (HCL) — modules, root configs, .tf/.tfvars/.tftest.hcl — for security, correctness, state safety, module-contract quality, and testing gaps. Runs the review across one or more configurable LLMs (claude/codex/gemini), each as its own subagent, then merges + cross-validates findings. Use whenever the user wants to review, audit, or sanity-check Terraform/OpenTofu code, asks "is this .tf safe/correct/idiomatic", or points at a module/directory and wants findings. Review-only. For Terragrunt orchestration use stark-terragrunt-review.
-version: 0.1.6
+version: 0.1.7
 maturity: beta
 runtimes:
   - claude
