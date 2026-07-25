@@ -571,7 +571,7 @@
       ],
       "category": "implementation",
       "maturity": "beta",
-      "version": "0.1.12",
+      "version": "0.2.0",
       "runtimes": [
         "claude",
         "codex"
@@ -581,6 +581,30 @@
         "codex": "native"
       },
       "digest": "sha256:cc283522423cee3ec57493feeca0edc294a348bf74e7af03ac97ab808e07c739"
+    },
+    {
+      "name": "stark-forge",
+      "type": "skill",
+      "bundle": "stark-implement",
+      "description": "Thin in-session conductor for the full write-spec through copilot pipeline. Runs each stage skill in-session, merges each artifact PR once at the last stage that touches it, and drives a crash-resumable state file via forge_state.ts. Never re-implements a stage's own logic. Use for end-to-end pipeline runs, forge, autonomous spec-to-implementation.",
+      "tags": [
+        "implementation",
+        "automation",
+        "lead-wing",
+        "autonomous"
+      ],
+      "category": "implementation",
+      "maturity": "beta",
+      "version": "0.2.0",
+      "runtimes": [
+        "claude",
+        "codex"
+      ],
+      "support": {
+        "claude": "native",
+        "codex": "native"
+      },
+      "digest": "sha256:4f58dbb04862f7f0205a43b1fa2be738f160b54160f6c67272423ef96bd26681"
     },
     {
       "name": "stark-phase-execute",
@@ -595,7 +619,7 @@
       ],
       "category": "implementation",
       "maturity": "beta",
-      "version": "0.1.12",
+      "version": "0.2.0",
       "runtimes": [
         "claude",
         "codex"
