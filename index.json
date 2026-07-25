@@ -22,7 +22,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.3.2",
+      "version": "0.3.3",
       "runtimes": [
         "claude",
         "codex"
@@ -47,7 +47,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.3.2",
+      "version": "0.3.3",
       "runtimes": [
         "claude",
         "codex"
@@ -72,7 +72,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.3.2",
+      "version": "0.3.3",
       "runtimes": [
         "claude",
         "codex"
@@ -97,7 +97,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.3.2",
+      "version": "0.3.3",
       "runtimes": [
         "claude",
         "codex"
@@ -122,7 +122,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.3.2",
+      "version": "0.3.3",
       "runtimes": [
         "claude",
         "codex"
@@ -147,7 +147,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.3.2",
+      "version": "0.3.3",
       "runtimes": [
         "claude",
         "codex"
@@ -162,7 +162,7 @@
       "name": "stark-review-plan",
       "type": "skill",
       "bundle": "stark-analyze",
-      "description": "Multi-domain execution plan review with lead/wing fix loop. Codex (gpt-5.6-sol, xhigh reasoning) reviews 5 adversarial domains in parallel; Claude (opus-4-8) wing fixes findings. Use for review plan, audit deployment plan.",
+      "description": "Multi-domain execution plan review with lead/wing fix loop. Codex (gpt-5.6-sol, xhigh reasoning) reviews 5 adversarial domains in parallel; Claude (opus-5 1m) wing fixes findings. Use for review plan, audit deployment plan.",
       "tags": [
         "review",
         "red-team",
@@ -172,7 +172,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.3.2",
+      "version": "0.3.3",
       "runtimes": [
         "claude",
         "codex"
@@ -181,7 +181,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:c28346d8c4525597a87e8810b9a0912dccf6440a7ead68de31666b2a6ff2c51a"
+      "digest": "sha256:c63446c8eb3c1fe034d9f7e8f35d6778edec357e19856a0bf29424f884cb158e"
     },
     {
       "name": "stark-review-spec-improvement",
@@ -197,7 +197,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.3.2",
+      "version": "0.3.3",
       "runtimes": [
         "claude",
         "codex"
@@ -212,7 +212,7 @@
       "name": "stark-review-spec",
       "type": "skill",
       "bundle": "stark-analyze",
-      "description": "Multi-domain spec review with lead/wing fix loop. Codex (gpt-5.6-sol, xhigh reasoning) reviews 9 domains in parallel; Claude (opus-4-8) wing fixes findings. Use for review spec, review architecture.",
+      "description": "Multi-domain spec review with lead/wing fix loop. Codex (gpt-5.6-sol, xhigh reasoning) reviews 9 domains in parallel; Claude (opus-5 1m) wing fixes findings. Use for review spec, review architecture.",
       "tags": [
         "review",
         "red-team",
@@ -222,7 +222,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.3.2",
+      "version": "0.3.3",
       "runtimes": [
         "claude",
         "codex"
@@ -231,7 +231,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:ab1c0427e7ba01a0a0589edceac7dff57bc811503d42ff69025b4c65998b6c3e"
+      "digest": "sha256:2711283f67869ca6484dcdb2a3d512a6f425bc955aeeee548b56ff5c0c9b910d"
     },
     {
       "name": "stark-review",
@@ -247,7 +247,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.3.2",
+      "version": "0.3.3",
       "runtimes": [
         "claude",
         "codex"
@@ -272,7 +272,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.3.2",
+      "version": "0.3.3",
       "runtimes": [
         "claude",
         "codex"
@@ -281,7 +281,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:d47f7e4c6d4bb1edaf34651d257269635a3024f67d54c70dd01d727b34233021"
+      "digest": "sha256:e6841774724cf390b44adaae4f6587d6223946180474c0b211c9643e6a617211"
     },
     {
       "name": "stark-terraform-review",
@@ -297,7 +297,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.3.2",
+      "version": "0.3.3",
       "runtimes": [
         "claude",
         "codex"
@@ -322,7 +322,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.3.2",
+      "version": "0.3.3",
       "runtimes": [
         "claude",
         "codex"
@@ -347,7 +347,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.3.2",
+      "version": "0.3.3",
       "runtimes": [
         "claude",
         "codex"
@@ -372,7 +372,7 @@
       ],
       "category": "productivity",
       "maturity": "beta",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "runtimes": [
         "claude",
         "codex"
@@ -397,7 +397,7 @@
       ],
       "category": "setup",
       "maturity": "beta",
-      "version": "0.2.7",
+      "version": "0.2.8",
       "runtimes": [
         "claude",
         "codex"
@@ -422,7 +422,7 @@
       ],
       "category": "setup",
       "maturity": "beta",
-      "version": "0.2.7",
+      "version": "0.2.8",
       "runtimes": [
         "claude",
         "codex"
@@ -447,7 +447,7 @@
       ],
       "category": "setup",
       "maturity": "beta",
-      "version": "0.2.7",
+      "version": "0.2.8",
       "runtimes": [
         "claude",
         "codex"
@@ -470,7 +470,7 @@
       ],
       "category": "productivity",
       "maturity": "beta",
-      "version": "0.1.6",
+      "version": "0.1.7",
       "runtimes": [
         "claude",
         "codex",
@@ -495,7 +495,7 @@
       ],
       "category": "productivity",
       "maturity": "beta",
-      "version": "0.1.6",
+      "version": "0.1.7",
       "runtimes": [
         "claude",
         "codex",
@@ -520,7 +520,7 @@
       ],
       "category": "productivity",
       "maturity": "beta",
-      "version": "0.1.6",
+      "version": "0.1.7",
       "runtimes": [
         "claude",
         "codex",
@@ -571,7 +571,7 @@
       ],
       "category": "implementation",
       "maturity": "beta",
-      "version": "0.1.10",
+      "version": "0.1.11",
       "runtimes": [
         "claude",
         "codex"
@@ -595,7 +595,7 @@
       ],
       "category": "implementation",
       "maturity": "beta",
-      "version": "0.1.10",
+      "version": "0.1.11",
       "runtimes": [
         "claude",
         "codex"
@@ -604,7 +604,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:5a06e86b9e496961e666ecf2d371c97e2b5b37cfc5c43a5ba5a248f1b5af0614"
+      "digest": "sha256:3cf4633e16b13aeb3a16a8cb8ec3bb29c67d58d5973cd6da41a6c8392bbd743c"
     },
     {
       "name": "stark-gh-user",
@@ -620,7 +620,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.2.4",
+      "version": "0.2.5",
       "runtimes": [
         "claude",
         "codex"
@@ -645,7 +645,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.2.4",
+      "version": "0.2.5",
       "runtimes": [
         "claude",
         "codex"
@@ -670,7 +670,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.2.4",
+      "version": "0.2.5",
       "runtimes": [
         "claude",
         "codex"
@@ -695,7 +695,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.2.4",
+      "version": "0.2.5",
       "runtimes": [
         "claude",
         "codex"
@@ -720,7 +720,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.2.4",
+      "version": "0.2.5",
       "runtimes": [
         "claude",
         "codex"
@@ -745,7 +745,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.2.4",
+      "version": "0.2.5",
       "runtimes": [
         "claude",
         "codex"
@@ -769,7 +769,7 @@
       ],
       "category": "planning",
       "maturity": "beta",
-      "version": "0.1.9",
+      "version": "0.1.10",
       "runtimes": [
         "claude",
         "codex"
@@ -793,7 +793,7 @@
       ],
       "category": "planning",
       "maturity": "beta",
-      "version": "0.1.9",
+      "version": "0.1.10",
       "runtimes": [
         "claude",
         "codex"

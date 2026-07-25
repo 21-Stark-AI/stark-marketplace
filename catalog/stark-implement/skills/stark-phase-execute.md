@@ -2,7 +2,7 @@
 name: stark-phase-execute
 type: skill
 description: 'Autonomously execute a dev phase: implement tasks, PR, review, fix, merge, release. Use for execute phase, run plan.'
-version: 0.1.10
+version: 0.1.11
 maturity: beta
 runtimes:
   - claude
@@ -200,7 +200,7 @@ EOF
 # (verified 2026-06-03, Claude Code 2.1.161). `"$(cat …)"` passes the whole
 # multi-line file as a single argv entry — no shell re-interpretation of its body.
 claude -p "$(cat "$PROMPT_FILE")" \
-  --model "$(node --experimental-strip-types "$TOOLS/stark_config_lib.ts" --model claude 2>/dev/null || echo claude-opus-4-8)" \
+  --model "$(node --experimental-strip-types "$TOOLS/stark_config_lib.ts" --model claude 2>/dev/null || echo 'claude-opus-5[1m]')" \
   --output-format text \
   --permission-mode bypassPermissions \
   --no-session-persistence \
