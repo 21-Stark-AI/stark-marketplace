@@ -2,7 +2,7 @@
 name: stark-adr
 type: skill
 description: 'Record and manage Architecture Decision Records (ADRs) under a repo''s docs/adr/. Use for: new ADR, log/record a decision, "create an ADR", supersede an ADR, list ADRs, "why did we decide X". Wraps `brain adr` — MADR-lite, auto-numbered, repo-relative.'
-version: 0.2.7
+version: 0.2.8
 maturity: beta
 runtimes:
   - claude
