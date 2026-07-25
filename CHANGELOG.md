@@ -4,6 +4,15 @@ All notable changes to `stark-marketplace`. The format follows [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.5.0] — 2026-07-25
+
+### Added
+- **`stark-forge`** skill in the **stark-implement** bundle (`0.1.12 → 0.2.0`) — the pipeline **conductor**. Chains the six pipeline stages (8 with `--red-team`) in-session over a crash-resumable, merge-at-artifact-boundaries state machine (`tools/forge_state{,_lib}.ts`); resolves chain/merge-points/commands and base-sync routing itself, so the skill is glue. Bundle now carries the full autonomous-execution trio: `stark-copilot` + `stark-phase-execute` + `stark-forge`.
+
+### Changed
+- **stark-implement** `0.1.12 → 0.2.0` (MINOR — bundle membership changed) — also re-renders `stark-copilot` (now lands an impl PR via `tools/copilot_land.ts` — create-or-adopt branch, push never `--force`, draft-by-default) and picks up the repo-wide `claude-opus-4-8 → claude-opus-5[1m]` default.
+- Root `VERSION` `0.4.0 → 0.5.0` (MINOR — bundle membership changed).
+
 ## [0.4.0] — 2026-07-18
 
 ### Added
