@@ -559,6 +559,30 @@
       "digest": "sha256:cc399e46295ebc0b2e0768ffad57118b89a0d3ba3dc5bd1aea4733565e65ba36"
     },
     {
+      "name": "stark-build",
+      "type": "skill",
+      "bundle": "stark-implement",
+      "description": "Stage 2 — autonomous implementation from an accepted stark-author spec: one fresh headless session per task, gated by checks the agent cannot edit (PreToolUse path-deny + Stop-hook gate), evidence per task, commit per green task, held-out e2e gate, one cross-vendor advisory review, draft PR. No LLM review loops. Use for build, implement a spec.",
+      "tags": [
+        "implementation",
+        "automation",
+        "lead-wing",
+        "autonomous"
+      ],
+      "category": "implementation",
+      "maturity": "beta",
+      "version": "0.3.0",
+      "runtimes": [
+        "claude",
+        "codex"
+      ],
+      "support": {
+        "claude": "native",
+        "codex": "native"
+      },
+      "digest": "sha256:6cbc25d68bb30c23434c41f7e3286603be0a3ab2a7a817afc8b06a9f6ae90540"
+    },
+    {
       "name": "stark-copilot",
       "type": "skill",
       "bundle": "stark-implement",
@@ -571,7 +595,7 @@
       ],
       "category": "implementation",
       "maturity": "beta",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "runtimes": [
         "claude",
         "codex"
@@ -595,7 +619,7 @@
       ],
       "category": "implementation",
       "maturity": "beta",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "runtimes": [
         "claude",
         "codex"
@@ -619,7 +643,7 @@
       ],
       "category": "implementation",
       "maturity": "beta",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "runtimes": [
         "claude",
         "codex"
@@ -781,6 +805,30 @@
       "digest": "sha256:e5e8a4b34ddc3e3046c3cbf28d62bb3a2d71701df3b7bfb9d3f054e151cd3010"
     },
     {
+      "name": "stark-author",
+      "type": "skill",
+      "bundle": "stark-plan",
+      "description": "Stage 1 — human-gated spec+plan authoring in one session: tier check, time-boxed recon, structured interview, one self-contained doc, one zero-context advisory pass, human gate, commit-pinned handoff. No LLM review loops. Use for author, spec, plan a change.",
+      "tags": [
+        "planning",
+        "plan",
+        "tasks",
+        "issues"
+      ],
+      "category": "planning",
+      "maturity": "beta",
+      "version": "0.2.0",
+      "runtimes": [
+        "claude",
+        "codex"
+      ],
+      "support": {
+        "claude": "native",
+        "codex": "native"
+      },
+      "digest": "sha256:bf26f704a6eb925fa54145171cfee3176e442438bff21d206da2019fd306a5eb"
+    },
+    {
       "name": "stark-plan-to-tasks",
       "type": "skill",
       "bundle": "stark-plan",
@@ -793,7 +841,7 @@
       ],
       "category": "planning",
       "maturity": "beta",
-      "version": "0.1.11",
+      "version": "0.2.0",
       "runtimes": [
         "claude",
         "codex"
@@ -817,7 +865,7 @@
       ],
       "category": "planning",
       "maturity": "beta",
-      "version": "0.1.11",
+      "version": "0.2.0",
       "runtimes": [
         "claude",
         "codex"

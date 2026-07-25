@@ -4,6 +4,16 @@ All notable changes to `stark-marketplace`. The format follows [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.6.0] — 2026-07-25
+
+### Added
+- **`stark-author`** skill in the **stark-plan** bundle (`0.1.11 → 0.2.0`) — **Stage 1 of the two-stage rebuild**: human-gated spec+plan authoring in ONE session (tier check → time-boxed recon → structured interview → one self-contained spec+plan doc + plain-English `.human.md` sidecar → one zero-context advisory pass → 8-item human gate → `accepted-base` pin → draft PR). No LLM-reviews-LLM loop anywhere. For new work it replaces the write-spec → review-spec → red-team-spec → spec-to-plan → review-plan chain.
+- **`stark-build`** skill in the **stark-implement** bundle (`0.2.0 → 0.3.0`) — **Stage 2**: autonomous implementation from an accepted stark-author spec. One fresh headless session per task, gated by checks the agent cannot edit (PreToolUse path-deny + Stop-hook gate with 7-block abort-with-deviation), commit per green task, held-out e2e gate, ONE cross-vendor advisory review whose findings die at the human. Zero new TS — protocol skill + two POSIX hook scripts.
+
+### Changed
+- **stark-plan** `0.1.11 → 0.2.0`, **stark-implement** `0.2.0 → 0.3.0` (MINOR — bundle membership changed).
+- Root `VERSION` `0.5.0 → 0.6.0` (MINOR — bundle membership changed).
+
 ## [0.5.0] — 2026-07-25
 
 ### Added
