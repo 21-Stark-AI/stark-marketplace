@@ -2,7 +2,7 @@
 name: stark-build
 type: skill
 description: 'Stage 2 — autonomous implementation from an accepted stark-author spec: one fresh headless session per task, gated by checks the agent cannot edit (PreToolUse path-deny + Stop-hook gate), evidence per task, commit per green task, held-out e2e gate, one cross-vendor advisory review, draft PR. No LLM review loops. Use for build, implement a spec.'
-version: 0.3.0
+version: 0.3.1
 maturity: beta
 runtimes:
   - claude
