@@ -2,7 +2,7 @@
 name: stark-forge
 type: skill
 description: Thin in-session conductor for the full write-spec through copilot pipeline. Runs each stage skill in-session, merges each artifact PR once at the last stage that touches it, and drives a crash-resumable state file via forge_state.ts. Never re-implements a stage's own logic. Use for end-to-end pipeline runs, forge, autonomous spec-to-implementation.
-version: 0.3.1
+version: 0.3.2
 maturity: beta
 runtimes:
   - claude
