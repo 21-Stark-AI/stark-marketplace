@@ -421,7 +421,7 @@
       ],
       "category": "implementation",
       "maturity": "beta",
-      "version": "0.4.3",
+      "version": "0.4.4",
       "runtimes": [
         "claude",
         "codex"
@@ -430,7 +430,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:0f1b54e028f3f6fe773e4f8db8e47d51e43194ce7162a97dd9800aa5e265cd79"
+      "digest": "sha256:498d9d5fcc07ef0f829aa1371cf4b687c5843c1ee974cbdb92834d77439175ea"
     },
     {
       "name": "stark-copilot",
@@ -445,7 +445,7 @@
       ],
       "category": "implementation",
       "maturity": "beta",
-      "version": "0.4.3",
+      "version": "0.4.4",
       "runtimes": [
         "claude",
         "codex"
