@@ -22,7 +22,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.5.0",
+      "version": "0.5.1",
       "runtimes": [
         "claude",
         "codex"
@@ -47,7 +47,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.5.0",
+      "version": "0.5.1",
       "runtimes": [
         "claude",
         "codex"
@@ -72,7 +72,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.5.0",
+      "version": "0.5.1",
       "runtimes": [
         "claude",
         "codex"
@@ -97,7 +97,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.5.0",
+      "version": "0.5.1",
       "runtimes": [
         "claude",
         "codex"
@@ -122,7 +122,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.5.0",
+      "version": "0.5.1",
       "runtimes": [
         "claude",
         "codex"
@@ -137,7 +137,7 @@
       "name": "stark-ssot",
       "type": "skill",
       "bundle": "stark-analyze",
-      "description": "Use when consolidating or reviewing a single source of truth — duplicated logic, a constant/model-id/URL/timeout copied into a second place, a parser or regex reimplemented, a local policy branch that belongs in a registry, a fallback default wired at a call site, or a value re-derived in the UI. Also on requests to centralize, deduplicate, unify, or \"why is this implemented manually / in two places\". Symptoms in a diff: a hardcoded model id or GCP project, `~/.claude/code-review/...` typed out, a hand-rolled token→USD cost, a re-pasted dispatch/env helper, a duplicated `>=`/threshold check. Do NOT use for code that only looks similar but answers a different question.",
+      "description": "Use when consolidating or reviewing a single source of truth — duplicated logic, a constant/model-id/URL/timeout copied into a second place, a parser or regex reimplemented, a local policy branch that belongs in a registry, a fallback default wired at a call site, or a value re-derived in the UI. Also on requests to centralize, deduplicate, unify, or \"why is this implemented manually / in two places\". Symptoms in a diff: a hardcoded model id or GCP project, `~/.claude/code-review/...` typed out, a re-pasted dispatch/env helper, a duplicated `>=`/threshold check. Do NOT use for code that only looks similar but answers a different question.",
       "tags": [
         "review",
         "red-team",
@@ -147,7 +147,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.5.0",
+      "version": "0.5.1",
       "runtimes": [
         "claude",
         "codex"
@@ -156,7 +156,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:0032765d0e640577b42f994ab0d5dc884df30b689306d79a7ea141d1998d7ccb"
+      "digest": "sha256:8d23ab8d5c65f418e789f5bdfad185c7e71938d6ed0847d7d8180fd3458c520b"
     },
     {
       "name": "stark-terraform-review",
@@ -172,7 +172,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.5.0",
+      "version": "0.5.1",
       "runtimes": [
         "claude",
         "codex"
@@ -197,7 +197,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.5.0",
+      "version": "0.5.1",
       "runtimes": [
         "claude",
         "codex"
