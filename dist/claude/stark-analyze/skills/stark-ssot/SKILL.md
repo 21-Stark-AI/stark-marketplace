@@ -18,8 +18,9 @@ usage, and arguments, then stop — do not run preflight or any phase.
 > domain. The 2026-07-26 rewrite retired the auto-fired `ssot` lens after
 > telemetry showed it produced **18 of the fleet's 28 review-noise labels (45%
 > noise among its classified findings)** while its 22 real fixes all shared one
-> shape: a nameable existing owner. The doc-review trees (`/stark-review-spec`,
-> `/stark-review-plan`) still carry an `ssot` domain until their demolition.
+> shape: a nameable existing owner. The doc-review loops were demolished on
+> 2026-07-26 — authoring runs through `/stark-author`, implementation through
+> `/stark-build`.
 > **This skill is the consolidation workflow** — the actual "give it one owner
 > and route the copies through it" refactor. Use it to fix what review (or
 > you) found.
@@ -89,9 +90,7 @@ already centralized the things people reflexively hardcode; in another repo the
 | a machine-specific **path** (`~/.claude/code-review/{tools,prompts}`) | `asset_root_lib.assetRoot()/assetPromptsDir()/stateRoot()` | path roots → one resolver seam, so relocation/packaging doesn't break |
 | a **credential/App id / key location** | the `APPS` map in `github_app_lib.ts` | auth identity → one map; callers mint through it |
 | a **cost / unit-conversion** calc | `cost_lib.computeDispatchCost()` | shared math → one function so every caller agrees |
-| a **resource path with precedence** (DB, cache) | `red_team_db_resolver` (`--db > env > config > default`) | resolution order → one resolver, not re-implemented per caller |
 | a **dispatch/env helper** (`run`, `buildAgentEnv`, gemini-home, parsers) | import from `copilot_dispatch.ts` (`plan_dispatch`/`iac_review` already do) | shared plumbing → export once, import; don't re-paste |
-| a **policy/config field** that must stay authoritative | `stark_config_lib.getRedTeamConfig()` locked fields | protected policy → owner rejects overrides by design |
 
 The right-hand *pattern* is what travels; the middle column is just this repo's
 instance of it. In a Terraform repo the "owner" is a `locals` block or a shared

@@ -1,5 +1,5 @@
 name: stark-analyze
-version: 0.4.2
+version: 0.5.0
 description: Contract-bounded spec authoring, multi-domain review, and adversarial red-team of specs, designs, execution plans, and PRs, multi-agent Terraform/Terragrunt (IaC) review, application-logging authoring/review guidance, plus review-prompt improvement from assessment feedback. Maps to spec-kit's specify + analyze phases.
 category: review
 tags:
@@ -18,18 +18,11 @@ runtimes:
 # Membership manifest consumed by the generator (`stark sync`): canonical skill
 # names pulled from a stark-skills checkout.
 skills:
-  - stark-write-spec
-  - stark-red-team-spec
-  - stark-red-team-plan
   - stark-refactor-plan
   - stark-review
-  - stark-review-spec
-  - stark-review-spec-improvement
   - stark-review-improvement
-  - stark-review-plan
   - stark-terraform-review
   - stark-terragrunt-review
   - stark-logging
   - stark-ssot
-  - stark-red-team-fold
   - stark-fresh-eyes

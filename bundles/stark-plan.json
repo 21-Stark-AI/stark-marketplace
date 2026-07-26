@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "bundle": {
     "name": "stark-plan",
-    "version": "0.2.2",
+    "version": "0.3.0",
     "description": "Turn a design doc into a phased implementation plan, then decompose it into phased GitHub issues with story points and risk labels. Maps to spec-kit's plan + tasks phases.",
     "category": "planning",
     "tags": [
@@ -19,7 +19,7 @@
       "name": "stark-author",
       "type": "skill",
       "description": "Stage 1 — human-gated spec+plan authoring in one session: tier check, time-boxed recon, structured interview, one self-contained doc, one zero-context advisory pass, human gate, commit-pinned handoff. No LLM review loops. Use for author, spec, plan a change.",
-      "version": "0.2.2",
+      "version": "0.3.0",
       "runtimes": [
         "claude",
         "codex"
@@ -41,72 +41,6 @@
         "codex": [
           {
             "path": ".agents/skills/stark-author/SKILL.md",
-            "kind": "file",
-            "emulated": false
-          }
-        ]
-      },
-      "fidelityNotes": {}
-    },
-    {
-      "name": "stark-plan-to-tasks",
-      "type": "skill",
-      "description": "Decompose spec/plan into phased GitHub issues with story points and risk labels. Use for plan to tasks, decompose plan.",
-      "version": "0.2.2",
-      "runtimes": [
-        "claude",
-        "codex"
-      ],
-      "support": {
-        "claude": "native",
-        "codex": "native"
-      },
-      "requires": [],
-      "diverged": false,
-      "outputs": {
-        "claude": [
-          {
-            "path": "skills/stark-plan-to-tasks/SKILL.md",
-            "kind": "file",
-            "emulated": false
-          }
-        ],
-        "codex": [
-          {
-            "path": ".agents/skills/stark-plan-to-tasks/SKILL.md",
-            "kind": "file",
-            "emulated": false
-          }
-        ]
-      },
-      "fidelityNotes": {}
-    },
-    {
-      "name": "stark-spec-to-plan",
-      "type": "skill",
-      "description": "Convert spec docs into phased implementation plans via paired lead/wing agents. Lead drafts, wing reviews, fix-loop until approved. Use for plan from spec.",
-      "version": "0.2.2",
-      "runtimes": [
-        "claude",
-        "codex"
-      ],
-      "support": {
-        "claude": "native",
-        "codex": "native"
-      },
-      "requires": [],
-      "diverged": false,
-      "outputs": {
-        "claude": [
-          {
-            "path": "skills/stark-spec-to-plan/SKILL.md",
-            "kind": "file",
-            "emulated": false
-          }
-        ],
-        "codex": [
-          {
-            "path": ".agents/skills/stark-spec-to-plan/SKILL.md",
             "kind": "file",
             "emulated": false
           }

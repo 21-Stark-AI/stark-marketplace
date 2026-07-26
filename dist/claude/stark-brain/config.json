@@ -27,7 +27,10 @@
   "severity_overrides": {},
   "iac_review": {
     "enabled": true,
-    "agents": ["codex", "gemini"],
+    "agents": [
+      "codex",
+      "gemini"
+    ],
     "timeout_sec": 600,
     "max_files": 80,
     "max_bytes_per_file": 100000
@@ -44,13 +47,6 @@
       "CLAUDE.md"
     ],
     "pr_merge_strategy": "squash"
-  },
-  "plan_to_tasks": {
-    "validation_agents": [
-      "codex"
-    ],
-    "max_quality_gate_rounds": 3,
-    "max_validation_iterations": 2
   },
   "models": {
     "claude": {
@@ -150,154 +146,6 @@
     "timeout": 15,
     "conservative_confidence_threshold": 0.8,
     "insights_url": "http://localhost:7420"
-  },
-  "spec_review": {
-    "agents": [
-      "claude",
-      "codex"
-    ],
-    "fix_threshold": "medium",
-    "disabled_domains": [],
-    "max_rounds": 2,
-    "max_fixes_per_round": 12,
-    "compress_retry_growth_ratio": 1.15,
-    "triage": {
-      "mode": "conservative"
-    }
-  },
-  "plan_review": {
-    "triage": {
-      "mode": "conservative"
-    }
-  },
-  "forge": {
-    "domain_routing": {
-      "completeness": "claude",
-      "security": "codex",
-      "scope": "claude",
-      "api-design": "codex",
-      "data-modeling": "codex",
-      "consistency": "claude",
-      "accessibility": "claude",
-      "test-plan": "codex",
-      "ssot": "codex"
-    },
-    "plan_review_routing": {
-      "completeness": "claude",
-      "security": "codex",
-      "sequencing": "claude",
-      "viability": "codex",
-      "ssot": "codex"
-    },
-    "agent_fallback_order": [
-      "claude",
-      "codex"
-    ],
-    "consensus_domains": [
-      "security"
-    ],
-    "consensus_threshold": 2,
-    "max_rounds": 3,
-    "workers": 3,
-    "fix_threshold": "medium",
-    "noise_improvement_threshold": 0.33,
-    "heuristic_consolidation_threshold": 50,
-    "timeout": 900
-  },
-  "forged_review": {
-    "forge_threshold": 4,
-    "max_rounds": 3,
-    "domain_pairs": {
-      "architecture": {
-        "leader": "claude",
-        "second": "codex"
-      },
-      "behavior": {
-        "leader": "codex",
-        "second": "claude"
-      },
-      "type-safety": {
-        "leader": "codex",
-        "second": "claude"
-      },
-      "security": {
-        "leader": "codex",
-        "second": "claude"
-      },
-      "test-coverage": {
-        "leader": "codex",
-        "second": "claude"
-      },
-      "spec-conformance": {
-        "leader": "claude",
-        "second": "codex"
-      },
-      "ssot": {
-        "leader": "codex",
-        "second": "claude"
-      }
-    },
-    "always_on_domains": [
-      "behavior"
-    ],
-    "triage_agent": "claude",
-    "delta_rereview": true,
-    "auto_merge_when_clean": true,
-    "max_diff_chars_per_domain": 60000
-  },
-  "red_team": {
-    "enabled": true,
-    "agent": "codex",
-    "model": "gpt-5.5-pro",
-    "halt_on_unresolved": true,
-    "stages": {
-      "spec": {
-        "enabled": true
-      },
-      "plan": {
-        "enabled": false
-      }
-    },
-    "personas": [
-      "security-trust",
-      "reliability-distsys",
-      "data",
-      "product-dx",
-      "cost-ops"
-    ],
-    "min_severity_to_block": "high",
-    "timeout_s": 900,
-    "per_run_budget_usd": 30,
-    "max_input_chars": 200000,
-    "allow_human_review_halt": true,
-    "verify": {
-      "enabled": true,
-      "model": "claude-opus-5[1m]",
-      "timeout_s": 300,
-      "votes": 1,
-      "max_input_chars": 200000
-    },
-    "fix_plan": {
-      "enabled": true,
-      "model": "gpt-5.5-pro",
-      "reasoning_effort": "xhigh",
-      "timeout_s": 1200,
-      "min_moves": 2,
-      "max_moves": 6,
-      "max_input_chars": 200000
-    },
-    "fold": {
-      "enabled": true,
-      "model": "claude-opus-5[1m]",
-      "timeout_s": 1200,
-      "max_input_chars": 200000,
-      "max_cost_usd": 15,
-      "open_pr": true
-    },
-    "audit": {
-      "retain_full_text": false,
-      "excerpt_max_chars": 240
-    }
   },
   "model_rates": {
     "o3": {
