@@ -421,7 +421,7 @@
       ],
       "category": "implementation",
       "maturity": "beta",
-      "version": "0.4.1",
+      "version": "0.4.3",
       "runtimes": [
         "claude",
         "codex"
@@ -445,7 +445,7 @@
       ],
       "category": "implementation",
       "maturity": "beta",
-      "version": "0.4.1",
+      "version": "0.4.3",
       "runtimes": [
         "claude",
         "codex"
@@ -619,7 +619,7 @@
       ],
       "category": "planning",
       "maturity": "beta",
-      "version": "0.3.0",
+      "version": "0.3.1",
       "runtimes": [
         "claude",
         "codex"
@@ -628,7 +628,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:4326b55a22eb352924f2233d5c2ad510cbcc2e8f317997f19eab8c5f91e79cf9"
+      "digest": "sha256:75c3361e58ecc158c1314e186ae5318c97683064d04f2e9396d35e572ce6aab9"
     }
   ]
 }
