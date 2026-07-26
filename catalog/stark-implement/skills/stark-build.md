@@ -2,7 +2,7 @@
 name: stark-build
 type: skill
 description: 'Stage 2 — autonomous implementation from an accepted stark-author spec: one fresh headless session per task, gated by checks the agent cannot edit (PreToolUse path-deny + Stop-hook gate), evidence per task, commit per green task, held-out e2e gate, one cross-vendor advisory review, draft PR. No LLM review loops. Use for build, implement a spec.'
-version: 0.3.2
+version: 0.4.0
 maturity: beta
 runtimes:
   - claude
@@ -219,6 +219,7 @@ human. No wall-clock, no self-report, no completion-rate dashboards.
 ## What this replaces
 
 For implementation from an accepted spec, this replaces `/stark-copilot`'s
-lead/wing review loop, `/stark-plan-to-tasks`, and `/stark-phase-execute`.
-Those remain installed for legacy plan artifacts until removed. The
-antipatterns this skill must never grow back: [references/stage2-dossier.md](references/stage2-dossier.md) §5.
+lead/wing review loop, `/stark-plan-to-tasks`, and `/stark-phase-execute`
+(the latter two deleted in the 2026-07-26 demolition; copilot survives for
+plan-file work with a 1-round cap and a hard test gate). The antipatterns
+this skill must never grow back: [references/stage2-dossier.md](references/stage2-dossier.md) §5.

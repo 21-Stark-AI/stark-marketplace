@@ -2,7 +2,7 @@
 name: stark-author
 type: skill
 description: 'Stage 1 — human-gated spec+plan authoring in one session: tier check, time-boxed recon, structured interview, one self-contained doc, one zero-context advisory pass, human gate, commit-pinned handoff. No LLM review loops. Use for author, spec, plan a change.'
-version: 0.2.2
+version: 0.3.0
 maturity: beta
 runtimes:
   - claude
@@ -209,7 +209,7 @@ self-report. [RQ9]
 
 ## What this replaces
 
-For new work, this single session replaces `/stark-write-spec`,
-`/stark-review-spec`, `/stark-red-team-spec`, `/stark-spec-to-plan`, and
-`/stark-review-plan`. Those skills remain installed for legacy artifacts
-until removed.
+This single session replaced `/stark-write-spec`, `/stark-review-spec`,
+`/stark-red-team-spec`, `/stark-spec-to-plan`, and `/stark-review-plan` —
+all five were deleted in the 2026-07-26 demolition. This is the authoring
+stage; `/stark-build` is the implementation stage.

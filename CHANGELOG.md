@@ -4,6 +4,16 @@ All notable changes to `stark-marketplace`. The format follows [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.8.0] — 2026-07-26
+
+### Removed — the demolition release
+- **11 skills deleted** with the stark-skills loop-machinery demolition (autopsy 2026-07-25; stark-skills #802/#803/#804, ~35k LOC): **stark-analyze** drops `stark-write-spec`, `stark-review-spec`, `stark-review-plan`, `stark-review-spec-improvement`, `stark-red-team-spec`, `stark-red-team-plan`, `stark-red-team-fold` (`0.4.2 → 0.5.0`); **stark-plan** drops `stark-spec-to-plan`, `stark-plan-to-tasks` (`0.2.2 → 0.3.0`, now carries `stark-author` alone); **stark-implement** drops `stark-phase-execute`, `stark-forge` (`0.3.2 → 0.4.0`, carries `stark-build` + `stark-copilot`).
+- The two-stage pipeline is the replacement: `/stark-author` (human-gated spec+plan) → `/stark-build` (check-gated implementation). No LLM-reviews-LLM loops anywhere.
+
+### Changed
+- **stark-ops** `0.2.8 → 0.2.9` (PATCH — `stark-gh-user` prose repointed at `stark_review.ts`).
+- Root `VERSION` `0.7.0 → 0.8.0` (MINOR — bundle membership changed).
+
 ## [0.7.0] — 2026-07-26
 
 ### Added

@@ -9,7 +9,7 @@
       "name": "stark-analyze",
       "source": "./dist/claude/stark-analyze",
       "description": "Contract-bounded spec authoring, multi-domain review, and adversarial red-team of specs, designs, execution plans, and PRs, multi-agent Terraform/Terragrunt (IaC) review, application-logging authoring/review guidance, plus review-prompt improvement from assessment feedback. Maps to spec-kit's specify + analyze phases.",
-      "version": "0.4.2",
+      "version": "0.5.0",
       "author": {
         "name": "21 Stark AI",
         "email": "engineering@21stark.com"
@@ -83,7 +83,7 @@
       "name": "stark-implement",
       "source": "./dist/claude/stark-implement",
       "description": "Autonomously execute a development phase end-to-end — implement, PR, review, fix, merge, release — via a paired lead/wing agent loop. Maps to spec-kit's implement phase.",
-      "version": "0.3.2",
+      "version": "0.4.0",
       "author": {
         "name": "21 Stark AI",
         "email": "engineering@21stark.com"
@@ -101,7 +101,7 @@
       "name": "stark-ops",
       "source": "./dist/claude/stark-ops",
       "description": "Repository operations beyond the spec-driven pipeline — cut releases, housekeep stale issues/branches/worktrees, run session start/end, hand off work across sessions, and switch GitHub identities.",
-      "version": "0.2.8",
+      "version": "0.2.9",
       "author": {
         "name": "21 Stark AI",
         "email": "engineering@21stark.com"
@@ -120,7 +120,7 @@
       "name": "stark-plan",
       "source": "./dist/claude/stark-plan",
       "description": "Turn a design doc into a phased implementation plan, then decompose it into phased GitHub issues with story points and risk labels. Maps to spec-kit's plan + tasks phases.",
-      "version": "0.2.2",
+      "version": "0.3.0",
       "author": {
         "name": "21 Stark AI",
         "email": "engineering@21stark.com"
