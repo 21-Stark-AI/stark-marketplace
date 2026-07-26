@@ -2,7 +2,7 @@
 name: stark-plan-to-tasks
 type: skill
 description: Decompose spec/plan into phased GitHub issues with story points and risk labels. Use for plan to tasks, decompose plan.
-version: 0.2.1
+version: 0.2.2
 maturity: beta
 runtimes:
   - claude
