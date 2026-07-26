@@ -22,7 +22,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.4.1",
+      "version": "0.4.2",
       "runtimes": [
         "claude",
         "codex"
@@ -47,7 +47,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.4.1",
+      "version": "0.4.2",
       "runtimes": [
         "claude",
         "codex"
@@ -72,7 +72,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.4.1",
+      "version": "0.4.2",
       "runtimes": [
         "claude",
         "codex"
@@ -97,7 +97,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.4.1",
+      "version": "0.4.2",
       "runtimes": [
         "claude",
         "codex"
@@ -122,7 +122,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.4.1",
+      "version": "0.4.2",
       "runtimes": [
         "claude",
         "codex"
@@ -147,7 +147,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.4.1",
+      "version": "0.4.2",
       "runtimes": [
         "claude",
         "codex"
@@ -172,7 +172,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.4.1",
+      "version": "0.4.2",
       "runtimes": [
         "claude",
         "codex"
@@ -197,7 +197,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.4.1",
+      "version": "0.4.2",
       "runtimes": [
         "claude",
         "codex"
@@ -222,7 +222,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.4.1",
+      "version": "0.4.2",
       "runtimes": [
         "claude",
         "codex"
@@ -247,7 +247,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.4.1",
+      "version": "0.4.2",
       "runtimes": [
         "claude",
         "codex"
@@ -272,7 +272,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.4.1",
+      "version": "0.4.2",
       "runtimes": [
         "claude",
         "codex"
@@ -297,7 +297,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.4.1",
+      "version": "0.4.2",
       "runtimes": [
         "claude",
         "codex"
@@ -306,7 +306,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:e6841774724cf390b44adaae4f6587d6223946180474c0b211c9643e6a617211"
+      "digest": "sha256:5d0f4d0b2759bd3d6b7b3f88476c3ae207c9b50f6e05966c38b24e4160d5fe91"
     },
     {
       "name": "stark-terraform-review",
@@ -322,7 +322,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.4.1",
+      "version": "0.4.2",
       "runtimes": [
         "claude",
         "codex"
@@ -347,7 +347,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.4.1",
+      "version": "0.4.2",
       "runtimes": [
         "claude",
         "codex"
@@ -372,7 +372,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.4.1",
+      "version": "0.4.2",
       "runtimes": [
         "claude",
         "codex"
