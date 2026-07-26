@@ -82,8 +82,8 @@
     {
       "name": "stark-implement",
       "source": "./dist/claude/stark-implement",
-      "description": "Autonomously execute a development phase end-to-end — implement, PR, review, fix, merge, release — via a paired lead/wing agent loop. Maps to spec-kit's implement phase.",
-      "version": "0.4.1",
+      "description": "Implement from an accepted spec. /stark-build runs one fresh headless session per task gated by checks the agent cannot edit, with a held-out e2e gate, one cross-vendor advisory review, and one bounded fix round for medium+ findings. /stark-copilot covers plan-file work via a paired lead/wing agent with a 1-round cap and a hard test gate.",
+      "version": "0.4.2",
       "author": {
         "name": "21 Stark AI",
         "email": "engineering@21stark.com"
