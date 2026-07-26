@@ -4,6 +4,14 @@ All notable changes to `stark-marketplace`. The format follows [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.7.0] — 2026-07-26
+
+### Added
+- **`stark-fresh-eyes`** skill in the **stark-analyze** bundle — one-shot zero-context review of a prompt/brief/spec/doc: a single read-only subagent re-verifies every checkable claim by a DIFFERENT method (recursive recounts, recompute from raw sources, path resolution, `--help` on cited commands) and reports defects only; the author dispositions findings once — never a round 2. Pure protocol skill, zero TS.
+
+### Changed
+- **stark-analyze** MINOR bump (membership changed); root `VERSION` `0.6.0 → 0.7.0`.
+
 ## [0.6.0] — 2026-07-25
 
 ### Added
