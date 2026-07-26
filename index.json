@@ -412,7 +412,7 @@
       "name": "stark-build",
       "type": "skill",
       "bundle": "stark-implement",
-      "description": "Stage 2 — autonomous implementation from an accepted stark-author spec: one fresh headless session per task, gated by checks the agent cannot edit (PreToolUse path-deny + Stop-hook gate), evidence per task, commit per green task, held-out e2e gate, one cross-vendor advisory review, draft PR. No LLM review loops. Use for build, implement a spec.",
+      "description": "Stage 2 — autonomous implementation from an accepted stark-author spec: one fresh headless session per task, gated by checks the agent cannot edit (PreToolUse path-deny + Stop-hook gate), evidence per task, commit per green task, held-out e2e gate, one cross-vendor advisory review, ONE bounded fix round for medium+ findings, draft PR. No LLM review loops. Use for build, implement a spec.",
       "tags": [
         "implementation",
         "automation",
@@ -421,7 +421,7 @@
       ],
       "category": "implementation",
       "maturity": "beta",
-      "version": "0.4.0",
+      "version": "0.4.1",
       "runtimes": [
         "claude",
         "codex"
@@ -430,7 +430,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:5b2b5541d2ec76cdccb2e710feef794863ac16ba52aed484128537a51c43f6bb"
+      "digest": "sha256:0f1b54e028f3f6fe773e4f8db8e47d51e43194ce7162a97dd9800aa5e265cd79"
     },
     {
       "name": "stark-copilot",
@@ -445,7 +445,7 @@
       ],
       "category": "implementation",
       "maturity": "beta",
-      "version": "0.4.0",
+      "version": "0.4.1",
       "runtimes": [
         "claude",
         "codex"
