@@ -2,7 +2,7 @@
 name: stark-build
 type: skill
 description: 'Stage 2 — autonomous implementation from an accepted stark-author spec: one fresh headless session per task, gated by checks the agent cannot edit (PreToolUse path-deny + Stop-hook gate), evidence per task, commit per green task, held-out e2e gate, one cross-vendor advisory review, ONE bounded fix round for medium+ findings, draft PR. No LLM review loops. Use for build, implement a spec.'
-version: 0.4.3
+version: 0.4.4
 maturity: beta
 runtimes:
   - claude
@@ -42,7 +42,9 @@ Evidence base: [references/stage2-dossier.md](references/stage2-dossier.md)
   its output is verified by the deterministic gates only, and the advisory
   reviewer is NEVER re-run. There is no second opinion for a ratchet to
   live in. Everything below medium, and everything still open after the one
-  round, dies at the human. [RQ6][A1]
+  round, dies at the human. [RQ6][A1 — relaxed by operator decision
+  2026-07-26 ahead of the A/B the dossier asked for; the dossier's §1.8
+  still argues against this round. Read §6.4a before widening it.]
 
 **Raw input:** `$ARGUMENTS`
 
