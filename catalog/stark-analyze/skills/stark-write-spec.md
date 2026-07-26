@@ -2,7 +2,7 @@
 name: stark-write-spec
 type: skill
 description: 'Author a spec doc via a bounded lead/wing contract loop. The lead drafts the nine-section spec, the wing verifies it against a host-owned contract, and the loop repeats until the contract is satisfied or a bounded breaker fires. Findings land on a create-or-adopt PR. Default agents: claude lead, codex wing. v1 supports claude|codex only (no gemini).'
-version: 0.4.1
+version: 0.4.2
 maturity: beta
 runtimes:
   - claude

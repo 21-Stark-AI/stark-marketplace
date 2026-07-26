@@ -2,7 +2,7 @@
 name: stark-red-team-fold
 type: skill
 description: 'Fold a red-team fix plan back into its design/spec/plan doc. A least-privilege Claude decider triages every proposed move (accept / modify / reject with a rationale), writes the revised artifact + a `.fold.md` decision log, and opens a reviewable PR — never auto-merged. This is the explicit opt-in *fold* step: the challenge skills (`/stark-red-team-spec`, `/stark-red-team-plan`) only surface a proposed fix plan; they do NOT apply it. Use for fold red-team fix plan, apply red-team fix plan, accept red-team counter-proposals into the doc.'
-version: 0.4.1
+version: 0.4.2
 maturity: beta
 runtimes:
   - claude
