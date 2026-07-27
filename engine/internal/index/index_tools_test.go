@@ -18,7 +18,7 @@ func TestBundleDetailSurfacesAgentTools(t *testing.T) {
 			Tools:    []string{"Read", "Bash"},
 		}},
 	}}}
-	_, details, err := Build(cat)
+	_, details, err := Build(cat, nil)
 	if err != nil {
 		t.Fatalf("build: %v", err)
 	}
@@ -42,7 +42,7 @@ func TestBundleDetailNoToolsForNonAgent(t *testing.T) {
 			Runtimes: []model.Runtime{model.RuntimeClaude},
 		}},
 	}}}
-	_, details, err := Build(cat)
+	_, details, err := Build(cat, nil)
 	if err != nil {
 		t.Fatalf("build: %v", err)
 	}
