@@ -17,7 +17,7 @@ func TestBuildLeanIndex(t *testing.T) {
 				Runtimes: []model.Runtime{model.RuntimeClaude}, Body: "b\n"},
 		},
 	}}}
-	idx, details, err := Build(cat)
+	idx, details, err := Build(cat, nil)
 	if err != nil {
 		t.Fatal(err)
 	}

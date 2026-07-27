@@ -14,6 +14,7 @@ import (
 
 	"github.com/21StarkCom/bifrost/engine/internal/adapter/claude"
 	"github.com/21StarkCom/bifrost/engine/internal/canonjson"
+	"github.com/21StarkCom/bifrost/engine/internal/digest"
 	"github.com/21StarkCom/bifrost/engine/internal/index"
 	"github.com/21StarkCom/bifrost/engine/internal/marketplace"
 	"github.com/21StarkCom/bifrost/engine/internal/model"
@@ -123,8 +124,15 @@ func Build(cat *model.Catalog, opts Options) (Output, error) {
 		}
 	}
 
-	// index.json + bundles/<name>.json
-	idx, details, err := index.Build(cat)
+	// index.json + bundles/<name>.json. The per-bundle plugin-asset digests ride along so
+	// `check-bumps` can hold vendored plugin tools to the same immutability rule as
+	// artifacts — without them, a change confined to `vendor/plugins/<bundle>/tools/**`
+	// ships under an unchanged bundle version (see index.PluginAsset).
+	pluginDigests := map[string]string{}
+	for name, files := range pluginAssets {
+		pluginDigests[name] = digest.Files(files)
+	}
+	idx, details, err := index.Build(cat, pluginDigests)
 	if err != nil {
 		return Output{}, err
 	}

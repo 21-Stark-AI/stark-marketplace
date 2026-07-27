@@ -5,6 +5,7 @@ package index
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/21StarkCom/bifrost/engine/internal/adapter/capability"
@@ -39,11 +40,28 @@ type GeneratedBy struct {
 	AdapterVersions map[string]string `json:"adapterVersions"`
 }
 
+// PluginAsset records the version-bump identity of one bundle's VENDORED PLUGIN
+// ASSETS (`vendor/plugins/<bundle>/**` — a stark-skills plugin's own `tools/**` +
+// config). These ship inside the bundle but are not artifacts, so they carry no
+// `digest.Source` and, before this row existed, participated in no gate: a change
+// confined to a plugin's tools left every artifact digest untouched, `check-bumps`
+// reported clean, and the bundle shipped modified content under an unchanged version
+// that consumers would never re-fetch. Recording the digest here lets `check-bumps`
+// hold plugin assets to the same immutability rule as artifacts (spec §11 / CC-5).
+type PluginAsset struct {
+	Bundle  string `json:"bundle"`
+	Version string `json:"version"`
+	Digest  string `json:"digest"`
+}
+
 // Index is the lean search index.
 type Index struct {
 	SchemaVersion int         `json:"schemaVersion"`
 	GeneratedBy   GeneratedBy `json:"generatedBy"`
 	Artifacts     []Entry     `json:"artifacts"`
+	// Omitted when no bundle has vendored plugin assets. Consumers ignore unknown
+	// fields (see package doc), so adding it does not break existing readers.
+	PluginAssets []PluginAsset `json:"pluginAssets,omitempty"`
 }
 
 // BundleDetail is the full per-bundle detail file (CC-3 structured shape).
@@ -184,11 +202,24 @@ func adapterVersions() map[string]string {
 // Build returns the lean index and a map of bundle-name -> CC-3 detail. It errors
 // if any targeted runtime's render fails (a real engine fault — validation gates
 // unsupported types before this point).
-func Build(cat *model.Catalog) (Index, map[string]BundleDetail, error) {
+// pluginDigests maps bundle name -> `digest.Files` over that bundle's vendored plugin
+// assets. Pass nil when a caller has none to record (tests, catalogs with no plugin-backed
+// bundle); bundles absent from the map simply get no row.
+func Build(cat *model.Catalog, pluginDigests map[string]string) (Index, map[string]BundleDetail, error) {
 	idx := Index{
 		SchemaVersion: SchemaVersion,
 		GeneratedBy:   GeneratedBy{AdapterVersions: adapterVersions()},
 	}
+	for _, b := range cat.Bundles {
+		if d, ok := pluginDigests[b.Name]; ok {
+			idx.PluginAssets = append(idx.PluginAssets, PluginAsset{
+				Bundle: b.Name, Version: b.Version, Digest: d,
+			})
+		}
+	}
+	sort.Slice(idx.PluginAssets, func(i, j int) bool {
+		return idx.PluginAssets[i].Bundle < idx.PluginAssets[j].Bundle
+	})
 	details := map[string]BundleDetail{}
 	for _, b := range cat.Bundles {
 		detailArtifacts := make([]DetailEntry, 0, len(b.Artifacts))

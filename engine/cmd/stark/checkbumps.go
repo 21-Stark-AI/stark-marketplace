@@ -42,7 +42,24 @@ type leanPrev struct {
 		Version string `json:"version"`
 		Digest  string `json:"digest"`
 	} `json:"artifacts"`
+	// Vendored plugin assets (index.PluginAsset). Absent in indexes generated before
+	// the field existed — those simply contribute no previous rows, so the gate skips
+	// them for one publish instead of failing the whole repo on rollout.
+	PluginAssets []struct {
+		Bundle  string `json:"bundle"`
+		Version string `json:"version"`
+		Digest  string `json:"digest"`
+	} `json:"pluginAssets"`
 }
+
+// pluginAssetKey namespaces a bundle's vendored-plugin-asset row so it can never collide
+// with an artifact key (`<bundle>/<type>/<name>`); "plugin-assets" is not an artifact type.
+func pluginAssetKey(bundle string) string { return bundle + "/plugin-assets/" + bundle }
+
+// emptyDirDigest is `digest.Files` over no files — the value a bundle without a
+// vendor/plugins/<bundle> directory produces. Used to skip recording a row for the many
+// bundles that have no plugin assets at all, keeping index.json free of empty entries.
+func emptyDirDigest() string { return digest.Files(map[string][]byte{}) }
 
 // runCheckBumps loads the previous committed index + the current catalog and
 // errors (exit 1) on any version-bump immutability violation (CC-5 / spec §11).
@@ -58,6 +75,9 @@ func runCheckBumps(catalogDir, repoRoot string) int {
 		for _, e := range lp.Artifacts {
 			prev[e.Bundle+"/"+e.Type+"/"+e.Name] = bumps.Previous{Version: e.Version, Digest: e.Digest}
 		}
+		for _, p := range lp.PluginAssets {
+			prev[pluginAssetKey(p.Bundle)] = bumps.Previous{Version: p.Version, Digest: p.Digest}
+		}
 	}
 
 	cat, err := load.Load(catalogDir)
@@ -69,6 +89,19 @@ func runCheckBumps(catalogDir, repoRoot string) int {
 	for _, b := range cat.Bundles {
 		for _, a := range b.Artifacts {
 			cur[b.Name+"/"+string(a.Type)+"/"+a.Name] = bumps.Current{Version: a.Version, SourceDigest: digest.Source(a)}
+		}
+		// Vendored plugin assets live OUTSIDE the catalog dir (repoRoot/vendor/plugins/
+		// <bundle>), so they are recomputed from disk here rather than from the loaded
+		// catalog. A bundle with no such directory digests to the empty set and, having
+		// no previous row either, never violates.
+		dir := filepath.Join(repoRoot, "vendor", "plugins", b.Name)
+		d, dErr := digest.Dir(dir)
+		if dErr != nil {
+			fmt.Println("check-bumps: plugin assets:", dErr)
+			return 1
+		}
+		if _, hadPrev := prev[pluginAssetKey(b.Name)]; hadPrev || d != emptyDirDigest() {
+			cur[pluginAssetKey(b.Name)] = bumps.Current{Version: b.Version, SourceDigest: d}
 		}
 	}
 	_ = index.SchemaVersion // keep digest/index contract in one place (CC-2/CC-5)
