@@ -2,7 +2,7 @@
 name: stark-author
 type: skill
 description: 'Stage 1 — human-gated spec+plan authoring in one session: tier check, time-boxed recon, structured interview, one self-contained doc, one zero-context advisory pass, human gate, commit-pinned handoff. No LLM review loops. Use for author, spec, plan a change.'
-version: 0.3.4
+version: 0.3.5
 maturity: beta
 runtimes:
   - claude
