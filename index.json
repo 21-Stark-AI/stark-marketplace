@@ -457,6 +457,32 @@
       "digest": "sha256:d4ba540c48096d3f3a801cb4bbde8647e30937ca8e1ff3a9568ee21b1bb848ba"
     },
     {
+      "name": "stark-cc-user",
+      "type": "skill",
+      "bundle": "stark-ops",
+      "description": "Switch the active Claude Code account between stored profiles when a 5-hour or 7-day rate-limit window runs out. Credentials live in macOS Keychain (service `stark-cc-token`); headroom comes from statusline snapshots.",
+      "tags": [
+        "release",
+        "housekeeping",
+        "session",
+        "handover",
+        "git",
+        "rate-limits"
+      ],
+      "category": "ops",
+      "maturity": "beta",
+      "version": "0.3.0",
+      "runtimes": [
+        "claude",
+        "codex"
+      ],
+      "support": {
+        "claude": "native",
+        "codex": "native"
+      },
+      "digest": "sha256:994c6ecc350b02a7da389c92a6069944d6778ce162d4ef094bb9110bd497908d"
+    },
+    {
       "name": "stark-gh-user",
       "type": "skill",
       "bundle": "stark-ops",
@@ -466,11 +492,12 @@
         "housekeeping",
         "session",
         "handover",
-        "git"
+        "git",
+        "rate-limits"
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.2.10",
+      "version": "0.3.0",
       "runtimes": [
         "claude",
         "codex"
@@ -491,11 +518,12 @@
         "housekeeping",
         "session",
         "handover",
-        "git"
+        "git",
+        "rate-limits"
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.2.10",
+      "version": "0.3.0",
       "runtimes": [
         "claude",
         "codex"
@@ -516,11 +544,12 @@
         "housekeeping",
         "session",
         "handover",
-        "git"
+        "git",
+        "rate-limits"
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.2.10",
+      "version": "0.3.0",
       "runtimes": [
         "claude",
         "codex"
@@ -541,11 +570,12 @@
         "housekeeping",
         "session",
         "handover",
-        "git"
+        "git",
+        "rate-limits"
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.2.10",
+      "version": "0.3.0",
       "runtimes": [
         "claude",
         "codex"
@@ -566,11 +596,12 @@
         "housekeeping",
         "session",
         "handover",
-        "git"
+        "git",
+        "rate-limits"
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.2.10",
+      "version": "0.3.0",
       "runtimes": [
         "claude",
         "codex"
@@ -591,11 +622,12 @@
         "housekeeping",
         "session",
         "handover",
-        "git"
+        "git",
+        "rate-limits"
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.2.10",
+      "version": "0.3.0",
       "runtimes": [
         "claude",
         "codex"
@@ -649,7 +681,7 @@
     },
     {
       "bundle": "stark-ops",
-      "version": "0.2.10",
+      "version": "0.3.0",
       "digest": "sha256:6d4c279f701a39da59c9ceae4c148bb3fff5b59aa00d6025de1a7678a04222f7"
     },
     {

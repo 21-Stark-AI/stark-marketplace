@@ -3,14 +3,15 @@
     "email": "engineering@21stark.com",
     "name": "21 Stark AI"
   },
-  "description": "Repository operations beyond the spec-driven pipeline — cut releases, housekeep stale issues/branches/worktrees, run session start/end, hand off work across sessions, and switch GitHub identities.",
+  "description": "Repository operations beyond the spec-driven pipeline — cut releases, housekeep stale issues/branches/worktrees, run session start/end, hand off work across sessions, and switch GitHub or Claude Code identities when a rate limit runs out.",
   "keywords": [
     "release",
     "housekeeping",
     "session",
     "handover",
-    "git"
+    "git",
+    "rate-limits"
   ],
   "name": "stark-ops",
-  "version": "0.2.10"
+  "version": "0.3.0"
 }
