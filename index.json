@@ -671,8 +671,8 @@
     },
     {
       "bundle": "stark-gh",
-      "version": "0.1.13",
-      "digest": "sha256:4a3cb11b2c709879ae7f0157d0368eaff297dc3062980308eb675ebbaf048bbf"
+      "version": "0.1.14",
+      "digest": "sha256:b5e20bf0ad759e53a181e0e2d028aa642bea63bc7a376cc87cda013d62d43609"
     },
     {
       "bundle": "stark-implement",

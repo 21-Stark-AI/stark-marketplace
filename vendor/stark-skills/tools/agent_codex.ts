@@ -1,6 +1,6 @@
 import type { AgentName, Finding, Severity } from "./stark_review_lib.ts";
 import { findingId } from "./stark_review_lib.ts";
-import { resolvedPath } from "./agent_env_lib.ts";
+import { AGENT_ENV_ALLOWLIST, resolvedPath } from "./agent_env_lib.ts";
 
 export interface BuiltCommand {
   cmd: string;
@@ -20,6 +20,14 @@ export interface BuildContext {
   cwd?: string;
   /** True only when the dispatcher just created cwd as an isolated scratch dir. */
   trustedGeneratedCwd?: boolean;
+  /**
+   * JSON Schema constraining the agent's reply. Honoured only by agents whose
+   * CLI can enforce it — currently `claude` (`--json-schema`), which forces a
+   * conforming object and retries the model on mismatch. Agents without an
+   * equivalent flag ignore this and keep their tolerant text parsing, so the
+   * field is safe to set unconditionally.
+   */
+  jsonSchema?: unknown;
 }
 
 export interface ParseError {
@@ -57,11 +65,10 @@ const KNOWN_FINDING_KEYS: ReadonlySet<string> = new Set([
   "extra",
 ]);
 
-const ENV_ALLOWLIST = ["PATH", "HOME", "LANG", "LC_ALL", "TMPDIR"] as const;
-
+// Allowlist owner is agent_env_lib.ts — see AGENT_ENV_ALLOWLIST there.
 function buildMinimalEnv(): Record<string, string> {
   const env: Record<string, string> = {};
-  for (const key of ENV_ALLOWLIST) {
+  for (const key of AGENT_ENV_ALLOWLIST) {
     const v = process.env[key];
     if (typeof v === "string") env[key] = v;
   }
