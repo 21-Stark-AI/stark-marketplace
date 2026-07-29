@@ -471,7 +471,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.3.3",
+      "version": "0.3.4",
       "runtimes": [
         "claude",
         "codex"
@@ -480,7 +480,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:524a5d11a4843b84a99ef7713db546f8f50c519495c40878a15e3675ffc5ff59"
+      "digest": "sha256:b5b73d221beb99a7370b5cce3dd40a6de3375bdb2032f2146d25610698ea10c3"
     },
     {
       "name": "stark-gh-user",
@@ -497,7 +497,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.3.3",
+      "version": "0.3.4",
       "runtimes": [
         "claude",
         "codex"
@@ -523,7 +523,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.3.3",
+      "version": "0.3.4",
       "runtimes": [
         "claude",
         "codex"
@@ -549,7 +549,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.3.3",
+      "version": "0.3.4",
       "runtimes": [
         "claude",
         "codex"
@@ -575,7 +575,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.3.3",
+      "version": "0.3.4",
       "runtimes": [
         "claude",
         "codex"
@@ -601,7 +601,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.3.3",
+      "version": "0.3.4",
       "runtimes": [
         "claude",
         "codex"
@@ -627,7 +627,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.3.3",
+      "version": "0.3.4",
       "runtimes": [
         "claude",
         "codex"
@@ -681,7 +681,7 @@
     },
     {
       "bundle": "stark-ops",
-      "version": "0.3.3",
+      "version": "0.3.4",
       "digest": "sha256:6d4c279f701a39da59c9ceae4c148bb3fff5b59aa00d6025de1a7678a04222f7"
     },
     {
