@@ -12,7 +12,7 @@
  *   add <name>           capture the CURRENT login as profile <name>
  *   use <name>           switch to profile <name>
  *   limits               headroom for every profile, best target first
- *   next [--apply]       print the best target (and optionally switch to it)
+ *   next [--dry-run]     switch to the next profile in the rotation
  *
  * Switching takes effect on the NEXT `claude` launch — the CLI reads its
  * credentials once at startup. Every mutating path says so on stdout.
@@ -40,9 +40,12 @@ import {
   seatKeyOf,
   parseSnapshot,
   projectUsage,
+  mergeProfile,
+  parseNextFlags,
   rankProfiles,
   readClaudeCredsArgv,
   readProfileArgv,
+  resolveClaudeKeychainAccount,
   validateStoredProfile,
   writeClaudeCredsArgv,
   writeProfileArgv,
@@ -52,6 +55,8 @@ import {
 import { isMainModule } from "./main_module_lib.ts";
 
 const HOME = os.homedir();
+/** The Keychain account the Claude CLI keys its credentials item by. */
+const CLAUDE_ACCOUNT = resolveClaudeKeychainAccount(process.env);
 const CLAUDE_JSON = path.join(HOME, ".claude.json");
 const REGISTRY = path.join(HOME, ".claude", ".cc-profiles.json");
 const SNAPSHOT_DIR = path.join(HOME, ".claude");
@@ -65,6 +70,9 @@ function security(argv: string[]): string {
     // Keychain blobs are small; a bounded buffer keeps a corrupt item from
     // ballooning memory.
     maxBuffer: 4 * 1024 * 1024,
+    // A missing item is an expected state (`list` probes every profile), and
+    // inherited stderr would spray `SecKeychainSearchCopyNext` noise per probe.
+    stdio: ["ignore", "pipe", "pipe"],
   }).replace(/\n$/, "");
 }
 
@@ -306,10 +314,11 @@ function cmdAdd(name: string): void {
   if (!/^[a-z0-9][a-z0-9._-]*$/i.test(name)) {
     fail(`invalid profile name ${JSON.stringify(name)} — use [a-z0-9._-]`);
   }
-  const creds = securityOrNull(readClaudeCredsArgv());
+  const creds = securityOrNull(readClaudeCredsArgv(CLAUDE_ACCOUNT));
   if (creds === null) {
     fail(
-      `no \`${KEYCHAIN.claudeService}\` item in the login keychain — ` +
+      `no \`${KEYCHAIN.claudeService}\` item for account ` +
+        `\`${CLAUDE_ACCOUNT}\` in the login keychain — ` +
         `run \`claude\` and log in first`,
     );
   }
@@ -334,27 +343,12 @@ function cmdAdd(name: string): void {
   validateStoredProfile(JSON.parse(record));
   security(writeProfileArgv(name, record));
 
-  // Dedupe on name and SEAT — never on email or org alone. One address can
-  // hold seats in several orgs, and one org holds many members, so filtering by
-  // either component would evict a distinct seat that merely shares it.
-  const existing = readRegistry();
-  const displaced = existing.find(
-    (p) => p.name !== name && p.seatKey === seatKey,
-  );
-  const profiles = existing.filter(
-    (p) => p.name !== name && p.seatKey !== seatKey,
-  );
-  // Inherit the displaced entry's slot when this is a rename of the same seat;
-  // otherwise leave `order` unset so the new account joins the END of the cycle
-  // rather than shifting a sequence the user deliberately arranged.
-  profiles.push({
+  const { profiles, displaced } = mergeProfile(readRegistry(), {
     name,
     email,
     seatKey,
     ...(label ? { label } : {}),
-    ...(displaced?.order !== undefined ? { order: displaced.order } : {}),
   });
-  profiles.sort((a, b) => a.name.localeCompare(b.name));
   writeRegistry(profiles);
 
   console.log(`stored profile ${name} → ${email}${label ? ` (${label})` : ""}`);
@@ -387,7 +381,7 @@ function cmdUse(name: string): void {
   // profile whenever the two share that component — silently corrupting the
   // profile it overwrote.
   const outgoingSeat = currentSeatKey();
-  const outgoingCreds = securityOrNull(readClaudeCredsArgv());
+  const outgoingCreds = securityOrNull(readClaudeCredsArgv(CLAUDE_ACCOUNT));
   const outgoingAcct = currentAccount();
   if (outgoingSeat && outgoingCreds && outgoingAcct) {
     const known = readRegistry().find(
@@ -409,7 +403,7 @@ function cmdUse(name: string): void {
   // Both halves, or neither: the Keychain write is the one that can fail on a
   // locked keychain, so it goes first. If it throws, ~/.claude.json is
   // untouched and the previous account is still coherent.
-  security(writeClaudeCredsArgv(record.credentials));
+  security(writeClaudeCredsArgv(CLAUDE_ACCOUNT, record.credentials));
   writeOauthAccount(record.oauthAccount);
 
   console.log(`switched to ${name} → ${record.oauthAccount["emailAddress"]}`);
@@ -448,6 +442,8 @@ function cmdLimits(): void {
  *
  * Profiles without stored credentials are skipped: they cannot be switched to,
  * so stopping on one would dead-end the cycle.
+ *
+ * Switches by default — `--dry-run` to preview the pick instead.
  */
 function cmdNext(apply: boolean, best: boolean): void {
   const profiles = readRegistry();
@@ -479,7 +475,7 @@ function cmdNext(apply: boolean, best: boolean): void {
     console.log(
       `${target.name}  ${target.email}${orgSuffix(target)}  ${why}`,
     );
-    console.log("# re-run with --apply to switch");
+    console.log("# --dry-run: not switched");
     return;
   }
   cmdUse(target.name);
@@ -535,7 +531,8 @@ const USAGE = `usage: cc_account.ts <command>
   add <name>        store the current login as profile <name>
   use <name>        switch to profile <name>
   limits            headroom for every profile, best target first
-  next [--apply]    next profile in the rotation ( --best = emptiest instead )
+  next              switch to the next profile in the rotation
+                    ( --dry-run = preview only · --best = emptiest instead )
   order [names...]  show the rotation cycle, or set it
 `;
 
@@ -555,8 +552,10 @@ export function main(argv: string[] = process.argv.slice(2)): void {
       return cmdUse(rest[0]);
     case "limits":
       return cmdLimits();
-    case "next":
-      return cmdNext(rest.includes("--apply"), rest.includes("--best"));
+    case "next": {
+      const { apply, best } = parseNextFlags(rest);
+      return cmdNext(apply, best);
+    }
     case "order":
       return cmdOrder(rest.filter((a) => !a.startsWith("-")));
     case "-h":
