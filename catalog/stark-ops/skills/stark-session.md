@@ -2,7 +2,7 @@
 name: stark-session
 type: skill
 description: Session start (context, git state, briefing) and end (tests, merge, push). Use for session start/end, catch me up.
-version: 0.3.2
+version: 0.3.3
 maturity: beta
 runtimes:
   - claude
