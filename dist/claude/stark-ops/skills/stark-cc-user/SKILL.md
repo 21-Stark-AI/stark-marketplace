@@ -24,8 +24,9 @@ still has room. Sibling of `stark-gh-user`, but the mechanics differ — read
 - `/stark-cc-user add <name>` — store the CURRENT login as profile `<name>`
 - `/stark-cc-user use <name>` — switch to profile `<name>`
 - `/stark-cc-user limits` — headroom for every profile, best target first
-- `/stark-cc-user next [--apply]` — **next profile in the rotation**
-- `/stark-cc-user next --best [--apply]` — emptiest window instead of the next one
+- `/stark-cc-user next` — **switch to the next profile in the rotation**
+- `/stark-cc-user next --dry-run` — preview that pick without switching
+- `/stark-cc-user next --best` — emptiest window instead of the next one
 - `/stark-cc-user order [names...]` — show the rotation cycle, or set it
 
 ## Behavior
@@ -63,7 +64,7 @@ writing only one leaves the machine incoherent:
 
 | Half | Where | What breaks if skipped |
 |---|---|---|
-| OAuth blob | Keychain `genp`, service `Claude Code-credentials`, account `root` | CLI still authenticates as the old account |
+| OAuth blob | Keychain `genp`, service `Claude Code-credentials`, account = the login user (`USER` env, `unknown` fallback — never hardcode; a hardcoded `root` shipped in the first release and made every switch a no-op) | CLI still authenticates as the old account |
 | Identity metadata | `~/.claude.json` → `oauthAccount` | Statusline and every `oauthAccount` reader report the wrong account |
 
 `use` writes both from one stored record, Keychain first (it is the half that
@@ -161,10 +162,13 @@ cycle visits every seat before repeating any.
 /stark-cc-user order Com-Max Net-T0 Net-M0 Net-T1 Net-M1 …
 /stark-cc-user order                 # show the current cycle
 /stark-cc-user list                  # same order, with live status
-/stark-cc-user next --apply          # advance one step
+/stark-cc-user next                  # advance one step (switches)
+/stark-cc-user next --dry-run        # show the pick without switching
 ```
 
-- **Wraps** at the end, so repeated `next --apply` laps the whole fleet.
+- **Switches by default.** `next` exists to advance the rotation; `--dry-run` is
+  the preview. (`--apply` is still accepted, and now just names the default.)
+- **Wraps** at the end, so repeated `next` laps the whole fleet.
 - **Skips profiles with no stored credentials** — they cannot be switched to, so
   stopping on one would dead-end the rotation.
 - **`add` appends** rather than inserting: a new account joins the end of the
