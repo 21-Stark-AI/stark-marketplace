@@ -320,7 +320,7 @@
       ],
       "category": "productivity",
       "maturity": "beta",
-      "version": "0.1.10",
+      "version": "0.1.12",
       "runtimes": [
         "claude",
         "codex",
@@ -345,7 +345,7 @@
       ],
       "category": "productivity",
       "maturity": "beta",
-      "version": "0.1.10",
+      "version": "0.1.12",
       "runtimes": [
         "claude",
         "codex",
@@ -370,7 +370,7 @@
       ],
       "category": "productivity",
       "maturity": "beta",
-      "version": "0.1.10",
+      "version": "0.1.12",
       "runtimes": [
         "claude",
         "codex",
@@ -421,7 +421,7 @@
       ],
       "category": "implementation",
       "maturity": "beta",
-      "version": "0.4.4",
+      "version": "0.4.5",
       "runtimes": [
         "claude",
         "codex"
@@ -430,7 +430,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:498d9d5fcc07ef0f829aa1371cf4b687c5843c1ee974cbdb92834d77439175ea"
+      "digest": "sha256:5008a68930e2402bd1e34cbe659c07d87448680c7516dd0b0348dc1959989e45"
     },
     {
       "name": "stark-copilot",
@@ -445,7 +445,7 @@
       ],
       "category": "implementation",
       "maturity": "beta",
-      "version": "0.4.4",
+      "version": "0.4.5",
       "runtimes": [
         "claude",
         "codex"
@@ -619,7 +619,7 @@
       ],
       "category": "planning",
       "maturity": "beta",
-      "version": "0.3.1",
+      "version": "0.3.2",
       "runtimes": [
         "claude",
         "codex"
@@ -628,7 +628,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:75c3361e58ecc158c1314e186ae5318c97683064d04f2e9396d35e572ce6aab9"
+      "digest": "sha256:04f74d1dd13a428979dc6f3891d48fa7669840a067a28787a0e4926d1b21254d"
     }
   ],
   "pluginAssets": [
@@ -639,12 +639,12 @@
     },
     {
       "bundle": "stark-gh",
-      "version": "0.1.11",
+      "version": "0.1.12",
       "digest": "sha256:4a3cb11b2c709879ae7f0157d0368eaff297dc3062980308eb675ebbaf048bbf"
     },
     {
       "bundle": "stark-implement",
-      "version": "0.4.4",
+      "version": "0.4.5",
       "digest": "sha256:becc435a104248bc9cf5501c6bbad44f4c5c12c3ad9339798c44291260c669ec"
     },
     {
@@ -654,7 +654,7 @@
     },
     {
       "bundle": "stark-plan",
-      "version": "0.3.1",
+      "version": "0.3.2",
       "digest": "sha256:52b3a11122118e8a00a820b643cd08183d2a380239d5203fc536035b0ca7cd18"
     }
   ]
