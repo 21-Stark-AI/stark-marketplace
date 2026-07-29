@@ -2,7 +2,7 @@
 name: stark-review-improvement
 type: skill
 description: Improve review prompts based on Prompt Improvement Assessment from completed reviews. Use for fix review prompts.
-version: 0.5.1
+version: 0.5.2
 maturity: beta
 runtimes:
   - claude
