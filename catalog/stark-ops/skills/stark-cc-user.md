@@ -2,7 +2,7 @@
 name: stark-cc-user
 type: skill
 description: Switch the active Claude Code account between stored profiles when a 5-hour or 7-day rate-limit window runs out. Credentials live in macOS Keychain (service `stark-cc-token`); headroom comes from statusline snapshots.
-version: 0.4.2
+version: 0.4.3
 maturity: beta
 runtimes:
   - claude
