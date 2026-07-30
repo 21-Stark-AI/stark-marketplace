@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "bundle": {
     "name": "stark-analyze",
-    "version": "0.5.4",
+    "version": "0.5.5",
     "description": "Contract-bounded spec authoring, multi-domain review, and adversarial red-team of specs, designs, execution plans, and PRs, multi-agent Terraform/Terragrunt (IaC) review, application-logging authoring/review guidance, plus review-prompt improvement from assessment feedback. Maps to spec-kit's specify + analyze phases.",
     "category": "review",
     "tags": [
@@ -20,7 +20,7 @@
       "name": "stark-fresh-eyes",
       "type": "skill",
       "description": "One-shot zero-context review of a prompt, research brief, spec, or doc before it ships: a single read-only subagent re-verifies every checkable claim by a DIFFERENT method and reports defects only. Findings return to the author once — no second round, no loops. Use for fresh eyes, review prompt, check brief.",
-      "version": "0.5.4",
+      "version": "0.5.5",
       "runtimes": [
         "claude",
         "codex"
@@ -53,7 +53,7 @@
       "name": "stark-logging",
       "type": "skill",
       "description": "Use when adding, changing, or reviewing application logging — instrumenting a service/CLI/connector, choosing log levels (DEBUG→FATAL), writing structured logs, or judging whether log lines in a diff are actually useful. Symptoms: fmt.Sprintf/printf into a message, everything at INFO, log-and-return, no correlation id, secrets in logs, per-item spam in loops, logs nobody can grep.",
-      "version": "0.5.4",
+      "version": "0.5.5",
       "runtimes": [
         "claude",
         "codex"
@@ -86,7 +86,7 @@
       "name": "stark-refactor-plan",
       "type": "skill",
       "description": "Plan a codebase refactor without touching code. Inspect a repository and produce two artifacts — REFACTOR_PLAN.md and REFACTOR_BACKLOG.json — an evidence-based, phased, file-by-file restructuring plan another agent can execute. Use whenever the user wants to refactor, restructure, reorganize, modularize, clean up, de-duplicate, untangle, find dead code, or assess the architecture of a codebase, or asks for a refactor plan / backlog / roadmap — even if they don't say \"plan\" explicitly. Planning only: never modifies, moves, renames, or deletes source.",
-      "version": "0.5.4",
+      "version": "0.5.5",
       "runtimes": [
         "claude",
         "codex"
@@ -119,7 +119,7 @@
       "name": "stark-review-improvement",
       "type": "skill",
       "description": "Improve review prompts based on Prompt Improvement Assessment from completed reviews. Use for fix review prompts.",
-      "version": "0.5.4",
+      "version": "0.5.5",
       "runtimes": [
         "claude",
         "codex"
@@ -152,7 +152,7 @@
       "name": "stark-review",
       "type": "skill",
       "description": "Single-agent PR review. Uses triage-selected PR review domains by default, or one forced agent via `--agent`.",
-      "version": "0.5.4",
+      "version": "0.5.5",
       "runtimes": [
         "claude",
         "codex"
@@ -185,7 +185,7 @@
       "name": "stark-ssot",
       "type": "skill",
       "description": "Use when consolidating or reviewing a single source of truth — duplicated logic, a constant/model-id/URL/timeout copied into a second place, a parser or regex reimplemented, a local policy branch that belongs in a registry, a fallback default wired at a call site, or a value re-derived in the UI. Also on requests to centralize, deduplicate, unify, or \"why is this implemented manually / in two places\". Symptoms in a diff: a hardcoded model id or GCP project, `~/.claude/code-review/...` typed out, a re-pasted dispatch/env helper, a duplicated `>=`/threshold check. Do NOT use for code that only looks similar but answers a different question.",
-      "version": "0.5.4",
+      "version": "0.5.5",
       "runtimes": [
         "claude",
         "codex"
@@ -218,7 +218,7 @@
       "name": "stark-terraform-review",
       "type": "skill",
       "description": "Multi-agent code review of Terraform / OpenTofu (HCL) — modules, root configs, .tf/.tfvars/.tftest.hcl — for security, correctness, state safety, module-contract quality, and testing gaps. Runs the review across one or more configurable LLMs (claude/codex/gemini), each as its own subagent, then merges + cross-validates findings. Use whenever the user wants to review, audit, or sanity-check Terraform/OpenTofu code, asks \"is this .tf safe/correct/idiomatic\", or points at a module/directory and wants findings. Review-only. For Terragrunt orchestration use stark-terragrunt-review.",
-      "version": "0.5.4",
+      "version": "0.5.5",
       "runtimes": [
         "claude",
         "codex"
@@ -251,7 +251,7 @@
       "name": "stark-terragrunt-review",
       "type": "skill",
       "description": "Multi-agent code review of Terragrunt orchestration — terragrunt.hcl, root.hcl, terragrunt.stack.hcl, units, includes, dependency/generate/remote_state blocks, the DRY values pattern, multi-account/multi-env live repos — for dependency correctness, state isolation, mock-output safety, and HCL pitfalls. Runs across one or more configurable LLMs (claude/codex/gemini), each as its own subagent, then merges + cross-validates findings. Use whenever the user wants to review, audit, or sanity-check a Terragrunt repo/catalog/live tree, or asks about dependency ordering / mock outputs / state keys / include hierarchy. Review-only; defers resource/module HCL to stark-terraform-review.",
-      "version": "0.5.4",
+      "version": "0.5.5",
       "runtimes": [
         "claude",
         "codex"
