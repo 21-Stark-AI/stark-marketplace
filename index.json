@@ -677,7 +677,7 @@
     {
       "bundle": "stark-implement",
       "version": "0.4.9",
-      "digest": "sha256:1b9b9e93c0f877faa9bbc761010033bd79797e9303d45effd97aff40ddc6b3d5"
+      "digest": "sha256:b0e1dd0ea460d718ea91214038e8a6144383d8005ed08048eb23d438638b0439"
     },
     {
       "bundle": "stark-ops",
