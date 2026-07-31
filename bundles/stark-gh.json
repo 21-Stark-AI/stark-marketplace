@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "bundle": {
     "name": "stark-gh",
-    "version": "0.1.17",
+    "version": "0.1.18",
     "description": "GitHub workflow commands + MCP for stark.",
     "category": "productivity",
     "tags": [
@@ -19,7 +19,7 @@
       "name": "cleanup",
       "type": "command",
       "description": "Sweep the local + remote repo for merged-PR branches, stale tracking refs, worktree leftovers (including detached-HEAD review worktrees), merged-PR watcher state, stale stashes, and loose objects. Rebases the current branch onto upstream and applies linear-tree git config so the history stays sharp.",
-      "version": "0.1.17",
+      "version": "0.1.18",
       "runtimes": [
         "claude",
         "codex",
@@ -61,7 +61,7 @@
       "name": "pr-merge",
       "type": "command",
       "description": "Rebase a PR, draft squash-commit prose + CHANGELOG bullet via Codex, force-push, mark a draft PR ready-for-review, and squash-merge once CI is green.",
-      "version": "0.1.17",
+      "version": "0.1.18",
       "runtimes": [
         "claude",
         "codex",
@@ -103,7 +103,7 @@
       "name": "pr-open",
       "type": "command",
       "description": "Open or update a PR with Codex-drafted prose, stage-all commit (default), push, and CI watcher. New PRs open as DRAFT by default (override --ready).",
-      "version": "0.1.17",
+      "version": "0.1.18",
       "runtimes": [
         "claude",
         "codex",
