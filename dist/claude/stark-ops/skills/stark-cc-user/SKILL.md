@@ -25,6 +25,7 @@ still has room. Sibling of `stark-gh-user`, but the mechanics differ — read
 - `/stark-cc-user use <name>` — switch to profile `<name>`
 - `/stark-cc-user remove <name>` — forget a profile (credentials + registry entry)
 - `/stark-cc-user prune [--dry-run]` — forget every profile with no stored credentials
+- `/stark-cc-user reset [--yes] [--snapshots]` — forget **every** stored login and start over (previews unless `--yes`)
 - `/stark-cc-user limits` — headroom for every profile, best target first
 - `/stark-cc-user next` — **switch to the next profile in the rotation**
 - `/stark-cc-user next --dry-run` — preview that pick without switching
@@ -85,6 +86,45 @@ the cycle and needs `order` run again.
 Survivors keep their `order` values, gaps and all — those are a sort key, not a
 position, so a removal never rewrites a cycle you arranged by hand.
 
+## Starting over — `reset`
+
+```
+/stark-cc-user reset               # preview: exactly what would go
+/stark-cc-user reset --yes         # do it
+/stark-cc-user reset --yes --snapshots   # ...and clear headroom history too
+```
+
+Use it when the registry has drifted past repair — mismatched seats, profiles
+you can no longer account for, a keying scheme from an older version. Rebuilding
+from a clean slate is cheaper than auditing eleven records.
+
+**It previews by default and acts only under `--yes`** — the inverse of `next`,
+and deliberately so: `next` is undone by another `next`, whereas an OAuth blob
+cannot be re-derived. A mistyped flag therefore degrades to a preview, and
+`--dry-run` beats `--yes` if both appear. Unknown flags are a hard error, never
+ignored.
+
+**What it does NOT touch:** the live `Claude Code-credentials` item and
+`~/.claude.json`. You stay logged in as whoever you are right now, so `add
+<name>` re-registers that account immediately. A reset that logged you out would
+leave nothing to rebuild from.
+
+**It drains the whole `stark-cc-token` service**, looping an un-named
+`security delete-generic-password` rather than walking registry names. That
+catches **orphans** — stored credentials whose registry entry was lost, which
+nothing can enumerate by name and which a name-walk would leave behind
+invisibly. The output reports orphans separately from registered profiles.
+
+**Usage snapshots are kept unless `--snapshots`.** They are per-seat headroom
+readings that cannot be regenerated retroactively and stay valid for any seat
+you re-`add`; clearing them re-ranks every profile as `unknown` until the
+statusline has rendered once per account.
+
+Rebuild afterwards, one `claude /login` + `add` per account, then `order` to set
+the rotation. Quit every other running `claude` first — see the Keychain-is-
+global warning above, which is how mismatched profiles get minted in the first
+place.
+
 ## Why this isn't just a token swap
 
 `gh` needs one token in one env var. A Claude switch has **two halves**, and
@@ -104,6 +144,33 @@ once at startup; a running session keeps the old account until restarted.
 
 `use` also re-captures the OUTGOING account before overwriting it, so a token
 refreshed during the session isn't lost.
+
+### The Keychain item is global — quit other sessions before `add`
+
+There is **one** `Claude Code-credentials` entry per login user, and every
+running `claude` reads *and rewrites* it on token refresh. So a live session
+authenticated as account A can clobber the credentials half moments after you
+switch to B, while `~/.claude.json` still says B. `add` (and the outgoing
+re-capture) then bottle that pair verbatim: **A's token under B's identity.**
+
+The CLI presents A's token, the server resolves entitlement from it and not
+from B's seat, and a team seat carrying a personal-org token bills as metered
+API usage — surfacing as **"Credit balance is too low"** on an account that has
+no metered balance at all. Nothing in the message points at the switch.
+
+Hit live on 2026-08-01: profile `Net-T3` held a `max` token under an
+`Evinced RD` (`claude_team`) seat — the only incoherent one of five team
+profiles. `seatIncoherence()` now compares `credentials.claudeAiOauth`
+`.subscriptionType` against `oauthAccount.organizationType` and blocks all
+three write paths: `add` refuses to store a mismatched pair, `use` refuses to
+switch to one, and the outgoing re-capture **skips** rather than overwrite a
+good stored profile with a mismatched snapshot. It fails **open** — only a
+definite contradiction between two known plan types (`claude_team`↔`team`,
+`claude_max`↔`max`) blocks anything, so an unfamiliar `organizationType` or an
+unreadable blob never strands a working profile.
+
+**Repair a flagged profile:** quit every other running `claude`, `claude
+/login` as that address, select the right organization, `add <name>` again.
 
 ## The identity is the SEAT, not the email and not the org
 

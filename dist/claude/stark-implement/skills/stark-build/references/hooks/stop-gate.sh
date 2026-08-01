@@ -22,15 +22,7 @@ MAX="${5:-7}"
 # a `codex exec` advisory, but worse, because it hangs turn-end inside the
 # gate and is indistinguishable from a slow task. Measured: without
 # `</dev/null` the check never returns; with it, rc=0 in <1s.
-# /bin/bash, NOT PATH bash. Bash 5.3 writes here-docs and here-strings into a pipe and
-# fills it BEFORE exec'ing the reader. macOS's small-pipe kernel buffer is 512 bytes, so
-# any heredoc/here-string >=512 bytes deadlocks: the write blocks and nothing is draining
-# it. Bisected on darwin 25.5 / bash 5.3.15: 511 bytes ok, 512 bytes hangs forever.
-# Independent of TMPDIR, locale, sandbox, BASH_COMPAT and --posix; /bin/bash 3.2 and zsh
-# are unaffected. done-when gates routinely pipe a multi-KB $out through `<<<`, so under
-# PATH bash the Stop gate hangs instead of gating - a SILENT failure that reads as "the
-# session is still working" and burns the whole turn budget.
-out="$(/bin/bash "$CHECK" </dev/null 2>&1)"
+out="$(bash "$CHECK" </dev/null 2>&1)"
 rc=$?
 if [ "$rc" -eq 0 ]; then
   printf '0' > "$COUNTER"

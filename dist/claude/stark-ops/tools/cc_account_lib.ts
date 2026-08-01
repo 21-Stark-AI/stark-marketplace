@@ -201,6 +201,20 @@ export function deleteProfileArgv(name: string): string[] {
   return ["delete-generic-password", "-s", SERVICE_PROFILES, "-a", name];
 }
 
+/**
+ * Delete ONE `stark-cc-token` item without naming it.
+ *
+ * `security` deletes a single matching item per call, so looping on this until
+ * it exits non-zero drains the whole service — including ORPHANS, records whose
+ * registry entry was lost and which `deleteProfileArgv` therefore cannot reach
+ * (nothing enumerates a Keychain service by name). That is why `reset` needs
+ * this and `remove` does not. Scoped to `stark-cc-token`, so it can never touch
+ * the live `Claude Code-credentials` item or any other service.
+ */
+export function deleteAnyProfileArgv(): string[] {
+  return ["delete-generic-password", "-s", SERVICE_PROFILES];
+}
+
 export function writeProfileArgv(name: string, blob: string): string[] {
   return [
     "add-generic-password",
@@ -449,6 +463,35 @@ export function parseNextFlags(args: readonly string[]): {
 }
 
 /**
+ * Flags for `reset` — the irreversible one.
+ *
+ * `reset` PREVIEWS by default and acts only under `--yes`, the inverse of
+ * `next`. The asymmetry is deliberate: `next` is undone by another `next`,
+ * whereas an OAuth blob cannot be re-derived, so the default of every path here
+ * is the one that destroys nothing. That also means a mistyped flag degrades to
+ * a preview rather than to a wipe.
+ *
+ * Unknown flags are a hard error rather than ignored: `--snapshots` silently
+ * dropped to false would keep state the operator asked to clear, and a typo'd
+ * `--yes` reading as a no-op is only safe if the operator is told why nothing
+ * happened.
+ */
+export function parseResetFlags(args: readonly string[]): {
+  confirmed: boolean;
+  snapshots: boolean;
+  unknown: string[];
+} {
+  const known = new Set(["--yes", "--dry-run", "--snapshots"]);
+  return {
+    // `--dry-run` wins over `--yes`. A contradictory pair resolves to the
+    // reading that destroys nothing.
+    confirmed: args.includes("--yes") && !args.includes("--dry-run"),
+    snapshots: args.includes("--snapshots"),
+    unknown: args.filter((a) => !known.has(a)),
+  };
+}
+
+/**
  * Merge a freshly-captured profile into the registry.
  *
  * Dedupe is on name and SEAT — never on email or org alone. One address can
@@ -581,6 +624,63 @@ export function validateStoredProfile(v: unknown): StoredProfile {
   }
   return { credentials: rec["credentials"], oauthAccount: a };
 }
+
+/**
+ * Detect a stored profile whose two halves describe different plans.
+ *
+ * The Keychain `Claude Code-credentials` item is GLOBAL — one entry per login
+ * user, shared by every running `claude` process — and a token refresh rewrites
+ * it in place. So a live session authenticated as account A can clobber the
+ * credentials half moments after `use B` wrote B's, while `~/.claude.json`
+ * still says B. `add`/the `use` re-capture then store that pair verbatim:
+ * A's token under B's identity. The CLI presents A's token, the server
+ * resolves entitlement from it rather than from B's seat, and a team seat with
+ * a personal-org token bills as metered API usage — surfacing as "credit
+ * balance is too low" on an account that has no metered balance at all.
+ *
+ * Observed live on 2026-08-01: profile `Net-T3` held a `max` token under an
+ * `Evinced RD` (`claude_team`) seat — the only incoherent one of five team
+ * profiles.
+ *
+ * Returns a human-readable reason, or null when the halves agree OR when
+ * either side is unreadable. Deliberately fail-open: only a DEFINITE
+ * contradiction between two known plan types is reported, so an unfamiliar
+ * `organizationType` never blocks a switch.
+ */
+export function seatIncoherence(rec: StoredProfile): string | null {
+  const orgType = rec.oauthAccount["organizationType"];
+  if (typeof orgType !== "string") return null;
+  const expected = EXPECTED_SUBSCRIPTION[orgType];
+  if (!expected) return null;
+
+  let sub: unknown;
+  try {
+    const creds = JSON.parse(rec.credentials) as Record<string, unknown>;
+    const oauth = creds["claudeAiOauth"];
+    if (typeof oauth !== "object" || oauth === null) return null;
+    sub = (oauth as Record<string, unknown>)["subscriptionType"];
+  } catch {
+    return null;
+  }
+  if (typeof sub !== "string" || sub === "" || sub === expected) return null;
+
+  const org = rec.oauthAccount["organizationName"];
+  const where = typeof org === "string" ? ` (${org})` : "";
+  return (
+    `stored credentials are a \`${sub}\` token but the seat is ` +
+    `\`${orgType}\`${where}, which expects \`${expected}\` — ` +
+    `the two halves came from different logins`
+  );
+}
+
+/**
+ * `organizationType` → the `subscriptionType` its OAuth token must carry.
+ * Org types absent from this map are not checked (see `seatIncoherence`).
+ */
+const EXPECTED_SUBSCRIPTION: Readonly<Record<string, string>> = {
+  claude_team: "team",
+  claude_max: "max",
+};
 
 /** Human-readable headroom line, e.g. `5H 12% (floor, 4m old) · 7D 61%`. */
 export function describeProjection(p: Projection): string {
