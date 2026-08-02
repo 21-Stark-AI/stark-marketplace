@@ -55,7 +55,7 @@ echo "→ stark-skills: $STARK_SKILLS"
 # A skill must be either a member of some bundle.yaml OR listed here — otherwise
 # the coverage gate below fails. This is what stops a NEW stark-skills skill from
 # being silently dropped by `stark sync` (which only pulls declared members).
-EXCLUDED_SKILLS=(stark-blog-sharpen stark-voice)
+EXCLUDED_SKILLS=(stark-voice)
 
 # bump <file> <minor|patch> — handles both a bundle.yaml `version: X.Y.Z` line and
 # the bare-`X.Y.Z` root VERSION file. minor: X.(Y+1).0 · patch: X.Y.(Z+1).

@@ -663,6 +663,31 @@
       "digest": "sha256:012db27b42d847ad07a4e8d7900776a84f1dd899e7c51ed2b8e454375a9fe297"
     },
     {
+      "name": "stark-blog-sharpen",
+      "type": "skill",
+      "bundle": "stark-write",
+      "description": "Adversarial editor for long-form posts (blog, personal-site essays, longer internal notes) in Aryeh's voice. Use after drafting OR expanding a post, or when asked to \"make this post matter / cut the padding / make it sound like a real person wrote it / does this read AI / tighten this essay\". Two jobs: kill filler so the post earns every word, and scrub the AI tells so it reads like a human manager. Editing/diagnosis only - pairs with stark-voice (which drafts).",
+      "tags": [
+        "writing",
+        "storytelling",
+        "blog",
+        "editing",
+        "humor"
+      ],
+      "category": "writing",
+      "maturity": "beta",
+      "version": "0.2.0",
+      "runtimes": [
+        "claude",
+        "codex"
+      ],
+      "support": {
+        "claude": "native",
+        "codex": "native"
+      },
+      "digest": "sha256:b95cd3e8fd8df4ac9ce091339eef59828a2e30135afd1edbfde86c60780e16b4"
+    },
+    {
       "name": "stark-story-edit",
       "type": "skill",
       "bundle": "stark-write",
@@ -676,7 +701,7 @@
       ],
       "category": "writing",
       "maturity": "beta",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "runtimes": [
         "claude",
         "codex"
