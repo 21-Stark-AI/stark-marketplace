@@ -1,0 +1,20 @@
+name: stark-write
+version: 0.1.0
+description: Long-form writing craft. A full-pass storytelling editor that rewrites a draft post for hook, arc, humor, and endings while keeping every fact frozen - no invented details, no derived numbers - and hands the author a diff plus the story at every size (title, summary, TL;DR, title variants).
+category: writing
+tags:
+  - writing
+  - storytelling
+  - blog
+  - editing
+  - humor
+owner:
+  name: 21 Stark AI
+  email: engineering@21stark.com
+maturity: beta
+runtimes:
+  - claude
+  - codex
+# Membership manifest consumed by the generator (`stark sync`).
+skills:
+  - stark-story-edit

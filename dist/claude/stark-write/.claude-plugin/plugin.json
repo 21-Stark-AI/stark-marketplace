@@ -1,0 +1,16 @@
+{
+  "author": {
+    "email": "engineering@21stark.com",
+    "name": "21 Stark AI"
+  },
+  "description": "Long-form writing craft. A full-pass storytelling editor that rewrites a draft post for hook, arc, humor, and endings while keeping every fact frozen - no invented details, no derived numbers - and hands the author a diff plus the story at every size (title, summary, TL;DR, title variants).",
+  "keywords": [
+    "writing",
+    "storytelling",
+    "blog",
+    "editing",
+    "humor"
+  ],
+  "name": "stark-write",
+  "version": "0.1.0"
+}
