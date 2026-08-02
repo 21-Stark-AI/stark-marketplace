@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "bundle": {
+    "name": "stark-write",
+    "version": "0.1.0",
+    "description": "Long-form writing craft. A full-pass storytelling editor that rewrites a draft post for hook, arc, humor, and endings while keeping every fact frozen - no invented details, no derived numbers - and hands the author a diff plus the story at every size (title, summary, TL;DR, title variants).",
+    "category": "writing",
+    "tags": [
+      "writing",
+      "storytelling",
+      "blog",
+      "editing",
+      "humor"
+    ],
+    "owner": "21 Stark AI",
+    "maturity": "beta"
+  },
+  "artifacts": [
+    {
+      "name": "stark-story-edit",
+      "type": "skill",
+      "description": "Full-pass storytelling editor for long-form posts (blog, essays, site copy) in Aryeh's voice. Use when a draft has the facts but not the story - reads flat, buries its hook, over-explains, lands on a maxim, or needs humor and narrative pull - or when asked to \"make this land / tell it as a story / punch this up / make it worth reading\". Returns the whole post rewritten for the author to diff; every fact frozen. Pairs with stark-blog-sharpen (cut-only padding/AI-tell pass) and stark-voice (register source of truth).",
+      "version": "0.1.0",
+      "runtimes": [
+        "claude",
+        "codex"
+      ],
+      "support": {
+        "claude": "native",
+        "codex": "native"
+      },
+      "requires": [],
+      "diverged": false,
+      "outputs": {
+        "claude": [
+          {
+            "path": "skills/stark-story-edit/SKILL.md",
+            "kind": "file",
+            "emulated": false
+          }
+        ],
+        "codex": [
+          {
+            "path": ".agents/skills/stark-story-edit/SKILL.md",
+            "kind": "file",
+            "emulated": false
+          }
+        ]
+      },
+      "fidelityNotes": {}
+    }
+  ]
+}

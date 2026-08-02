@@ -661,6 +661,31 @@
         "codex": "native"
       },
       "digest": "sha256:012db27b42d847ad07a4e8d7900776a84f1dd899e7c51ed2b8e454375a9fe297"
+    },
+    {
+      "name": "stark-story-edit",
+      "type": "skill",
+      "bundle": "stark-write",
+      "description": "Full-pass storytelling editor for long-form posts (blog, essays, site copy) in Aryeh's voice. Use when a draft has the facts but not the story - reads flat, buries its hook, over-explains, lands on a maxim, or needs humor and narrative pull - or when asked to \"make this land / tell it as a story / punch this up / make it worth reading\". Returns the whole post rewritten for the author to diff; every fact frozen. Pairs with stark-blog-sharpen (cut-only padding/AI-tell pass) and stark-voice (register source of truth).",
+      "tags": [
+        "writing",
+        "storytelling",
+        "blog",
+        "editing",
+        "humor"
+      ],
+      "category": "writing",
+      "maturity": "beta",
+      "version": "0.1.0",
+      "runtimes": [
+        "claude",
+        "codex"
+      ],
+      "support": {
+        "claude": "native",
+        "codex": "native"
+      },
+      "digest": "sha256:80f556ae2da465f69c0ee19a99d3ad7db5bf9c217d0f5893f86915b8bc512bb7"
     }
   ],
   "pluginAssets": [
