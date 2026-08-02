@@ -2,7 +2,7 @@
 name: stark-housekeeping
 type: skill
 description: Audit and clean up stale issues, dead branches, and worktree remnants. Use for cleanup, housekeeping, close stale issues.
-version: 0.4.4
+version: 0.4.5
 maturity: beta
 runtimes:
   - claude
