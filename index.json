@@ -676,7 +676,7 @@
       ],
       "category": "writing",
       "maturity": "beta",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "runtimes": [
         "claude",
         "codex"
@@ -701,7 +701,7 @@
       ],
       "category": "writing",
       "maturity": "beta",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "runtimes": [
         "claude",
         "codex"
@@ -711,6 +711,31 @@
         "codex": "native"
       },
       "digest": "sha256:80f556ae2da465f69c0ee19a99d3ad7db5bf9c217d0f5893f86915b8bc512bb7"
+    },
+    {
+      "name": "stark-story-judge",
+      "type": "skill",
+      "bundle": "stark-write",
+      "description": "Zero-context reader verdict on a long-form post. Use before publishing, after an edit pass, or whenever the ask is \"how good is this / would a stranger read this / fresh eyes on this post / grade it\". Dispatches ONE cold subagent that grades the reading experience on an anchored rubric with quoted evidence, then relays the scorecard verbatim. Judges only - it never edits (stark-story-edit rewrites, stark-blog-sharpen cuts) and never checks publish machinery.",
+      "tags": [
+        "writing",
+        "storytelling",
+        "blog",
+        "editing",
+        "humor"
+      ],
+      "category": "writing",
+      "maturity": "beta",
+      "version": "0.3.0",
+      "runtimes": [
+        "claude",
+        "codex"
+      ],
+      "support": {
+        "claude": "native",
+        "codex": "native"
+      },
+      "digest": "sha256:a9cc7ba1abbe923a85cd80feb1427273099ee95fd9b4e415b1919ff4c24a8285"
     }
   ],
   "pluginAssets": [
