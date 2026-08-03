@@ -676,7 +676,7 @@
       ],
       "category": "writing",
       "maturity": "beta",
-      "version": "0.3.1",
+      "version": "0.3.2",
       "runtimes": [
         "claude",
         "codex"
@@ -701,7 +701,7 @@
       ],
       "category": "writing",
       "maturity": "beta",
-      "version": "0.3.1",
+      "version": "0.3.2",
       "runtimes": [
         "claude",
         "codex"
@@ -716,7 +716,7 @@
       "name": "stark-story-judge",
       "type": "skill",
       "bundle": "stark-write",
-      "description": "Zero-context reader verdict on a long-form post. Use before publishing, after an edit pass, or whenever the ask is \"how good is this / would a stranger read this / fresh eyes on this post / grade it / second opinion\". Dispatches cold judges - one per vendor, never a re-roll - that grade the reading experience on an anchored rubric with quoted evidence, then relays the scorecards verbatim. Judges only - it never edits (stark-story-edit rewrites, stark-blog-sharpen cuts) and never checks publish machinery.",
+      "description": "Zero-context reader verdict on a long-form post. Use before publishing, after an edit pass, or whenever the ask is \"how good is this / would a stranger read this / fresh eyes on this post / grade it / second opinion / would my audience or LinkedIn crowd read this\". Dispatches cold judges - one per vendor, never a re-roll - that grade the reading experience on an anchored rubric with quoted evidence, plus optional audience-persona lenses (read/share verdicts, no grades), then relays the scorecards verbatim. Judges only - it never edits (stark-story-edit rewrites, stark-blog-sharpen cuts) and never checks publish machinery.",
       "tags": [
         "writing",
         "storytelling",
@@ -726,7 +726,7 @@
       ],
       "category": "writing",
       "maturity": "beta",
-      "version": "0.3.1",
+      "version": "0.3.2",
       "runtimes": [
         "claude",
         "codex"
@@ -735,7 +735,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:9cb118f92f9a875ef568290cc139a738470af40f3e495c002d26d115a81f8790"
+      "digest": "sha256:d1e82ccfe2e1b9fb468743114bdc91cd6fa385f56b5a5bb704072e086752531d"
     }
   ],
   "pluginAssets": [

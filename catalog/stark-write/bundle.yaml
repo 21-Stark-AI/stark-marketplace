@@ -1,5 +1,5 @@
 name: stark-write
-version: 0.3.1
+version: 0.3.2
 description: Long-form writing craft, three moves. stark-story-judge grades a post like a zero-context stranger - anchored rubric, quoted evidence, letter grade, publish verdict. stark-story-edit rewrites a draft for hook, arc, humor, and endings while keeping every fact frozen - no invented details, no derived numbers - and hands the author a diff plus the story at every size. stark-blog-sharpen is the adversarial cut-only pass - kill padding until the post earns every word, then scrub the AI tells so it reads like a person.
 category: writing
 tags:
