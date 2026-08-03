@@ -2,7 +2,7 @@
 name: stark-jury
 type: skill
 description: Run one of the four post skills (stark-voice, stark-story-edit, stark-blog-sharpen, stark-story-judge) across a three-model panel and reconcile the results. Use when the ask is "run this through the panel / best of three / compare the models on this post / which model edits this best / jury this draft / second and third opinion on this edit". Dispatches the skill plus the document to claude, codex and gemini in parallel, verifies every candidate against the skill's own iron rules, then THIS session merges anchored (rewrite skills) or writes the calibration report (story-judge). Never edits the four skills, never publishes.
-version: 0.4.0
+version: 0.4.1
 maturity: beta
 runtimes:
   - claude
@@ -67,7 +67,7 @@ node --experimental-strip-types \
 ```
 
 Options: `--panel seat=model[:effort],...` (default
-`claude=claude-opus-5:max,codex=gpt-5.5-pro:xhigh,gemini=gemini-3.1-pro-preview`;
+`claude=claude-opus-5:max,codex=gpt-5.6-sol:xhigh,gemini=gemini-3.1-pro-preview`;
 gemini has no reasoning-effort knob and takes no effort field), `--name` for
 the run-store name, `--timeout-sec` (default 1800 per seat), `--json`.
 `list` and `show <run-id>` read the store. Exit codes: `0` ok, `1` the ladder
