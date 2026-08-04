@@ -1,15 +1,33 @@
 /**
- * GitHub PAT resolver — TypeScript port of `scripts/user_token.py`.
+ * GitHub PAT resolver — the rate-limit escape hatch behind `/stark-gh-user`.
  *
- * Two user identities are supported:
- *   - primary   → aryeh-evinced
- *   - secondary → aryeh-admin
+ *   - primary   → aryeh-stark   (THE identity; matches gh's own keyring login)
+ *   - secondary → a deliberately-provisioned relief account, for when
+ *                 aryeh-stark's GraphQL/REST hourly bucket runs dry
+ *
+ * IDENTITY POLICY: `aryeh-stark` authors everything unless Aryeh explicitly
+ * asks otherwise. `secondary` therefore exists ONLY for a human to reach for by
+ * hand — `/stark-gh-user` carries `disable-model-invocation: true` so no model
+ * can select it, and nothing in this repo calls `getUserToken` automatically.
+ * Do not wire this resolver into a tool, skill or hook: swapping identity mid-run
+ * would silently re-author whatever came next.
  *
  * Tokens are read from the macOS Keychain (service `stark-gh-token`,
  * accounts `{primary,secondary}-{fine,classic}`).
  *
- * This intentionally only addresses *user-identity* gh calls. Bot calls
- * keep using GitHub App installation tokens minted by `tools/github_app.ts`.
+ * STATE (checked 2026-08-04): all four Keychain entries are ABSENT, so every
+ * lookup throws until they are seeded — the skill is a working mechanism with no
+ * credentials behind it yet. Provision `primary-*` from `aryeh-stark` first;
+ * `secondary-*` only when a relief account is actually wanted.
+ *
+ * The three candidate accounts (`aryeh-stark`, `aryeh-evinced`, `aryeh-admin`)
+ * all still EXIST on GitHub — verified live 2026-08-04. An earlier note in this
+ * repo called the latter two retired; that was inferred from the empty Keychain
+ * and is wrong. What is retired is their use as a default, not the accounts.
+ *
+ * This intentionally only addresses *user-identity* gh calls. Bot calls keep
+ * using GitHub App installation tokens minted by `tools/github_app.ts`, whose
+ * only sanctioned use is posting multi-LLM review findings.
  */
 
 import { spawnSync } from "node:child_process";

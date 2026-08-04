@@ -2,7 +2,7 @@
 name: stark-cc-user
 type: skill
 description: Switch the active Claude Code account between stored profiles when a 5-hour or 7-day rate-limit window runs out. Credentials live in macOS Keychain (service `stark-cc-token`); headroom comes from statusline snapshots.
-version: 0.4.7
+version: 0.4.8
 maturity: beta
 runtimes:
   - claude
@@ -18,7 +18,8 @@ usage, and arguments, then stop — do not run any phase.
 # stark-cc-user
 
 Toggle the Claude Code account so work can continue on a profile whose window
-still has room. Sibling of `stark-gh-user`, but the mechanics differ — read
+still has room. Sibling of `stark-gh-user` (which does the same for the **GitHub**
+identity when a GraphQL/REST bucket runs dry), but the mechanics differ — read
 "Why this isn't just a token swap" before changing anything.
 
 ## Arguments
