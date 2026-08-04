@@ -11,12 +11,20 @@ usage, and arguments, then stop — do not run preflight or any phase.
 
 # stark-gh-user
 
-Toggle the GitHub user identity used by `gh` so rate-limited GraphQL/REST traffic can flow under a second admin account.
+Toggle the GitHub user identity used by `gh` so rate-limited GraphQL/REST traffic can flow under a relief account when `aryeh-stark`'s hourly bucket runs dry.
 
-- **primary** → `aryeh-evinced`
-- **secondary** → `aryeh-admin`
+- **primary** → `aryeh-stark` — **THE identity.** Matches `gh`'s own keyring login. Everything authors as this unless Aryeh says otherwise.
+- **secondary** → a relief account, provisioned deliberately (`aryeh-evinced` and `aryeh-admin` both still exist and either can serve).
 
-Bot calls (App installation tokens minted by `tools/github_app.ts`) are unaffected — they get their own pool per app.
+**This skill is human-only, by design.** `disable-model-invocation: true` in the frontmatter means no model can select it — a swap happens because Aryeh typed `/stark-gh-user`, never because an agent decided to. Nothing in the repo calls `tools/user_token.ts` automatically, and nothing should: a token left in `GH_TOKEN` re-authors every later `gh` call in that shell. When you're done with a relief window, revert (see Reverting below).
+
+Bot calls (App installation tokens minted by `tools/github_app.ts`) are unaffected — they get their own pool per app, and their only sanctioned use is posting multi-LLM review findings.
+
+**No tokens are provisioned yet** (checked 2026-08-04): all four `stark-gh-token` Keychain entries are absent, so every subcommand that resolves a token fails until they're seeded. `limits`/`show` will report that rather than a number. Seed `primary-*` from `aryeh-stark` first:
+
+```bash
+security add-generic-password -U -s stark-gh-token -a primary-fine -w   # paste the aryeh-stark PAT
+```
 
 ## Arguments
 
@@ -80,9 +88,11 @@ Render a compact two-row table:
 
 ```
 identity   core         graphql      login
-primary    4982 / 5000  4998 / 5000  aryeh-evinced
-secondary  5000 / 5000  5000 / 5000  aryeh-admin
+primary    4982 / 5000  4998 / 5000  aryeh-stark
+secondary  5000 / 5000  5000 / 5000  <relief account>
 ```
+
+Show the login each token actually resolves to (`gh api user`), never the login this doc predicts — the whole point of the table is catching a token that belongs to someone you didn't expect.
 
 If a keychain entry is missing, render `MISSING` in place of the numbers and continue with the other identity.
 
@@ -102,7 +112,17 @@ If a keychain entry is missing, render `MISSING` in place of the numbers and con
 
 - `gh` honors `GH_TOKEN` over the keychain auth, so once the user `eval`s the export block, every subsequent `gh` call in that shell — including ones spawned by `stark_review.ts` and the TS tools in `tools/` (including `github_projects.ts`) — uses the chosen identity automatically. No call-site edits.
 - `tools/runtime_env_lib.ts` overrides `GH_TOKEN` for review subprocesses with the matching App installation token, so review-posting still goes through the correct bot.
-- To revert to the OS keychain auth: `unset GH_TOKEN GITHUB_TOKEN STARK_GH_USER`.
+
+## Reverting — do this when the relief window is over
+
+```bash
+unset GH_TOKEN GITHUB_TOKEN STARK_GH_USER   # back to gh's own keyring (aryeh-stark)
+gh api user --jq .login                     # confirm: expect aryeh-stark
+```
+
+**Why it matters:** that blanket override is the whole mechanism *and* the whole hazard. A `secondary` token left in `GH_TOKEN` silently authors every later PR, comment, review-reply and merge in that shell as the relief account — with nothing in the output saying so. The rule is that Aryeh's GitHub activity reads as `aryeh-stark`; a forgotten `eval` breaks it quietly. So: swap for the rate-limited command, revert immediately after, and confirm the login rather than assuming.
+
+A swap is scoped to the one shell that `eval`'d it — it does not follow into other terminals or other Claude Code sessions. It DOES follow into subprocesses that shell spawns.
 
 ## How It Works
 
