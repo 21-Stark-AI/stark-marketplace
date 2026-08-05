@@ -25,6 +25,58 @@ func samplePlan() *installplan.Plan {
 	}
 }
 
+// A pre-existing UNMANAGED file inside the installer-owned asset step must not abort the
+// whole install — the vendored content overwrites the stale copy, and the skills + mcp
+// that install alongside it still land. Regression: prepending the ~150-file asset step
+// made any single leftover under .agents/stark/<bundle>/ fail the entire codex install.
+func TestAssetStepCollisionDoesNotAbortInstall(t *testing.T) {
+	dest := t.TempDir()
+	p := samplePlan()
+	assetPath := ".agents/stark/rev/config.json"
+	p.Steps = append([]installplan.Step{
+		{Bundle: "rev", Name: installplan.AssetsStepName, Files: []installplan.AdaptedFile{
+			{Path: assetPath, Kind: "file", Payload: "{\"vendored\":true}\n"},
+		}},
+	}, p.Steps...)
+
+	// A leftover unmanaged file from a prior manual setup.
+	stale := filepath.Join(dest, filepath.FromSlash(assetPath))
+	if err := os.MkdirAll(filepath.Dir(stale), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(stale, []byte("{\"manual\":true}\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	if _, err := Install(dest, p, Options{Force: false}); err != nil {
+		t.Fatalf("asset collision must not abort the install: %v", err)
+	}
+	// The vendored content won, and the artifacts installed too.
+	if got, _ := os.ReadFile(stale); !contains(string(got), "vendored") {
+		t.Fatalf("vendored asset did not overwrite the stale copy:\n%s", got)
+	}
+	if _, err := os.Stat(filepath.Join(dest, ".agents/skills/session/SKILL.md")); err != nil {
+		t.Fatalf("skill did not install alongside the colliding asset: %v", err)
+	}
+}
+
+// The exemption is scoped: a collision on a real ARTIFACT file still refuses (§9.2).
+func TestArtifactCollisionStillRefuses(t *testing.T) {
+	dest := t.TempDir()
+	skillPath := filepath.Join(dest, ".agents/skills/session/SKILL.md")
+	if err := os.MkdirAll(filepath.Dir(skillPath), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(skillPath, []byte("hand-written\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	_, err := Install(dest, samplePlan(), Options{Force: false})
+	var ce *ConflictError
+	if !errors.As(err, &ce) {
+		t.Fatalf("unmanaged artifact-file collision must still be a ConflictError, got %v", err)
+	}
+}
+
 func TestInstallThenRemoveLeavesClean(t *testing.T) {
 	dest := t.TempDir()
 	// pre-existing user config.toml the install must preserve

@@ -20,9 +20,12 @@ import (
 	"github.com/21StarkCom/bifrost/engine/internal/model"
 )
 
-// toLF normalizes content to LF so the in-memory set, the on-disk write, and the
+// ToLF normalizes content to LF so the in-memory set, the on-disk write, and the
 // drift check all hash identical bytes regardless of any CR in source bodies
-// (F-Cov#7 / spec §7.6).
+// (F-Cov#7 / spec §7.6). Exported because the install path vendors the same
+// snapshot and must produce byte-identical files.
+func ToLF(b []byte) []byte { return toLF(b) }
+
 func toLF(b []byte) []byte {
 	b = bytes.ReplaceAll(b, []byte("\r\n"), []byte("\n"))
 	return bytes.ReplaceAll(b, []byte("\r"), []byte("\n"))
@@ -243,6 +246,11 @@ func Check(repoRoot string, out Output) ([]string, error) {
 	sort.Strings(drift)
 	return drift, nil
 }
+
+// VendorAssets reads every regular file under src and returns a map of
+// slash-relative path -> content. Exported so the install path can vendor the
+// same snapshot for runtimes whose dist tree is built on the user's machine.
+func VendorAssets(src string) (map[string][]byte, error) { return vendorAssets(src) }
 
 // vendorAssets reads every regular file under src and returns a map of
 // slash-relative path -> content, to be copied verbatim into each bundle's dist

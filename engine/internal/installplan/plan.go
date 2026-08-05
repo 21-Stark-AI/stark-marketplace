@@ -20,9 +20,10 @@ type Step struct {
 
 // ConsentPayload is the human-facing summary for code-executing classes (spec §9.3).
 type ConsentPayload struct {
-	Required        bool     // true if any mcp/agent in the closure
+	Required        bool     // true if any mcp/agent OR executable vendored assets in the closure
 	MCPCommands     []string // "name: command arg arg"
 	AgentToolGrants []string // "name: tool, tool"
+	AssetExec       []string // "bundle: N executable vendored files (tools/scripts)"
 	ClosureRefs     []string // full resolved closure, transitive mcp/agent highlighted
 }
 
@@ -32,6 +33,14 @@ type Plan struct {
 	Steps   []Step
 	Consent ConsentPayload
 	Skipped []string // bundle/name skipped (don't target runtime)
+}
+
+// consumesAssets reports whether an artifact type references the bundle's vendored
+// assets (tools/standards/prompts/scripts/config). Skills, commands, prompts and
+// emulated agents all render bodies that invoke those; an mcp is a pure config merge
+// that names none of them.
+func consumesAssets(typ model.ArtifactType) bool {
+	return typ != model.TypeMCP
 }
 
 // node identifies an artifact within the catalog.
@@ -160,6 +169,7 @@ func Compute(idx *indexio.Index, bundlesDir string, ad Adapter, bundle, artifact
 	}
 	p := &Plan{Runtime: rt}
 	seen := map[string]bool{}
+	needsAssets := map[string]bool{} // bundles that installed an asset-CONSUMING artifact
 	for _, root := range roots {
 		order, err := topo(idx, c, root)
 		if err != nil {
@@ -183,13 +193,46 @@ func Compute(idx *indexio.Index, bundlesDir string, ad Adapter, bundle, artifact
 				return nil, err
 			}
 			p.Steps = append(p.Steps, Step{Bundle: n.bundle, Name: n.name, Type: n.typ, Files: files})
+			// Only artifacts that REFERENCE the vendored assets pull them in. An MCP
+			// server is a config.toml merge that names no tool/standard/prompt, so an
+			// mcp-only install must not drag in the bundle's ~150-file asset tree.
+			if consumesAssets(n.typ) {
+				needsAssets[n.bundle] = true
+			}
 			addConsent(&p.Consent, n, adet)
 		}
+	}
+	// Bundle-level vendored assets, prepended so a bundle's own artifacts win on any
+	// path collision — the same precedence `stark build` applies to dist/claude. Only
+	// bundles whose install actually references the assets get theirs.
+	if ap, ok := ad.(AssetProvider); ok {
+		bundles := make([]string, 0, len(needsAssets))
+		for b := range needsAssets {
+			bundles = append(bundles, b)
+		}
+		sort.Strings(bundles)
+		var assetSteps []Step
+		for _, b := range bundles {
+			files, err := ap.BundleAssets(b, rt)
+			if err != nil {
+				return nil, fmt.Errorf("bundle assets for %s@%s: %w", b, rt, err)
+			}
+			if len(files) == 0 {
+				continue
+			}
+			assetSteps = append(assetSteps, Step{Bundle: b, Name: AssetsStepName, Files: files})
+			// Vendored assets include executable code (tools/*.ts, scripts/*.sh) that the
+			// installed skills invoke. That is a code-execution surface, so it belongs
+			// inside the §9.3 consent gate even when the bundle ships no mcp/agent.
+			addAssetConsent(&p.Consent, b, files)
+		}
+		p.Steps = append(assetSteps, p.Steps...)
 	}
 	sort.Strings(p.Skipped)
 	sort.Strings(p.Consent.ClosureRefs)
 	sort.Strings(p.Consent.MCPCommands)
 	sort.Strings(p.Consent.AgentToolGrants)
+	sort.Strings(p.Consent.AssetExec)
 	return p, nil
 }
 

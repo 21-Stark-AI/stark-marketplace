@@ -9,6 +9,7 @@ package codex
 
 import (
 	"fmt"
+	"regexp"
 	"sort"
 	"strings"
 
@@ -22,7 +23,97 @@ import (
 )
 
 // version is the independently-versioned target identity (spec §7.7).
-const version = "codex@1"
+// codex@2 retargets asset references onto the Codex tree (see AssetPath /
+// retargetAssets) — bodies rendered by codex@1 pointed at a Claude plugin root
+// that does not exist on Codex.
+const version = "codex@2"
+
+// AssetsRoot is the Codex-tree directory holding ONE bundle's vendored
+// stark-skills assets (tools/, standards/, prompts/, scripts/, config.json).
+// It is the Codex analogue of dist/claude/<bundle>/ for a Claude plugin: a root
+// per bundle, never a shared one — stark-gh ships its own config.json, which
+// would clobber the shared snapshot's in a flat namespace.
+func AssetsRoot(bundle string) string { return ".agents/stark/" + bundle }
+
+// AssetPath maps a vendored asset's bundle-relative path (as it sits in
+// dist/claude/<bundle>/) to its path in the Codex tree.
+//
+// Per-skill assets (skills/<name>/references/**) must land NEXT TO the skill
+// that references them, and Codex skills live at .agents/skills/<name>/ — so
+// those keep their shape under .agents/. Everything else is bundle-scoped and
+// goes to the bundle's assets root.
+func AssetPath(bundle, rel string) string {
+	if strings.HasPrefix(rel, "skills/") {
+		return ".agents/" + rel
+	}
+	return AssetsRoot(bundle) + "/" + rel
+}
+
+// pluginRootSkillsRe matches ${CLAUDE_PLUGIN_ROOT...}/skills/ — a body reference
+// into a PER-SKILL asset (skills/<name>/references/**). AssetPath routes those to
+// .agents/skills/<name>/ (next to the skill), NOT the bundle's own root, so the
+// blanket pluginRootRe rewrite below would send them to the wrong place. This runs
+// first and re-points them via the bundle root's siblings: on both a global
+// (~/.agents/stark/<bundle>) and a project-local (<dest>/.agents/stark/<bundle>)
+// install, <root>/../../skills IS .agents/skills, so one rule covers both modes.
+var pluginRootSkillsRe = regexp.MustCompile(`\$\{CLAUDE_PLUGIN_ROOT(?::-[^}]*)?\}/skills/`)
+
+// pluginRootRe matches ${CLAUDE_PLUGIN_ROOT} and its ${CLAUDE_PLUGIN_ROOT:-...}
+// defaulted form. The variable is injected by Claude Code and is never set on
+// Codex, so both forms would resolve to the Claude fallback (or to empty).
+var pluginRootRe = regexp.MustCompile(`\$\{CLAUDE_PLUGIN_ROOT(?::-[^}]*)?\}`)
+
+// relAssetRe matches a SKILL.md-relative reference into a vendored asset dir
+// (../../standards/help.md and friends). On Claude a skill sits at
+// <plugin>/skills/<name>/SKILL.md so ../../ IS the plugin root, while a command
+// sits at <plugin>/commands/<name>.md so its natural ref is a single ../; on Codex
+// BOTH classes emit at .agents/skills/<name>/SKILL.md (emitSkill), so any leading
+// ../-run is one or more levels short of the bundle's assets root. Match a run of
+// one-or-more ../ and re-point the whole thing at the bundle root.
+var relAssetRe = regexp.MustCompile(`(?:\.\./)+(tools|standards|prompts|scripts)/`)
+
+// starkToolRe matches the stark tool runner signature `node --experimental-strip-types`.
+// Every vendored tool is a .ts invoked this way; inline `node -e '...'` snippets do NOT
+// carry the flag, so they are correctly left alone.
+var starkToolRe = regexp.MustCompile(`node\s+--experimental-strip-types`)
+
+// retargetAssets rewrites a SKILL.md body's asset references onto the Codex tree
+// layout that BundleAssets installs. Without it every rendered skill points at
+// paths that exist only inside a Claude plugin.
+func retargetAssets(body, bundle string) string {
+	// Depth-independent rewrites (var refs + tool-invocation env) — safe for any
+	// vendored text file, shared with BundleAssets via RetargetPluginRefs.
+	body = RetargetPluginRefs(body, bundle)
+	// SKILL.md-depth-specific: relative ../ asset refs. Only valid for bodies
+	// emitted at .agents/skills/<name>/SKILL.md, so NOT applied to vendored files.
+	return relAssetRe.ReplaceAllString(body, "../../stark/"+bundle+"/$1/")
+}
+
+// RetargetPluginRefs rewrites the DEPTH-INDEPENDENT asset references — the
+// ${CLAUDE_PLUGIN_ROOT} variable and stark-tool invocations — onto the Codex tree.
+// It is exported so BundleAssets can apply it to vendored prose (references,
+// standards, prompts) that ship these refs verbatim; the relative-path rewrite is
+// deliberately excluded there because a vendored file's on-disk depth differs from
+// a SKILL.md's, so ../ math cannot be assumed.
+func RetargetPluginRefs(body, bundle string) string {
+	root := "${STARK_PLUGIN_ROOT:-$HOME/" + AssetsRoot(bundle) + "}"
+	// Per-skill asset refs first (see pluginRootSkillsRe) — before the blanket rule
+	// consumes the variable. ReplaceAllLiteralString: the replacement holds $HOME.
+	body = pluginRootSkillsRe.ReplaceAllLiteralString(body, root+"/../../skills/")
+	// Blanket: every remaining ${CLAUDE_PLUGIN_ROOT...} → the bundle's Codex root.
+	body = pluginRootRe.ReplaceAllLiteralString(body, root)
+	// Export STARK_ASSET_ROOT on each tool invocation so the tool's own
+	// assetRoot() (STARK_ASSET_ROOT > CLAUDE_PLUGIN_ROOT > ~/.claude/code-review)
+	// resolves its sibling config/prompts/standards/tools to the vendored bundle
+	// root — NOT the Claude-only ~/.claude/code-review a Codex install never
+	// creates. A ${VAR:-default} on the command line is substitution, not an
+	// export, so the child process would otherwise never see it; the inline
+	// assignment IS exported, and every sibling tool the invocation spawns inherits
+	// it. This is the seam that makes vendored Codex tools actually self-contained.
+	return starkToolRe.ReplaceAllStringFunc(body, func(m string) string {
+		return `STARK_ASSET_ROOT="` + root + `" ` + m
+	})
+}
 
 type Target struct{}
 
@@ -173,7 +264,7 @@ func (t *Target) emitSkill(a *model.Artifact, res merge.Resolved, emulated bool)
 	if hint, ok := fa.Derived["argument-hint"]; ok {
 		b.WriteString("Usage: " + a.Name + " " + hint + "\n\n")
 	}
-	b.WriteString(res.Body)
+	b.WriteString(retargetAssets(res.Body, a.Bundle))
 
 	files := []adapter.OutputFile{{
 		Path:    ".agents/skills/" + a.Name + "/SKILL.md",

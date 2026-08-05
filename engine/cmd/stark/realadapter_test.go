@@ -60,7 +60,8 @@ func TestRealAdapterRendersCommittedCatalog(t *testing.T) {
 		t.Skipf("committed index.json not present (%v) — skipping live-catalog test", err)
 	}
 	bundles := filepath.Join(root, "bundles")
-	ad := realAdapter(filepath.Join(root, "catalog"))
+	ad := realAdapter(filepath.Join(root, "catalog"),
+		filepath.Join(root, "vendor", "stark-skills"), filepath.Join(root, "vendor", "plugins"))
 
 	t.Run("codex", func(t *testing.T) {
 		dest := t.TempDir()

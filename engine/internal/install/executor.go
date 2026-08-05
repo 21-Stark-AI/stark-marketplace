@@ -202,6 +202,16 @@ func preflightCollisions(dest string, p *installplan.Plan, manifest *Manifest) e
 		known[r.Path+"|"+r.Key+"|"+r.Sentinel] = true
 	}
 	for _, step := range p.Steps {
+		// The vendored asset step writes immutable content into installer-owned
+		// namespaces (.agents/stark/<bundle>/ and per-skill references/). A stale
+		// leftover there — e.g. a config.json from a prior manual setup — is safe to
+		// overwrite, and must NOT abort the skills + mcp that install alongside it
+		// (which it would, since one collision anywhere fails the whole plan). The
+		// write is still journaled + manifest-tracked, so it stays repairable and
+		// removable.
+		if step.Name == installplan.AssetsStepName {
+			continue
+		}
 		for _, f := range step.Files {
 			abs := filepath.Join(dest, filepath.FromSlash(f.Path))
 			cur := readOrEmpty(abs)
