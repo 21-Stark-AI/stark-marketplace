@@ -10,8 +10,10 @@ For every shell invocation that reads this skill's packaged files, first
 resolve the absolute directory containing this loaded `SKILL.md` from the skill
 path Codex supplied. In that same shell invocation set `SKILL_DIR` to that
 directory, set `STARK_PLUGIN_ROOT` to the absolute `../..` directory, and
-export it. Do not derive the plugin root from the current working directory and
-do not reuse a value from an earlier shell invocation.
+export it. In every such shell invocation also set and export
+`STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}"`. Do not derive
+the plugin root from the current working directory, do not reuse a value from
+an earlier shell invocation, and do not write Codex state under `~/.claude`.
 
 ## Help
 
@@ -83,7 +85,7 @@ SKILL_ID=blog-sharpen
   echo "missing jury payload: $SKILLS_ROOT/stark-$SKILL_ID/SKILL.md" >&2
   exit 2
 }
-STARK_JURY_SKILLS_ROOT="$SKILLS_ROOT" STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" node --experimental-strip-types \
+STARK_JURY_SKILLS_ROOT="$SKILLS_ROOT" env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types \
   "$TOOLS/jury.ts" run --skill "$SKILL_ID" --input /path/to/post.md
 ```
 

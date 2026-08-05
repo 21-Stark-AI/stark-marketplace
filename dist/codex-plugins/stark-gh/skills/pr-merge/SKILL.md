@@ -13,8 +13,10 @@ For every shell invocation that reads this skill's packaged files, first
 resolve the absolute directory containing this loaded `SKILL.md` from the skill
 path Codex supplied. In that same shell invocation set `SKILL_DIR` to that
 directory, set `STARK_PLUGIN_ROOT` to the absolute `../..` directory, and
-export it. Do not derive the plugin root from the current working directory and
-do not reuse a value from an earlier shell invocation.
+export it. In every such shell invocation also set and export
+`STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}"`. Do not derive
+the plugin root from the current working directory, do not reuse a value from
+an earlier shell invocation, and do not write Codex state under `~/.claude`.
 
 # pr-merge
 
@@ -45,7 +47,7 @@ RAW_ARGS='<argument tail from the current user request, safely shell-quoted>'
 The raw arg may be a bare PR number OR a flag list — the parser accepts both.
 
 ```bash
-if PREFLIGHT_OUT="$(STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" node --experimental-strip-types "$TOOLS/gh_pr_merge_preflight.ts" \
+if PREFLIGHT_OUT="$(env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types "$TOOLS/gh_pr_merge_preflight.ts" \
   --raw-args "$RAW_ARGS" \
   --emit-plan-path)"; then
   :
@@ -74,7 +76,7 @@ if [ "$RESUME_MODE" = "attached" ]; then
 fi
 ```
 
-A live **ci-observer** watcher (the one `/stark-gh:pr-open` spawns) does NOT
+A live **ci-observer** watcher (the one `$pr-open` spawns) does NOT
 produce `attached` — preflight pre-empts it and proceeds, because the head it
 is watching is about to be invalidated by the rebase + force-push. So
 `pr-open --ready` immediately followed by `pr-merge` no longer fails with
@@ -92,7 +94,7 @@ restore_on_failure() {
   restore_rc=$?
   trap - EXIT
   if [ "$restore_rc" -ne 0 ]; then
-    STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" node --experimental-strip-types "$TOOLS/lib/restore_branch.ts" "$PLAN_FILE" >&2 || true
+    env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types "$TOOLS/lib/restore_branch.ts" "$PLAN_FILE" >&2 || true
   fi
   exit "$restore_rc"
 }
@@ -105,7 +107,7 @@ If `RESUME_MODE=spawn-only`, skip drafting (already done in the prior run).
 
 ```bash
 if [ "$RESUME_MODE" != "spawn-only" ]; then
-  STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" node --experimental-strip-types "$TOOLS/gh_pr_merge_draft.ts" --plan-file "$PLAN_FILE"
+  env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types "$TOOLS/gh_pr_merge_draft.ts" --plan-file "$PLAN_FILE"
 fi
 ```
 
@@ -118,14 +120,14 @@ plan-file.
 
 ```bash
 if [ "$RESUME_MODE" = "spawn-only" ]; then
-  if EXECUTE_OUT="$(STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" node --experimental-strip-types "$TOOLS/gh_pr_merge_execute.ts" \
+  if EXECUTE_OUT="$(env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types "$TOOLS/gh_pr_merge_execute.ts" \
     --plan-file "$PLAN_FILE" --resume-from-spawn)"; then
     EXECUTE_RC=0
   else
     EXECUTE_RC=$?
   fi
 else
-  if EXECUTE_OUT="$(STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" node --experimental-strip-types "$TOOLS/gh_pr_merge_execute.ts" \
+  if EXECUTE_OUT="$(env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types "$TOOLS/gh_pr_merge_execute.ts" \
     --plan-file "$PLAN_FILE")"; then
     EXECUTE_RC=0
   else

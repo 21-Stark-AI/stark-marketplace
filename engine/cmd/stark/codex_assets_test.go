@@ -42,12 +42,14 @@ func liveCodexInstall(t *testing.T, bundle string) string {
 
 // relRefRe / varRefRe mirror the two reference shapes a skill body can carry after
 // the codex target retargets them. toolSigRe is the stark-tool runner signature;
-// exportedToolRe is that signature with its mandatory inline STARK_ASSET_ROOT export.
+// retargetedToolRe is that signature with its mandatory inline asset and state
+// roots. Keeping the two assignments adjacent to the invocation makes each
+// shell call self-contained.
 var (
-	relRefRe       = regexp.MustCompile(`\.\./\.\./[A-Za-z0-9_./-]+`)
-	varRefRe       = regexp.MustCompile(`\$\{STARK_PLUGIN_ROOT:-\$HOME/([^}]*)\}([A-Za-z0-9_./-]*)`)
-	toolSigRe      = regexp.MustCompile(`node --experimental-strip-types`)
-	exportedToolRe = regexp.MustCompile(`STARK_ASSET_ROOT="[^"]*" node --experimental-strip-types`)
+	relRefRe         = regexp.MustCompile(`\.\./\.\./[A-Za-z0-9_./-]+`)
+	varRefRe         = regexp.MustCompile(`\$\{STARK_PLUGIN_ROOT:-\$HOME/([^}]*)\}([A-Za-z0-9_./-]*)`)
+	toolSigRe        = regexp.MustCompile(`node --experimental-strip-types`)
+	retargetedToolRe = regexp.MustCompile(`env STARK_ASSET_ROOT="[^"]*" STARK_STATE_ROOT="\$\{STARK_STATE_ROOT:-\$HOME/\.stark/code-review\}" node --experimental-strip-types`)
 )
 
 // TestCodexInstallResolvesEveryAssetReference is the live-surface gate this whole
@@ -87,12 +89,12 @@ func TestCodexInstallResolvesEveryAssetReference(t *testing.T) {
 					}
 					checked++
 				}
-				// Every stark-tool invocation must carry an inline STARK_ASSET_ROOT export;
-				// without it the tool's own assetRoot() resolves to ~/.claude/code-review
-				// (unset on Codex) instead of the vendored bundle root. A bare signature
-				// with no export is the exact false-green this gate previously missed.
-				if bare, exp := len(toolSigRe.FindAllString(string(body), -1)), len(exportedToolRe.FindAllString(string(body), -1)); bare != exp {
-					t.Errorf("%s: %d tool invocations, only %d carry STARK_ASSET_ROOT export", sk, bare, exp)
+				// Every stark-tool invocation must carry inline asset and state roots;
+				// without them the invocation can lose its packaged assets or let mutable
+				// Codex state escape the ~/.stark tree. A bare signature is the exact
+				// false-green this gate previously missed.
+				if bare, retargeted := len(toolSigRe.FindAllString(string(body), -1)), len(retargetedToolRe.FindAllString(string(body), -1)); bare != retargeted {
+					t.Errorf("%s: %d tool invocations, only %d carry Codex asset and state roots", sk, bare, retargeted)
 				}
 			}
 			if checked == 0 {

@@ -97,10 +97,20 @@ For every shell invocation that reads this skill's packaged files, first
 resolve the absolute directory containing this loaded ` + "`SKILL.md`" + ` from the skill
 path Codex supplied. In that same shell invocation set ` + "`SKILL_DIR`" + ` to that
 directory, set ` + "`STARK_PLUGIN_ROOT`" + ` to the absolute ` + "`../..`" + ` directory, and
-export it. Do not derive the plugin root from the current working directory and
-do not reuse a value from an earlier shell invocation.
+export it. In every such shell invocation also set and export
+` + "`STARK_STATE_ROOT=\"${STARK_STATE_ROOT:-$HOME/.stark/code-review}\"`" + `. Do not derive
+the plugin root from the current working directory, do not reuse a value from
+an earlier shell invocation, and do not write Codex state under ` + "`~/.claude`" + `.
 
 `
+
+const codexStateRootAssignment = `STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}"`
+
+func retargetToolInvocations(body, root string) string {
+	return starkToolRe.ReplaceAllStringFunc(body, func(m string) string {
+		return `env STARK_ASSET_ROOT="` + root + `" ` + codexStateRootAssignment + ` ` + m
+	})
+}
 
 // retargetAssets rewrites a SKILL.md body's asset references onto the Codex tree
 // layout that BundleAssets installs. Without it every rendered skill points at
@@ -127,17 +137,16 @@ func RetargetPluginRefs(body, bundle string) string {
 	body = pluginRootSkillsRe.ReplaceAllLiteralString(body, root+"/../../skills/")
 	// Blanket: every remaining ${CLAUDE_PLUGIN_ROOT...} → the bundle's Codex root.
 	body = pluginRootRe.ReplaceAllLiteralString(body, root)
-	// Export STARK_ASSET_ROOT on each tool invocation so the tool's own
-	// assetRoot() (STARK_ASSET_ROOT > CLAUDE_PLUGIN_ROOT > ~/.claude/code-review)
+	// Forward STARK_ASSET_ROOT and STARK_STATE_ROOT through env on each tool
+	// invocation so shell commands and argv arrays share one valid command shape.
+	// The Codex tool overlay's own assetRoot()
+	// (STARK_ASSET_ROOT > STARK_PLUGIN_ROOT > ~/.stark/code-review)
 	// resolves its sibling config/prompts/standards/tools to the vendored bundle
 	// root — NOT the Claude-only ~/.claude/code-review a Codex install never
-	// creates. A ${VAR:-default} on the command line is substitution, not an
-	// export, so the child process would otherwise never see it; the inline
-	// assignment IS exported, and every sibling tool the invocation spawns inherits
-	// it. This is the seam that makes vendored Codex tools actually self-contained.
-	return starkToolRe.ReplaceAllStringFunc(body, func(m string) string {
-		return `STARK_ASSET_ROOT="` + root + `" ` + m
-	})
+	// creates. env exports both assignments to the child, and every sibling tool
+	// the invocation spawns inherits them. This is the seam that makes vendored
+	// Codex tools self-contained without relying on shell assignment position.
+	return retargetToolInvocations(body, root)
 }
 
 // retargetPluginSkill rewrites a resolved skill body for a native plugin root.
@@ -157,9 +166,7 @@ func retargetPluginSkill(body string) string {
 	body = pluginRootSkillsRe.ReplaceAllLiteralString(body, root+"/skills/")
 	body = pluginRootRe.ReplaceAllLiteralString(body, root)
 	body = starkPluginRootRe.ReplaceAllLiteralString(body, root)
-	body = starkToolRe.ReplaceAllStringFunc(body, func(m string) string {
-		return `STARK_ASSET_ROOT="` + root + `" ` + m
-	})
+	body = retargetToolInvocations(body, root)
 	return pluginAssetPreamble + body
 }
 
@@ -173,9 +180,7 @@ func RetargetPluginAssetRefs(body string) string {
 	body = pluginRootSkillsRe.ReplaceAllLiteralString(body, root+"/skills/")
 	body = pluginRootRe.ReplaceAllLiteralString(body, root)
 	body = starkPluginRootRe.ReplaceAllLiteralString(body, root)
-	return starkToolRe.ReplaceAllStringFunc(body, func(m string) string {
-		return `STARK_ASSET_ROOT="` + root + `" ` + m
-	})
+	return retargetToolInvocations(body, root)
 }
 
 type layout uint8
@@ -221,7 +226,7 @@ func (t *Target) Render(b *model.Bundle) ([]adapter.OutputFile, []adapter.Findin
 			return nil, nil, fmt.Errorf("codex: resolve %s/%s: %w", b.Name, a.Name, err)
 		}
 		findings = append(findings, foldFindings(b.Name, a, mf)...)
-		out, fdrops, err := t.emitArtifact(a, res)
+		out, fdrops, err := t.emitArtifact(b, a, res)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -274,13 +279,13 @@ func dropFindings(bundle, name string, rt model.Runtime, dropped []string) []ada
 	return out
 }
 
-func (t *Target) emitArtifact(a *model.Artifact, res merge.Resolved) ([]adapter.OutputFile, []adapter.Finding, error) {
+func (t *Target) emitArtifact(bundle *model.Bundle, a *model.Artifact, res merge.Resolved) ([]adapter.OutputFile, []adapter.Finding, error) {
 	switch a.Type {
 	case model.TypeSkill, model.TypePrompt, model.TypeCommand:
-		f, fd := t.emitSkill(a, res, false)
+		f, fd := t.emitSkill(bundle, a, res, false)
 		return f, fd, nil
 	case model.TypeAgent:
-		f, fd := t.emitSkill(a, res, true) // emulated
+		f, fd := t.emitSkill(bundle, a, res, true) // emulated
 		return f, fd, nil
 	case model.TypeMCP:
 		if t.layout == layoutPlugin {
@@ -296,13 +301,14 @@ func (t *Target) emitArtifact(a *model.Artifact, res merge.Resolved) ([]adapter.
 // emitSkill writes .agents/skills/<name>/SKILL.md. emulated=true prepends the
 // §6.1 fidelity header (agents have no Codex primitive). Frontmatter is emitted via
 // yaml.Marshal so values escape correctly and carried lists become YAML sequences.
-func (t *Target) emitSkill(a *model.Artifact, res merge.Resolved, emulated bool) ([]adapter.OutputFile, []adapter.Finding) {
+func (t *Target) emitSkill(bundle *model.Bundle, a *model.Artifact, res merge.Resolved, emulated bool) ([]adapter.OutputFile, []adapter.Finding) {
 	fa := fieldmap.Apply(res.Frontmatter, a, model.RuntimeCodex, nil)
 
 	desc := a.Description
 	if d, ok := res.Frontmatter["description"].(string); ok && d != "" {
 		desc = d
 	}
+	desc = TranslateInvocationReferences(desc, bundle)
 
 	var fm strings.Builder
 	fm.WriteString("---\n")
@@ -354,6 +360,93 @@ func (t *Target) emitSkill(a *model.Artifact, res merge.Resolved, emulated bool)
 		})
 	}
 	return files, dropFindings(a.Bundle, a.Name, model.RuntimeCodex, fa.Dropped)
+}
+
+// TranslateInvocationReferences projects authored Claude slash-command prose
+// onto Codex's dollar-prefixed skill invocation syntax. Only names of artifacts
+// that actually target Codex are translated, so paths and references to
+// unavailable Claude-only commands remain untouched.
+func TranslateInvocationReferences(description string, b *model.Bundle) string {
+	if b == nil || description == "" {
+		return description
+	}
+
+	type invocationReference struct {
+		authored string
+		codex    string
+	}
+	references := make([]invocationReference, 0, len(b.Artifacts)*2)
+	seen := make(map[string]struct{}, len(b.Artifacts)*2)
+	addReference := func(authored, codex string) {
+		if authored == "" || codex == "" {
+			return
+		}
+		if _, ok := seen[authored]; ok {
+			return
+		}
+		seen[authored] = struct{}{}
+		references = append(references, invocationReference{authored: authored, codex: codex})
+	}
+	for _, a := range b.Artifacts {
+		if a == nil || a.Name == "" || !targetsRuntime(a, model.RuntimeCodex) {
+			continue
+		}
+		addReference(a.Name, a.Name)
+		// Claude plugin commands may be invoked through their bundle-qualified
+		// namespace. Native Codex exposes each command artifact as a flat skill.
+		// Keep this mapping type-aware: skills and agents do not acquire a
+		// command-only bundle alias.
+		if a.Type == model.TypeCommand && b.Name != "" {
+			addReference(b.Name+":"+a.Name, a.Name)
+		}
+	}
+	// Prefer the longest authored form when one is a prefix of another.
+	sort.Slice(references, func(i, j int) bool {
+		if len(references[i].authored) != len(references[j].authored) {
+			return len(references[i].authored) > len(references[j].authored)
+		}
+		return references[i].authored < references[j].authored
+	})
+
+	var out strings.Builder
+	out.Grow(len(description))
+	for i := 0; i < len(description); {
+		var matched *invocationReference
+		if description[i] == '/' && invocationBoundaryBefore(description, i) {
+			for j := range references {
+				ref := &references[j]
+				end := i + 1 + len(ref.authored)
+				if end <= len(description) && description[i+1:end] == ref.authored && invocationBoundaryAfter(description, end) {
+					matched = ref
+					break
+				}
+			}
+		}
+		if matched != nil {
+			out.WriteByte('$')
+			out.WriteString(matched.codex)
+			i += 1 + len(matched.authored)
+			continue
+		}
+		out.WriteByte(description[i])
+		i++
+	}
+	return out.String()
+}
+
+func invocationBoundaryBefore(s string, slash int) bool {
+	if slash == 0 {
+		return true
+	}
+	return !invocationNameByte(s[slash-1]) && s[slash-1] != '/' && s[slash-1] != '$' && s[slash-1] != '.'
+}
+
+func invocationBoundaryAfter(s string, end int) bool {
+	return end == len(s) || !invocationNameByte(s[end]) && s[end] != '/'
+}
+
+func invocationNameByte(b byte) bool {
+	return b >= 'a' && b <= 'z' || b >= 'A' && b <= 'Z' || b >= '0' && b <= '9' || b == '-' || b == '_'
 }
 
 // renderOpenAIYAML emits the Codex-native home for invocation policy. The

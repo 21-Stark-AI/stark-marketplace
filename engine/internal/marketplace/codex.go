@@ -9,6 +9,7 @@ import (
 	"strings"
 	"unicode"
 
+	codexadapter "github.com/21StarkCom/bifrost/engine/internal/adapter/codex"
 	"github.com/21StarkCom/bifrost/engine/internal/model"
 )
 
@@ -112,6 +113,7 @@ func GenerateCodexPlugin(b *model.Bundle, version string) (CodexPluginManifest, 
 	if description == "" {
 		description = displayCodexName(b.Name) + " plugin"
 	}
+	description = codexadapter.TranslateInvocationReferences(description, b)
 	developer := strings.TrimSpace(b.Owner.Name)
 	if developer == "" {
 		developer = defaultCodexOwner

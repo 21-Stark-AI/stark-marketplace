@@ -7,7 +7,7 @@ Skills point at this doc instead of inlining the pattern.
 
 ```bash
 TOOLS="${STARK_REVIEW_TOOLS:-${STARK_PLUGIN_ROOT:?resolve from the loaded SKILL.md as instructed}/tools}"
-STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from the loaded SKILL.md as instructed}" node --experimental-strip-types "$TOOLS/preflight.ts" --workflow <skill-slug> --json
+env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from the loaded SKILL.md as instructed}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types "$TOOLS/preflight.ts" --workflow <skill-slug> --json
 ```
 
 The skill provides its own `<skill-slug>` (e.g. `stark-review`, `stark-review-plan`).
@@ -27,7 +27,8 @@ Parse the JSON `overall` field:
 When the skill runs from automation (CCR triggers, scheduled jobs, CI), a
 `blocked` result MUST also:
 
-1. Append an entry to `~/.claude/code-review/alerts.jsonl`.
+1. Append an entry to `$STARK_STATE_ROOT/alerts.jsonl` (default:
+   `~/.stark/code-review/alerts.jsonl`).
 2. Exit non-zero so the trigger is marked failed.
 
 Interactive skill invocations skip steps 1–2 and just print + stop.

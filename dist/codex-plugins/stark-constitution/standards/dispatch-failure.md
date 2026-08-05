@@ -21,7 +21,7 @@ failure that returns zero findings is a failure, not a pass.
 
 ```bash
 which claude codex gemini
-STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from the loaded SKILL.md as instructed}" node --experimental-strip-types "$TOOLS/plan_review_dispatch.ts" --prompts-dir <prompts-dir> \
+env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from the loaded SKILL.md as instructed}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types "$TOOLS/plan_review_dispatch.ts" --prompts-dir <prompts-dir> \
   --file "$path" --round $round --agents claude --timeout 60
 ```
 

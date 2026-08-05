@@ -1,7 +1,8 @@
 /**
  * Persistent session state — TypeScript port of `scripts/session_state.py`.
  *
- * Sessions live at `~/.claude/code-review/sessions/{sanitized-id}.json`
+ * Sessions live at `$STARK_STATE_ROOT/sessions/{sanitized-id}.json`
+ * (default `~/.stark/code-review/sessions/{sanitized-id}.json`)
  * and survive `/clear`. The store key is the session ID resolved via
  * `session_id_lib` (same precedence as the Python).
  *
@@ -12,9 +13,9 @@
 
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
-import os from "node:os";
 import path from "node:path";
 
+import { stateRoot } from "./asset_root_lib.ts";
 import { resolveSessionId } from "./session_id_lib.ts";
 
 // ---------------------------------------------------------------------------
@@ -24,7 +25,7 @@ import { resolveSessionId } from "./session_id_lib.ts";
 export function defaultSessionsDir(env: NodeJS.ProcessEnv = process.env): string {
   const override = env.STARK_SESSIONS_DIR;
   if (override && override.length > 0) return override;
-  return path.join(os.homedir(), ".claude", "code-review", "sessions");
+  return path.join(stateRoot(env), "sessions");
 }
 
 // ---------------------------------------------------------------------------
@@ -183,7 +184,7 @@ export function getCurrent(opts: GetCurrentOpts = {}): SessionState {
 }
 
 // ---------------------------------------------------------------------------
-// setField — used by /stark-session SKILL.md Phase 3 / Phase 6
+// setField — used by $stark-session Phase 3 / Phase 6
 // ---------------------------------------------------------------------------
 
 export type SetFieldName = "name" | "start_head" | "last_checkpoint";

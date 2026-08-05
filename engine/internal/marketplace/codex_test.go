@@ -53,6 +53,55 @@ func TestGenerateCodexPluginRejectsInvalidVersion(t *testing.T) {
 	}
 }
 
+func TestGenerateCodexPluginTranslatesKnownInvocationSyntax(t *testing.T) {
+	b := &model.Bundle{
+		Name:        "stark-implement",
+		Description: "Use /stark-build or /stark-copilot; preserve /claude-only and docs/stark-build.",
+		Artifacts: []*model.Artifact{
+			{Name: "stark-build", Runtimes: []model.Runtime{model.RuntimeCodex}},
+			{Name: "stark-copilot", Runtimes: []model.Runtime{model.RuntimeCodex}},
+			{Name: "claude-only", Runtimes: []model.Runtime{model.RuntimeClaude}},
+		},
+	}
+	want := "Use $stark-build or $stark-copilot; preserve /claude-only and docs/stark-build."
+
+	got, err := GenerateCodexPlugin(b, "1.2.3")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got.Description != want || got.Interface.LongDescription != want {
+		t.Fatalf("Codex manifest descriptions were not translated:\n%#v", got)
+	}
+	if !strings.Contains(got.Interface.ShortDescription, "$stark-build") || strings.Contains(got.Interface.ShortDescription, "Use /stark-build") {
+		t.Fatalf("Codex interface short description retained slash syntax: %q", got.Interface.ShortDescription)
+	}
+	if b.Description == want || !strings.Contains(b.Description, "/stark-build") {
+		t.Fatalf("Codex projection mutated catalog metadata: %q", b.Description)
+	}
+}
+
+func TestGenerateCodexPluginTranslatesQualifiedCommands(t *testing.T) {
+	b := &model.Bundle{
+		Name:        "stark-gh",
+		Description: "Use /stark-gh:cleanup, /stark-gh:pr-open, or /stark-gh:pr-merge; not /stark-gh:review.",
+		Artifacts: []*model.Artifact{
+			{Name: "cleanup", Type: model.TypeCommand, Runtimes: []model.Runtime{model.RuntimeCodex}},
+			{Name: "pr-open", Type: model.TypeCommand, Runtimes: []model.Runtime{model.RuntimeCodex}},
+			{Name: "pr-merge", Type: model.TypeCommand, Runtimes: []model.Runtime{model.RuntimeCodex}},
+			{Name: "review", Type: model.TypeSkill, Runtimes: []model.Runtime{model.RuntimeCodex}},
+		},
+	}
+	want := "Use $cleanup, $pr-open, or $pr-merge; not /stark-gh:review."
+
+	got, err := GenerateCodexPlugin(b, "1.2.3")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got.Description != want || got.Interface.LongDescription != want || got.Interface.ShortDescription != want {
+		t.Fatalf("qualified command syntax was not projected into every Codex manifest description:\n%#v", got)
+	}
+}
+
 func TestGenerateCodexMarketplaceSortedAndFiltered(t *testing.T) {
 	artifact := func(rt model.Runtime) *model.Artifact {
 		return &model.Artifact{Name: "skill", Type: model.TypeSkill, Runtimes: []model.Runtime{rt}}

@@ -12,8 +12,10 @@ For every shell invocation that reads this skill's packaged files, first
 resolve the absolute directory containing this loaded `SKILL.md` from the skill
 path Codex supplied. In that same shell invocation set `SKILL_DIR` to that
 directory, set `STARK_PLUGIN_ROOT` to the absolute `../..` directory, and
-export it. Do not derive the plugin root from the current working directory and
-do not reuse a value from an earlier shell invocation.
+export it. In every such shell invocation also set and export
+`STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}"`. Do not derive
+the plugin root from the current working directory, do not reuse a value from
+an earlier shell invocation, and do not write Codex state under `~/.claude`.
 
 # cleanup
 
@@ -31,7 +33,7 @@ execute the marker literally.
 ```bash
 TOOLS="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}/tools"
 RAW_ARGS='<argument tail from the current user request, safely shell-quoted>'
-STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" node --experimental-strip-types "$TOOLS/gh_cleanup.ts" --raw-args "$RAW_ARGS"
+env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types "$TOOLS/gh_cleanup.ts" --raw-args "$RAW_ARGS"
 ```
 
 The tool handles its own preflight (in-repo, gh authed, clean tree), discovery,
@@ -72,7 +74,7 @@ worktree for that PR), removes its watcher state.
 
 ## Worktrees, stashes, objects
 
-- **Detached-HEAD review worktrees** — `/stark-review` provisions
+- **Detached-HEAD review worktrees** — `$stark-review` provisions
   `review-*-prN-single` worktrees with no branch ref, so the branch-pinned
   sweep can't see them. The full sweep matches them by path, confirms the PR
   is MERGED/CLOSED, and removes them only when the tree is clean (a dirty one
@@ -103,7 +105,7 @@ worktree for that PR), removes its watcher state.
 | `--dry-run` | Print plan, do not execute |
 | `--keep-branch NAME` | Add NAME to the protected set (repeatable) |
 | `--no-rebase` | Skip the rebase / fast-forward phase |
-| `--no-watcher-cleanup` | Skip the `~/.claude/code-review/stark-gh/watchers/...` sweep |
+| `--no-watcher-cleanup` | Skip the watcher-state sweep (`$STARK_STATE_ROOT/stark-gh/watchers`, default `~/.stark/code-review/stark-gh/watchers`; Codex sandboxes use temporary state) |
 | `--no-config` | Skip the linear-tree `git config` writes |
 | `--no-gc` | Skip the `git gc` repack step |
 | `--drop-stale-stashes` | Drop stashes whose base branch no longer exists (default: surface only) |

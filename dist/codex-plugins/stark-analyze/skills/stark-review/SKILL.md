@@ -10,8 +10,10 @@ For every shell invocation that reads this skill's packaged files, first
 resolve the absolute directory containing this loaded `SKILL.md` from the skill
 path Codex supplied. In that same shell invocation set `SKILL_DIR` to that
 directory, set `STARK_PLUGIN_ROOT` to the absolute `../..` directory, and
-export it. Do not derive the plugin root from the current working directory and
-do not reuse a value from an earlier shell invocation.
+export it. In every such shell invocation also set and export
+`STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}"`. Do not derive
+the plugin root from the current working directory, do not reuse a value from
+an earlier shell invocation, and do not write Codex state under `~/.claude`.
 
 ## Help
 
@@ -119,7 +121,7 @@ credentials, and reaches that path only after explicit `--post` consent.
 ```bash
 gh auth status
 
-SETUP_JSON=$(STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" node --experimental-strip-types "$TOOLS/review_setup_worktree.ts" \
+SETUP_JSON=$(env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types "$TOOLS/review_setup_worktree.ts" \
     --pr "$PR_NUM" --repo "$REPO" --mode single --json)
 json_value() {
     printf '%s' "$SETUP_JSON" | node -e '
@@ -178,7 +180,7 @@ if [ "${FIX_APPROVED:-0}" = 1 ] && [ "${POST_APPROVED:-0}" != 1 ]; then
 fi
 
 set +e
-RECEIPT_JSON=$(STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" node --experimental-strip-types "$TOOLS/stark_review.ts" "${review_args[@]}")
+RECEIPT_JSON=$(env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types "$TOOLS/stark_review.ts" "${review_args[@]}")
 TS_EXIT=$?
 set -e
 ```
@@ -316,7 +318,7 @@ a host-specific history root nor manages those files.
 ```bash
 cd - >/dev/null
 
-STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" node --experimental-strip-types "$TOOLS/review_cleanup_worktree.ts" \
+env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types "$TOOLS/review_cleanup_worktree.ts" \
     --worktree "$WORKTREE_PATH" --head-sha "$HEAD_SHA" --json
 ```
 

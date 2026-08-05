@@ -29,7 +29,7 @@ import { readFile } from "node:fs/promises";
 import * as os from "node:os";
 import * as path from "node:path";
 
-import { assetConfigPath } from "./asset_root_lib.ts";
+import { assetConfigPath, stateRoot } from "./asset_root_lib.ts";
 import { applyClaudeAuth } from "./claude_auth_lib.ts";
 import { detectTestCommand } from "./stark_review_lib.ts";
 import { geminiAuthSettings, resolveGeminiAuthMode } from "./gemini_auth_lib.ts";
@@ -75,9 +75,7 @@ const DEFAULT_ADC_PATH = path.join(
   "application_default_credentials.json",
 );
 const GEMINI_FALLBACK_LOG = path.join(
-  HOME,
-  ".claude",
-  "code-review",
+  stateRoot(),
   "gemini-api-key-fallback.log",
 );
 

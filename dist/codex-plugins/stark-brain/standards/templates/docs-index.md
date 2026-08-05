@@ -34,7 +34,7 @@ cp docs/adr/template.md docs/adr/$(printf "%04d" $(ls docs/adr/*.md | wc -l))-yo
 touch docs/specs/your-feature.md
 
 # Run AI review on a PR
-/stark-review <PR_NUMBER>
+$stark-review <PR_NUMBER>
 ```
 
 ---

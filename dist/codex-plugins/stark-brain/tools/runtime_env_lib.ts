@@ -161,13 +161,11 @@ export async function buildAgentEnv(
     }
   }
 
-  // Always propagate CLAUDE_PLUGIN_ROOT (when set) so any stark tool a
-  // sub-agent shells out to resolves its vendored assets (config/prompts/tools)
-  // from the same installed-plugin dir. Structural runtime path, not a
-  // user-tunable allowlist entry — injected unconditionally.
-  const pluginRoot = process.env.CLAUDE_PLUGIN_ROOT;
-  if (pluginRoot && pluginRoot.trim() !== "") {
-    env["CLAUDE_PLUGIN_ROOT"] = pluginRoot;
+  // Always propagate Codex's structural roots so nested Stark tools resolve
+  // packaged assets and mutable state without consulting a Claude install.
+  for (const key of ["STARK_ASSET_ROOT", "STARK_PLUGIN_ROOT", "STARK_STATE_ROOT"] as const) {
+    const value = process.env[key];
+    if (value && value.trim() !== "") env[key] = value;
   }
 
   // Model auth for the claude agent: subscription mode (default) leaves

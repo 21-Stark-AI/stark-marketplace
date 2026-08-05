@@ -5,22 +5,23 @@
  * On-disk contract:
  *   - alerts log:  `<base>/alerts.jsonl` (one JSON object per line)
  *   - marker file: `<base>/alert-{unix-ts}[-{counter}].marker`
- * `<base>` defaults to `~/.claude/code-review/`. Cross-language
+ * `<base>` defaults to `~/.stark/code-review/`. Cross-language
  * interop was the seam while the Python and TS implementations lived
  * side by side; with the Python gone (self_healer cutover, 2026-05-18)
  * the on-disk format is now owned purely by this module.
  */
 
 import fs from "node:fs";
-import os from "node:os";
 import path from "node:path";
+
+import { stateRoot } from "./asset_root_lib.ts";
 
 // ---------------------------------------------------------------------------
 // Paths
 // ---------------------------------------------------------------------------
 
 export function defaultBaseDir(): string {
-  return path.join(os.homedir(), ".claude", "code-review");
+  return stateRoot();
 }
 
 export function alertsPath(baseDir?: string): string {

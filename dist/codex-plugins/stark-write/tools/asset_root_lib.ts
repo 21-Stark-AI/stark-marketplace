@@ -1,29 +1,27 @@
 /**
  * Asset- vs. state-root resolution — the seam that lets a skill/tool resolve
- * its shipped assets whether it runs inside a self-contained Claude Code plugin
+ * its shipped assets whether it runs inside a self-contained Codex plugin
  * (marketplace distribution) or via a direct, non-plugin invocation.
  *
  * Two distinct roots:
  *
  *   - `assetRoot()` — IMMUTABLE shipped assets: `tools/`, `prompts/`,
  *     `standards/`, `config.json`, `forge_heuristics.json`, `orchestrator.md`.
- *     In an installed plugin Claude Code sets `CLAUDE_PLUGIN_ROOT` to the
- *     plugin's cache dir, which the bifrost engine populates with
- *     these assets (vendored per bundle). For direct (non-plugin) invocations
- *     `CLAUDE_PLUGIN_ROOT` is unset and we fall back to the canonical
- *     `~/.claude/code-review` tree. `STARK_ASSET_ROOT` overrides both
- *     (tests / unusual layouts).
+ *     The bifrost Codex adapter exports `STARK_PLUGIN_ROOT` for native plugins
+ *     and `STARK_ASSET_ROOT` for standalone installs. For direct invocations
+ *     without either variable we fall back to `~/.stark/code-review`, never a
+ *     Claude-owned path.
  *
  *   - `stateRoot()` — MUTABLE runtime state: `history/`, `sessions/`,
  *     `staged/`, `dashboard/`, `locks/`, `logs/`, alerts, healer + cost ledgers.
- *     This ALWAYS lives under the user's real home (`~/.claude/code-review`),
+ *     This ALWAYS lives under the user's real home (`~/.stark/code-review`),
  *     never inside a plugin dir — plugin caches are replaced wholesale on
  *     update, so state kept there would be lost and would not be shared across
  *     bundles. `STARK_STATE_ROOT` overrides (tests).
  *
- * Both default to the same `~/.claude/code-review` path, so behaviour is
- * identical to the pre-plugin world whenever `CLAUDE_PLUGIN_ROOT` is unset —
- * the live symlink dev loop is unaffected.
+ * Both default to the same `~/.stark/code-review` path. Codex runtime state is
+ * therefore disjoint from Claude Code runtime state even when no environment
+ * overrides are supplied.
  */
 
 import fs from "node:fs";
@@ -70,19 +68,19 @@ function firstExistingFile(candidates: readonly string[], fallback: string): str
   return fallback;
 }
 
-/** Canonical home tree: `~/.claude/code-review`. */
+/** Canonical Codex runtime tree: `~/.stark/code-review`. */
 function homeCodeReview(): string {
-  return path.join(os.homedir(), ".claude", "code-review");
+  return path.join(os.homedir(), ".stark", "code-review");
 }
 
 /**
  * Root for immutable, shipped assets (tools, prompts, standards, config.json).
- * Precedence: `STARK_ASSET_ROOT` > `CLAUDE_PLUGIN_ROOT` > `~/.claude/code-review`.
+ * Precedence: `STARK_ASSET_ROOT` > `STARK_PLUGIN_ROOT` > `~/.stark/code-review`.
  */
 export function assetRoot(): string {
   return (
     nonEmpty(process.env.STARK_ASSET_ROOT) ??
-    nonEmpty(process.env.CLAUDE_PLUGIN_ROOT) ??
+    nonEmpty(process.env.STARK_PLUGIN_ROOT) ??
     homeCodeReview()
   );
 }
@@ -90,25 +88,41 @@ export function assetRoot(): string {
 /**
  * Like `assetRoot()` but for call sites that already resolve their own `home`
  * (typically for test injection via an explicit `opts.home`). Honours the
- * plugin/asset overrides first, then falls back to `<home>/.claude/code-review`
+ * plugin/asset overrides first, then falls back to `<home>/.stark/code-review`
  * rather than `os.homedir()` — so existing tests that pass a temp `home` keep
  * working unchanged when no plugin env is set.
  */
 export function assetRootForHome(home: string): string {
   return (
     nonEmpty(process.env.STARK_ASSET_ROOT) ??
-    nonEmpty(process.env.CLAUDE_PLUGIN_ROOT) ??
-    path.join(home, ".claude", "code-review")
+    nonEmpty(process.env.STARK_PLUGIN_ROOT) ??
+    path.join(home, ".stark", "code-review")
   );
 }
 
 /**
  * Root for mutable runtime state (history, sessions, locks, logs, ledgers).
- * Precedence: `STARK_STATE_ROOT` > `~/.claude/code-review`. Deliberately does
- * NOT consult `CLAUDE_PLUGIN_ROOT` — state must outlive plugin-cache churn.
+ * Precedence: `STARK_STATE_ROOT` > `~/.stark/code-review`. Deliberately does
+ * NOT consult `STARK_PLUGIN_ROOT` — state must outlive plugin-cache churn.
  */
-export function stateRoot(): string {
-  return nonEmpty(process.env.STARK_STATE_ROOT) ?? homeCodeReview();
+export function stateRoot(env: NodeJS.ProcessEnv = process.env): string {
+  return nonEmpty(env.STARK_STATE_ROOT) ?? homeCodeReview();
+}
+
+/**
+ * Like `stateRoot()` for callers that accept an injected home directory.
+ * The explicit state override remains authoritative; otherwise state lives at
+ * `<home>/.stark/code-review` so tests and isolated runtimes never touch the
+ * operator's real state tree.
+ */
+export function stateRootForHome(
+  home: string,
+  env: NodeJS.ProcessEnv = process.env,
+): string {
+  return (
+    nonEmpty(env.STARK_STATE_ROOT) ??
+    path.join(home, ".stark", "code-review")
+  );
 }
 
 /**

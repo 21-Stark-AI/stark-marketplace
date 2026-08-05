@@ -27,6 +27,8 @@ func TestPluginLayoutEmitsNativePluginSkill(t *testing.T) {
 	}
 	for _, want := range []string{
 		"## Codex plugin asset root",
+		`STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}"`,
+		"do not write Codex state under `~/.claude`",
 		"${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}/tools/gh_cleanup.ts",
 		"Usage: cleanup [--dry-run]",
 	} {
@@ -77,7 +79,8 @@ func TestPluginRetargetHandlesNestedPortableRoots(t *testing.T) {
 	if strings.Contains(got, "${STARK_PLUGIN_ROOT:-${STARK_PLUGIN_ROOT") {
 		t.Fatalf("nested root rewrite was malformed:\n%s", got)
 	}
-	if !strings.Contains(got, `STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" node --experimental-strip-types`) {
+	want := `env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types`
+	if !strings.Contains(got, want) {
 		t.Fatalf("tool invocation did not receive the plugin asset root:\n%s", got)
 	}
 }
@@ -102,5 +105,9 @@ func TestRetargetPluginAssetRefsDoesNotAddSkillPreamble(t *testing.T) {
 	}
 	if strings.Contains(got, "CLAUDE_PLUGIN_ROOT") || !strings.Contains(got, "../../tools/y.ts") {
 		t.Fatalf("depth-independent rewrite is wrong:\n%s", got)
+	}
+	want := `env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from the loaded SKILL.md as instructed}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types`
+	if !strings.Contains(got, want) {
+		t.Fatalf("prose tool invocation did not receive isolated roots:\n%s", got)
 	}
 }

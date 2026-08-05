@@ -25,17 +25,17 @@ context. On a large repo that degrades. The dispatcher instead:
 
 ## Run it
 
-No `pnpm` in this repo — invoke with `STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from the loaded SKILL.md as instructed}" node --experimental-strip-types`:
+No `pnpm` in this repo — invoke with `env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from the loaded SKILL.md as instructed}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types`:
 
 ```bash
 # Inventory + planned subagent jobs, NO LLM calls (always safe, fast)
-STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from the loaded SKILL.md as instructed}" node --experimental-strip-types tools/refactor_planner.ts --mode dry-run
+env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from the loaded SKILL.md as instructed}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types tools/refactor_planner.ts --mode dry-run
 
 # Full multi-agent planning workflow -> REFACTOR_PLAN.md + REFACTOR_BACKLOG.json
-STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from the loaded SKILL.md as instructed}" node --experimental-strip-types tools/refactor_planner.ts --mode run --provider claude
+env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from the loaded SKILL.md as instructed}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types tools/refactor_planner.ts --mode run --provider claude
 
 # Validate an existing REFACTOR_BACKLOG.json (schema + DAG + enum + path checks)
-STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from the loaded SKILL.md as instructed}" node --experimental-strip-types tools/refactor_planner.ts --mode validate
+env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from the loaded SKILL.md as instructed}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types tools/refactor_planner.ts --mode validate
 ```
 
 Add `--json` for a machine-readable receipt on stdout (human summary stays on

@@ -4,6 +4,19 @@ All notable changes to `stark-marketplace`. The format follows [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.15.2] — 2026-08-05
+
+### Fixed
+- Isolated native Codex runtime assets and mutable state from Claude: packaged
+  assets resolve through `STARK_ASSET_ROOT`, while sessions, reviews, healer
+  state, alerts, and housekeeping use `STARK_STATE_ROOT` under `~/.stark`.
+- Rewrote known native skill references to Codex `$skill-name` invocation syntax
+  in generated skill and plugin metadata without changing canonical Claude
+  descriptions or generated Claude artifacts.
+- Made Codex housekeeping operate only on Codex-owned state, preserve existing
+  monthly archives, and safely archive repository filenames that resemble
+  command-line options.
+
 ## [0.15.1] — 2026-08-05
 
 ### Fixed

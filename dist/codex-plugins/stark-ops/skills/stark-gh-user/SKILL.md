@@ -10,8 +10,10 @@ For every shell invocation that reads this skill's packaged files, first
 resolve the absolute directory containing this loaded `SKILL.md` from the skill
 path Codex supplied. In that same shell invocation set `SKILL_DIR` to that
 directory, set `STARK_PLUGIN_ROOT` to the absolute `../..` directory, and
-export it. Do not derive the plugin root from the current working directory and
-do not reuse a value from an earlier shell invocation.
+export it. In every such shell invocation also set and export
+`STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}"`. Do not derive
+the plugin root from the current working directory, do not reuse a value from
+an earlier shell invocation, and do not write Codex state under `~/.claude`.
 
 ## Help
 
@@ -74,13 +76,13 @@ parses `"$@"` without word-splitting. Default subcommand: `show`.
 ### `show`
 
 1. Read `$STARK_GH_USER` (default `primary`).
-2. Run `STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" node --experimental-strip-types --no-warnings <script> --user <active>` to confirm a token is reachable. If it raises, surface the keychain account name that's missing.
+2. Run `env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types --no-warnings <script> --user <active>` to confirm a token is reachable. If it raises, surface the keychain account name that's missing.
 3. Spawn `gh api rate_limit --jq '.resources | {core, graphql}'` with `GH_TOKEN` set to that token.
 4. Print: active user, login (`gh api user --jq .login`), core remaining/limit, graphql remaining/limit.
 
 ### `primary` / `secondary`
 
-1. Resolve token via `STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" node --experimental-strip-types --no-warnings <script> --user <name> --kind <kind>`.
+1. Resolve token via `env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types --no-warnings <script> --user <name> --kind <kind>`.
 2. Validate that the requested Keychain entry exists, discarding the resolved
    value rather than printing it.
 3. Print one guarded deferred export block (no markdown or commentary), so the

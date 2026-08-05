@@ -2,10 +2,8 @@
  * Session ID resolver — TypeScript port of `scripts/session_id.py`.
  *
  * Resolution order:
- *   1. CLAUDE_SESSION_ID env var (trimmed; blank falls through)
- *   2. ~/.claude/projects/ marker files (newest-mtime JSON with a
- *      non-empty `session_id` string key)
- *   3. uuid4 fallback
+ *   1. CODEX_THREAD_ID env var (trimmed; blank falls through)
+ *   2. uuid4 fallback
  *
  * Also exports the standalone `resolveFromCheckpoint(path)` reader for
  * one-shot checkpoint reads (used by external callers that want a
@@ -21,7 +19,7 @@ import os from "node:os";
 import path from "node:path";
 
 export function defaultProjectsDir(): string {
-  return path.join(os.homedir(), ".claude", "projects");
+  return path.join(os.homedir(), ".codex", "projects");
 }
 
 interface FileEntry {
@@ -126,27 +124,24 @@ export function resolveFromProjectsDir(projectsDir: string): string | null {
 
 export interface ResolveSessionIdOpts {
   env?: NodeJS.ProcessEnv;
+  /** Retained for source compatibility; Codex does not scan project markers. */
   projectsDir?: string;
 }
 
 /**
- * Authoritative session ID resolver. Three-tier precedence; never
+ * Authoritative Codex session ID resolver. Two-tier precedence; never
  * throws; always returns a non-empty string.
  *
- * Unlike the Python original, results are NOT memoized at the module
- * level — the projects-dir scan is cheap on cold caches and the env
- * var is the dominant fast path in practice. Callers wanting
- * per-process caching should wrap with their own memo.
+ * Results are not memoized at the module level. Codex deliberately does not
+ * inspect Claude Code project markers: an invocation belongs to the current
+ * Codex thread when that identifier is available and otherwise receives an
+ * isolated UUID.
  */
 export function resolveSessionId(opts: ResolveSessionIdOpts = {}): string {
   const env = opts.env ?? process.env;
-  const projectsDir = opts.projectsDir ?? defaultProjectsDir();
 
-  const envVal = (env.CLAUDE_SESSION_ID ?? "").trim();
+  const envVal = (env.CODEX_THREAD_ID ?? "").trim();
   if (envVal.length > 0) return envVal;
-
-  const fromMarkers = resolveFromProjectsDir(projectsDir);
-  if (fromMarkers) return fromMarkers;
 
   return randomUUID();
 }
