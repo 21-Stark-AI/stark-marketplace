@@ -33,8 +33,23 @@ func installExitCode(err error) int {
 	return ExitValidation
 }
 
-func newInstallCmd(adapterFactory func(catalogDir string) installplan.Adapter) *cobra.Command {
+// defaultAssetRoots derives the vendor roots from the catalog dir's parent (the repo
+// root), mirroring `stark build`'s defaults so an install from a checkout is
+// self-contained without extra flags. A missing dir yields "" — no vendoring.
+func defaultAssetRoots(catalogDir string) (assetsSource, pluginAssetsRoot string) {
+	repoRoot := filepath.Dir(filepath.Clean(catalogDir))
+	if d := filepath.Join(repoRoot, "vendor", "stark-skills"); dirExists(d) {
+		assetsSource = d
+	}
+	if d := filepath.Join(repoRoot, "vendor", "plugins"); dirExists(d) {
+		pluginAssetsRoot = d
+	}
+	return
+}
+
+func newInstallCmd(adapterFactory func(catalogDir, assetsSource, pluginAssetsRoot string) installplan.Adapter) *cobra.Command {
 	var rt, dest, indexPath, bundlesDir, catalogDir, removeManifest string
+	var assetsSource, pluginAssetsRoot string
 	var plan, force, repair, jsonOut, yes bool
 	cmd := &cobra.Command{
 		Use:   "install <bundle[/artifact]>",
@@ -73,7 +88,14 @@ func newInstallCmd(adapterFactory func(catalogDir string) installplan.Adapter) *
 			}
 			bundle, artifact := splitRef(args[0])
 			typ := rootType(idx, bundle, artifact)
-			p, err := installplan.Compute(idx, bundlesDir, adapterFactory(catalogDir), bundle, artifact, typ, r)
+			defAssets, defPlugins := defaultAssetRoots(catalogDir)
+			if assetsSource == "" {
+				assetsSource = defAssets
+			}
+			if pluginAssetsRoot == "" {
+				pluginAssetsRoot = defPlugins
+			}
+			p, err := installplan.Compute(idx, bundlesDir, adapterFactory(catalogDir, assetsSource, pluginAssetsRoot), bundle, artifact, typ, r)
 			if err != nil {
 				fmt.Fprintln(os.Stderr, "plan:", err)
 				osExit(ExitValidation)
@@ -120,6 +142,8 @@ func newInstallCmd(adapterFactory func(catalogDir string) installplan.Adapter) *
 	cmd.Flags().StringVar(&removeManifest, "remove", "", "remove a prior install by manifest path")
 	cmd.Flags().BoolVar(&repair, "repair", false, "recover a crashed/partial install under --dest")
 	cmd.Flags().BoolVar(&jsonOut, "json", false, "machine-readable output")
+	cmd.Flags().StringVar(&assetsSource, "assets-source", "", "vendored stark-skills snapshot to install alongside artifacts (default: <repo>/vendor/stark-skills if present)")
+	cmd.Flags().StringVar(&pluginAssetsRoot, "plugin-assets", "", "per-bundle plugin asset root (default: <repo>/vendor/plugins if present)")
 	return cmd
 }
 
@@ -139,6 +163,12 @@ func rootType(idx *indexio.Index, bundle, artifact string) model.ArtifactType {
 func printPlan(p *installplan.Plan) {
 	fmt.Printf("plan for runtime %s:\n", p.Runtime)
 	for _, s := range p.Steps {
+		// The asset step is 150+ vendored files; listing each one buries the
+		// artifacts the operator is actually consenting to. Summarize it.
+		if s.Name == installplan.AssetsStepName {
+			fmt.Printf("  %s: %d vendored asset files\n", s.Bundle, len(s.Files))
+			continue
+		}
 		for _, f := range s.Files {
 			tag := ""
 			if f.Emulated {

@@ -9,6 +9,7 @@ package codex
 
 import (
 	"fmt"
+	"regexp"
 	"sort"
 	"strings"
 
@@ -22,7 +23,53 @@ import (
 )
 
 // version is the independently-versioned target identity (spec §7.7).
-const version = "codex@1"
+// codex@2 retargets asset references onto the Codex tree (see AssetPath /
+// retargetAssets) — bodies rendered by codex@1 pointed at a Claude plugin root
+// that does not exist on Codex.
+const version = "codex@2"
+
+// AssetsRoot is the Codex-tree directory holding ONE bundle's vendored
+// stark-skills assets (tools/, standards/, prompts/, scripts/, config.json).
+// It is the Codex analogue of dist/claude/<bundle>/ for a Claude plugin: a root
+// per bundle, never a shared one — stark-gh ships its own config.json, which
+// would clobber the shared snapshot's in a flat namespace.
+func AssetsRoot(bundle string) string { return ".agents/stark/" + bundle }
+
+// AssetPath maps a vendored asset's bundle-relative path (as it sits in
+// dist/claude/<bundle>/) to its path in the Codex tree.
+//
+// Per-skill assets (skills/<name>/references/**) must land NEXT TO the skill
+// that references them, and Codex skills live at .agents/skills/<name>/ — so
+// those keep their shape under .agents/. Everything else is bundle-scoped and
+// goes to the bundle's assets root.
+func AssetPath(bundle, rel string) string {
+	if strings.HasPrefix(rel, "skills/") {
+		return ".agents/" + rel
+	}
+	return AssetsRoot(bundle) + "/" + rel
+}
+
+// pluginRootRe matches ${CLAUDE_PLUGIN_ROOT} and its ${CLAUDE_PLUGIN_ROOT:-...}
+// defaulted form. The variable is injected by Claude Code and is never set on
+// Codex, so both forms would resolve to the Claude fallback (or to empty).
+var pluginRootRe = regexp.MustCompile(`\$\{CLAUDE_PLUGIN_ROOT(?::-[^}]*)?\}`)
+
+// relAssetRe matches a SKILL.md-relative reference into a vendored asset dir
+// (../../standards/help.md and friends). On Claude the skill sits at
+// <plugin>/skills/<name>/SKILL.md, so ../../ IS the plugin root; on Codex it
+// sits at .agents/skills/<name>/SKILL.md, so ../../ is .agents/ — one level
+// short of the bundle's assets root. Re-point it.
+var relAssetRe = regexp.MustCompile(`\.\./\.\./(tools|standards|prompts|scripts)/`)
+
+// retargetAssets rewrites a body's asset references onto the Codex tree layout
+// that BundleAssets installs. Without it every rendered skill points at paths
+// that exist only inside a Claude plugin.
+func retargetAssets(body, bundle string) string {
+	// ReplaceAllLiteralString, NOT ReplaceAllString: the replacement contains
+	// $HOME, which the expanding form would read as a capture-group reference.
+	body = pluginRootRe.ReplaceAllLiteralString(body, "${STARK_PLUGIN_ROOT:-$HOME/"+AssetsRoot(bundle)+"}")
+	return relAssetRe.ReplaceAllString(body, "../../stark/"+bundle+"/$1/")
+}
 
 type Target struct{}
 
@@ -173,7 +220,7 @@ func (t *Target) emitSkill(a *model.Artifact, res merge.Resolved, emulated bool)
 	if hint, ok := fa.Derived["argument-hint"]; ok {
 		b.WriteString("Usage: " + a.Name + " " + hint + "\n\n")
 	}
-	b.WriteString(res.Body)
+	b.WriteString(retargetAssets(res.Body, a.Bundle))
 
 	files := []adapter.OutputFile{{
 		Path:    ".agents/skills/" + a.Name + "/SKILL.md",

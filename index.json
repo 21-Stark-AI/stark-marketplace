@@ -3,7 +3,7 @@
   "generatedBy": {
     "adapterVersions": {
       "claude": "claude@1",
-      "codex": "codex@1",
+      "codex": "codex@2",
       "gemini": "gemini@1"
     }
   },

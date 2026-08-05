@@ -160,6 +160,7 @@ func Compute(idx *indexio.Index, bundlesDir string, ad Adapter, bundle, artifact
 	}
 	p := &Plan{Runtime: rt}
 	seen := map[string]bool{}
+	installed := map[string]bool{} // bundles that contributed at least one step
 	for _, root := range roots {
 		order, err := topo(idx, c, root)
 		if err != nil {
@@ -183,8 +184,32 @@ func Compute(idx *indexio.Index, bundlesDir string, ad Adapter, bundle, artifact
 				return nil, err
 			}
 			p.Steps = append(p.Steps, Step{Bundle: n.bundle, Name: n.name, Type: n.typ, Files: files})
+			installed[n.bundle] = true
 			addConsent(&p.Consent, n, adet)
 		}
+	}
+	// Bundle-level vendored assets, prepended so a bundle's own artifacts win on any
+	// path collision — the same precedence `stark build` applies to dist/claude. Only
+	// bundles that actually contributed a step get theirs; a bundle whose every
+	// artifact was skipped for this runtime installs nothing at all.
+	if ap, ok := ad.(AssetProvider); ok {
+		bundles := make([]string, 0, len(installed))
+		for b := range installed {
+			bundles = append(bundles, b)
+		}
+		sort.Strings(bundles)
+		var assetSteps []Step
+		for _, b := range bundles {
+			files, err := ap.BundleAssets(b, rt)
+			if err != nil {
+				return nil, fmt.Errorf("bundle assets for %s@%s: %w", b, rt, err)
+			}
+			if len(files) == 0 {
+				continue
+			}
+			assetSteps = append(assetSteps, Step{Bundle: b, Name: AssetsStepName, Files: files})
+		}
+		p.Steps = append(assetSteps, p.Steps...)
 	}
 	sort.Strings(p.Skipped)
 	sort.Strings(p.Consent.ClosureRefs)

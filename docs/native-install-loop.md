@@ -32,6 +32,41 @@ Net effect: a teammate runs `/plugin install <bundle>` and everything works —
 Skills shell out to the vendored tools via `node --experimental-strip-types`,
 which needs **Node ≥ 22.6** (24+ recommended). `stark doctor` verifies this.
 
+### Codex installs vendor the same assets
+
+`stark install --runtime codex` writes the vendored snapshot alongside the
+skills, so a Codex install is self-contained the same way a Claude plugin is.
+Layout under `--dest`:
+
+| Path | Holds |
+|---|---|
+| `.agents/skills/<name>/SKILL.md` | the skill body (Codex-native discovery) |
+| `.agents/skills/<name>/references/**` | that skill's own reference files |
+| `.agents/stark/<bundle>/**` | the bundle's assets root — `tools/`, `standards/`, `prompts/`, `scripts/`, `config.json` |
+
+The assets root is **per bundle, never shared**: `stark-gh` ships its own
+`config.json`, which would clobber the shared snapshot's in a flat namespace.
+
+Because the tree differs from a Claude plugin's, the codex target (`codex@2`)
+retargets both reference shapes in each rendered body:
+
+- `${CLAUDE_PLUGIN_ROOT}` / `${CLAUDE_PLUGIN_ROOT:-…}` →
+  `${STARK_PLUGIN_ROOT:-$HOME/.agents/stark/<bundle>}`. The `$HOME` fallback
+  assumes the recommended global install (`--dest ~`); for a project-local
+  install, export `STARK_PLUGIN_ROOT`.
+- `../../{tools,standards,prompts,scripts}/` → `../../stark/<bundle>/…`. On
+  Claude a skill sits at `<plugin>/skills/<name>/SKILL.md`, so `../../` **is**
+  the plugin root; on Codex it sits at `.agents/skills/<name>/SKILL.md`, one
+  level short.
+
+The vendor roots default to `<repo>/vendor/stark-skills` and `<repo>/vendor/plugins`
+(derived from `--catalog`'s parent); override with `--assets-source` /
+`--plugin-assets`, or point them at nothing to install artifacts only.
+
+**Still open:** `stark install --runtime claude` does not vendor assets — the
+Claude distribution path is the committed `dist/claude/` plugin tree, which
+already carries them. `--runtime gemini` covers `stark-gh` only.
+
 ## What is committed (spec §5.1)
 
 - **Committed:** repo-root `.claude-plugin/marketplace.json`, the `dist/claude/`

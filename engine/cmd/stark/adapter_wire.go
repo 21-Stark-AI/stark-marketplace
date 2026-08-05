@@ -3,12 +3,16 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"path/filepath"
+	"sort"
 	"strings"
 	"sync"
 
 	"github.com/21StarkCom/bifrost/engine/internal/adapter"
+	"github.com/21StarkCom/bifrost/engine/internal/adapter/codex"
 	"github.com/21StarkCom/bifrost/engine/internal/adapter/registry"
 	"github.com/21StarkCom/bifrost/engine/internal/aggregate"
+	"github.com/21StarkCom/bifrost/engine/internal/build"
 	"github.com/21StarkCom/bifrost/engine/internal/indexio"
 	"github.com/21StarkCom/bifrost/engine/internal/install"
 	"github.com/21StarkCom/bifrost/engine/internal/installplan"
@@ -26,8 +30,17 @@ type catalogAdapter struct {
 	catalogDir string
 	targets    map[model.Runtime]adapter.Target
 
-	mu  sync.Mutex
-	cat *model.Catalog
+	// assetsSource is the shared stark-skills snapshot (vendor/stark-skills) and
+	// pluginAssetsRoot holds the per-bundle overlays (vendor/plugins/<bundle>) —
+	// the same two inputs `stark build` vendors into dist/claude/<bundle>/. Empty
+	// = nothing to vendor (a catalog checked out without them).
+	assetsSource     string
+	pluginAssetsRoot string
+
+	mu     sync.Mutex
+	cat    *model.Catalog
+	shared map[string][]byte            // assetsSource, read once
+	plugin map[string]map[string][]byte // bundle -> overlay, read once
 }
 
 func newCatalogAdapter(catalogDir string) *catalogAdapter {
@@ -187,7 +200,100 @@ func sentinelBody(content, id string) (string, error) {
 	return "", fmt.Errorf("rendered output has no sentinel section %q", id)
 }
 
+// assetPathFor returns the runtime's mapper from a bundle-relative asset path (its
+// place in dist/claude/<bundle>/) to a path in that runtime's tree, or nil when the
+// runtime has no asset layout.
+//
+// Claude is deliberately nil: its distribution path is the committed dist/claude/
+// plugin tree, which `stark build` already vendors — a second copy written by
+// `stark install` would be unmanaged duplication, not a fix.
+func assetPathFor(rt model.Runtime) func(bundle, rel string) string {
+	if rt == model.RuntimeCodex {
+		return codex.AssetPath
+	}
+	return nil
+}
+
+// BundleAssets implements installplan.AssetProvider: the vendored stark-skills
+// snapshot plus this bundle's plugin overlay, mapped into the runtime's tree. Skill
+// bodies reference these by path (${CLAUDE_PLUGIN_ROOT}/tools/x.ts,
+// ../../standards/help.md); without them every such reference dangles.
+func (c *catalogAdapter) BundleAssets(bundle string, rt model.Runtime) ([]installplan.AdaptedFile, error) {
+	mapPath := assetPathFor(rt)
+	if mapPath == nil {
+		return nil, nil
+	}
+	shared, plugin, err := c.assets(bundle)
+	if err != nil {
+		return nil, err
+	}
+	// Shared snapshot first, then the bundle's own overlay — same precedence as
+	// build.Build, so e.g. stark-gh's {draft} config.json wins over the global one.
+	merged := make(map[string][]byte, len(shared)+len(plugin))
+	for rel, content := range shared {
+		merged[rel] = content
+	}
+	for rel, content := range plugin {
+		merged[rel] = content
+	}
+	rels := make([]string, 0, len(merged))
+	for rel := range merged {
+		rels = append(rels, rel)
+	}
+	sort.Strings(rels)
+	out := make([]installplan.AdaptedFile, 0, len(rels))
+	for _, rel := range rels {
+		out = append(out, installplan.AdaptedFile{
+			Path:    mapPath(bundle, rel),
+			Kind:    "file",
+			Payload: string(build.ToLF(merged[rel])),
+		})
+	}
+	return out, nil
+}
+
+// assets reads (once) the shared snapshot and this bundle's overlay. A missing
+// directory is not an error — it just means there is nothing to vendor.
+func (c *catalogAdapter) assets(bundle string) (map[string][]byte, map[string][]byte, error) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if c.shared == nil {
+		c.shared = map[string][]byte{}
+		if c.assetsSource != "" && dirExists(c.assetsSource) {
+			v, err := build.VendorAssets(c.assetsSource)
+			if err != nil {
+				return nil, nil, fmt.Errorf("vendor assets from %s: %w", c.assetsSource, err)
+			}
+			c.shared = v
+		}
+	}
+	if c.plugin == nil {
+		c.plugin = map[string]map[string][]byte{}
+	}
+	overlay, ok := c.plugin[bundle]
+	if !ok {
+		overlay = map[string][]byte{}
+		if c.pluginAssetsRoot != "" {
+			dir := filepath.Join(c.pluginAssetsRoot, bundle)
+			if dirExists(dir) {
+				v, err := build.VendorAssets(dir)
+				if err != nil {
+					return nil, nil, fmt.Errorf("plugin assets from %s: %w", dir, err)
+				}
+				overlay = v
+			}
+		}
+		c.plugin[bundle] = overlay
+	}
+	return c.shared, overlay, nil
+}
+
 // realAdapter returns the production adapter, rendering from the given catalog directory.
-func realAdapter(catalogDir string) installplan.Adapter {
-	return newCatalogAdapter(catalogDir)
+// assetsSource / pluginAssetsRoot are the vendor roots to install alongside the artifacts;
+// empty disables asset vendoring.
+func realAdapter(catalogDir, assetsSource, pluginAssetsRoot string) installplan.Adapter {
+	c := newCatalogAdapter(catalogDir)
+	c.assetsSource = assetsSource
+	c.pluginAssetsRoot = pluginAssetsRoot
+	return c
 }

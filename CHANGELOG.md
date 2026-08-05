@@ -4,6 +4,21 @@ All notable changes to `stark-marketplace`. The format follows [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.14.0] — 2026-08-05
+
+### Fixed — Codex installs were shipping dangling asset references
+- **All 29 artifacts were broken on Codex.** `stark build` vendors the stark-skills snapshot (`tools/`, `standards/`, `prompts/`, `scripts/`, `config.json`) into every `dist/claude/<bundle>/`, but `stark install --runtime codex` wrote `SKILL.md` files and nothing else. Every one of them referenced assets that were never installed — 19 via `${CLAUDE_PLUGIN_ROOT}` (unset on Codex) and 26 via `../../standards/help.md`-style relative paths. Skills installed and were discoverable; anything that shelled a tool or followed a standard died.
+- **`stark install --runtime codex` now vendors the same assets**, per bundle: `.agents/stark/<bundle>/{tools,standards,prompts,scripts,config.json}`, with each skill's own `references/` kept next to it at `.agents/skills/<name>/references/`. The assets root is per bundle, not shared — `stark-gh`'s `config.json` would otherwise clobber the shared snapshot's.
+- **Codex target `codex@1` → `codex@2`**: rendered bodies are retargeted onto that tree — `${CLAUDE_PLUGIN_ROOT…}` → `${STARK_PLUGIN_ROOT:-$HOME/.agents/stark/<bundle>}`, and `../../{tools,standards,prompts,scripts}/` → `../../stark/<bundle>/…`.
+
+### Added
+- **`installplan.AssetProvider`** — optional adapter interface for bundle-level files that belong to no artifact. Its step is prepended (artifacts win on collision) and excluded from the consent closure; only bundles that contributed a real step get one.
+- `stark install --assets-source` / `--plugin-assets`, defaulting to `<repo>/vendor/stark-skills` and `<repo>/vendor/plugins` off `--catalog`'s parent.
+
+### Not covered
+- `stark install --runtime claude` still vendors nothing — its distribution path is the committed `dist/claude/` plugin tree, which already carries the assets.
+- Gemini remains `stark-gh`-only (3 commands). The other 26 skills declare `[claude, codex]`; rendering them as `GEMINI.md` sentinel blocks would put ~307 KB permanently in context, so that is deliberately deferred.
+
 ## [0.8.0] — 2026-07-26
 
 ### Removed — the demolition release
