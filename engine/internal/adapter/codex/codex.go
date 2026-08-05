@@ -1,17 +1,19 @@
 // Package codex is the Codex (OpenAI) adapter target (spec §6, corrected matrix).
 // Codex has NATIVE Skills at .agents/skills/<name>/SKILL.md (name+description
 // required). Prompts are deprecated, so prompt/command map to a Codex skill.
-// agent → emulated Codex skill. mcp → ~/.codex/config.toml [mcp_servers.<name>].
+// agent → emulated Codex skill. mcp → .codex/config.toml [mcp_servers.<name>].
 // Render is the canonical bundle-level entry point (CC-1): it iterates the bundle's
 // artifacts, resolves each body via merge.Resolve (which runs fence.Strip) internally,
 // and emits per-runtime output.
 package codex
 
 import (
+	"encoding/json"
 	"fmt"
 	"regexp"
 	"sort"
 	"strings"
+	"unicode"
 
 	"github.com/21StarkCom/bifrost/engine/internal/adapter"
 	"github.com/21StarkCom/bifrost/engine/internal/adapter/emulate"
@@ -23,10 +25,10 @@ import (
 )
 
 // version is the independently-versioned target identity (spec §7.7).
-// codex@2 retargets asset references onto the Codex tree (see AssetPath /
-// retargetAssets) — bodies rendered by codex@1 pointed at a Claude plugin root
-// that does not exist on Codex.
-const version = "codex@2"
+// codex@2 retargeted asset references onto the Codex tree. codex@3 emits native
+// agents/openai.yaml invocation policy and stops writing the unsupported model
+// field into SKILL.md.
+const version = "codex@3"
 
 // AssetsRoot is the Codex-tree directory holding ONE bundle's vendored
 // stark-skills assets (tools/, standards/, prompts/, scripts/, config.json).
@@ -122,32 +124,6 @@ func New() *Target { return &Target{} }
 func (t *Target) Runtime() model.Runtime { return model.RuntimeCodex }
 func (t *Target) Version() string        { return version }
 
-// modelMap translates canonical model ids → Codex model ids (§6.2 ActionMap).
-func modelMap(canonical string) (string, bool) {
-	switch modelFamily(canonical) {
-	case "opus", "sonnet":
-		return "gpt-5-codex", true
-	case "haiku":
-		return "gpt-5-mini", true
-	default:
-		return "", false
-	}
-}
-
-func modelFamily(canonical string) string {
-	s := strings.ToLower(strings.TrimSpace(canonical))
-	switch {
-	case s == "opus" || strings.HasPrefix(s, "opus[") || strings.HasPrefix(s, "opus-"):
-		return "opus"
-	case s == "sonnet" || strings.HasPrefix(s, "sonnet[") || strings.HasPrefix(s, "sonnet-"):
-		return "sonnet"
-	case s == "haiku" || strings.HasPrefix(s, "haiku[") || strings.HasPrefix(s, "haiku-"):
-		return "haiku"
-	default:
-		return s
-	}
-}
-
 // Render emits Codex output for every artifact in the bundle that targets Codex.
 // Per CC-1 it owns body resolution: merge.Resolve(a, RuntimeCodex) runs fence.Strip
 // internally — the target never receives a pre-stripped body. merge.Resolve returns
@@ -238,7 +214,7 @@ func (t *Target) emitArtifact(a *model.Artifact, res merge.Resolved) ([]adapter.
 // §6.1 fidelity header (agents have no Codex primitive). Frontmatter is emitted via
 // yaml.Marshal so values escape correctly and carried lists become YAML sequences.
 func (t *Target) emitSkill(a *model.Artifact, res merge.Resolved, emulated bool) ([]adapter.OutputFile, []adapter.Finding) {
-	fa := fieldmap.Apply(res.Frontmatter, a, model.RuntimeCodex, modelMap)
+	fa := fieldmap.Apply(res.Frontmatter, a, model.RuntimeCodex, nil)
 
 	desc := a.Description
 	if d, ok := res.Frontmatter["description"].(string); ok && d != "" {
@@ -270,7 +246,86 @@ func (t *Target) emitSkill(a *model.Artifact, res merge.Resolved, emulated bool)
 		Path:    ".agents/skills/" + a.Name + "/SKILL.md",
 		Content: []byte(fm.String() + b.String()),
 	}}
+
+	// Claude commands are explicit slash-command surfaces, not auto-selected
+	// workflows. Preserve that boundary when a command is represented as a Codex
+	// skill. Native source skills carry the same intent through
+	// disable-model-invocation, mapped by fieldmap into this product metadata.
+	disableModelInvocation, hasDisableModelInvocation := fa.Derived["disable-model-invocation"]
+	hasInvocationPolicy := a.Type == model.TypeCommand || hasDisableModelInvocation
+	// A command remains explicit-only even though the canonical serializer writes
+	// `disable-model-invocation: false` for commands by default. That false value
+	// describes the source frontmatter; it must not weaken the stricter semantic
+	// boundary introduced by representing a slash command as a Codex skill.
+	allowImplicit := a.Type != model.TypeCommand && disableModelInvocation != "true"
+	if hasInvocationPolicy {
+		files = append(files, adapter.OutputFile{
+			Path:    ".agents/skills/" + a.Name + "/agents/openai.yaml",
+			Content: renderOpenAIYAML(a.Name, desc, allowImplicit),
+		})
+	}
 	return files, dropFindings(a.Bundle, a.Name, model.RuntimeCodex, fa.Dropped)
+}
+
+// renderOpenAIYAML emits the Codex-native home for invocation policy. The
+// interface keys are required whenever agents/openai.yaml exists; derive compact,
+// deterministic values from the canonical identity rather than inventing a
+// second authored metadata source.
+func renderOpenAIYAML(name, description string, allowImplicit bool) []byte {
+	display := displayName(name)
+	short := shortDescription(description)
+	return []byte(fmt.Sprintf(
+		"interface:\n  display_name: %s\n  short_description: %s\npolicy:\n  allow_implicit_invocation: %t\n",
+		quoteYAMLString(display), quoteYAMLString(short), allowImplicit,
+	))
+}
+
+func quoteYAMLString(s string) string {
+	b, _ := json.Marshal(s) // every Go string is JSON/YAML representable
+	return string(b)
+}
+
+func displayName(name string) string {
+	acronyms := map[string]string{
+		"adr": "ADR", "cc": "CC", "gh": "GH", "gha": "GHA",
+		"ssot": "SSOT", "iac": "IaC", "pr": "PR",
+	}
+	parts := strings.Split(name, "-")
+	for i, part := range parts {
+		if v, ok := acronyms[part]; ok {
+			parts[i] = v
+			continue
+		}
+		r := []rune(part)
+		if len(r) > 0 {
+			r[0] = unicode.ToUpper(r[0])
+		}
+		parts[i] = string(r)
+	}
+	return strings.Join(parts, " ")
+}
+
+// shortDescription follows the Codex UI guidance (25-64 characters). Collapse
+// authored wrapping, then cut at the last word boundary so the result remains a
+// readable blurb rather than a byte-truncated fragment.
+func shortDescription(description string) string {
+	s := strings.Join(strings.Fields(description), " ")
+	if len([]rune(s)) < 25 {
+		stem := strings.TrimSpace(strings.TrimRight(s, ".!?"))
+		if stem == "" {
+			stem = "Guided skill"
+		}
+		s = stem + " workflow instructions for Codex."
+	}
+	r := []rune(s)
+	if len(r) <= 64 {
+		return s
+	}
+	cut := 64
+	for cut > 25 && !unicode.IsSpace(r[cut]) {
+		cut--
+	}
+	return strings.TrimSpace(string(r[:cut]))
 }
 
 // writeYAMLField appends `k: <yaml-encoded v>` using yaml.Marshal so scalars are
@@ -300,32 +355,56 @@ type codexMCPDoc struct {
 }
 
 type codexMCPServer struct {
-	Command string            `toml:"command,omitempty"`
-	Args    []string          `toml:"args,omitempty"`
-	URL     string            `toml:"url,omitempty"`
-	Env     map[string]string `toml:"env,omitempty"`
+	Command string   `toml:"command,omitempty"`
+	Args    []string `toml:"args,omitempty"`
+	URL     string   `toml:"url,omitempty"`
+	EnvVars []string `toml:"env_vars,omitempty"`
 }
 
 func (t *Target) emitMCP(a *model.Artifact) ([]adapter.OutputFile, error) {
 	if a.MCP == nil {
 		return nil, fmt.Errorf("codex: mcp artifact %q has no mcp config", a.Name)
 	}
+	switch a.MCP.Transport {
+	case "stdio":
+		if a.MCP.Command == "" {
+			return nil, fmt.Errorf("codex: stdio mcp artifact %q requires command", a.Name)
+		}
+		if a.MCP.URL != "" {
+			return nil, fmt.Errorf("codex: stdio mcp artifact %q cannot set url", a.Name)
+		}
+	case "http":
+		if a.MCP.URL == "" {
+			return nil, fmt.Errorf("codex: http mcp artifact %q requires url", a.Name)
+		}
+		if a.MCP.Command != "" || len(a.MCP.Args) > 0 {
+			return nil, fmt.Errorf("codex: http mcp artifact %q cannot set command or args", a.Name)
+		}
+		if len(a.MCP.Env) > 0 {
+			return nil, fmt.Errorf("codex: http mcp artifact %q cannot map canonical env to HTTP authentication; model bearer_token_env_var or env_http_headers explicitly", a.Name)
+		}
+	default:
+		return nil, fmt.Errorf("codex: mcp artifact %q has unsupported transport %q", a.Name, a.MCP.Transport)
+	}
 	srv := codexMCPServer{
 		Command: a.MCP.Command,
 		Args:    a.MCP.Args,
 		URL:     a.MCP.URL,
 	}
-	if len(a.MCP.Env) > 0 {
-		srv.Env = map[string]string{}
-		// secretRef → ${KEY} placeholder; never the secret value (§4.4).
+	if a.MCP.Transport == "stdio" && len(a.MCP.Env) > 0 {
+		// Codex forwards named variables from the launch environment with
+		// `env_vars`. Its `env` table contains literal values and does not expand
+		// `${KEY}` placeholders, so writing secret-looking strings there silently
+		// disconnects the server from the actual credential.
 		for k := range a.MCP.Env {
-			srv.Env[k] = "${" + k + "}"
+			srv.EnvVars = append(srv.EnvVars, k)
 		}
+		sort.Strings(srv.EnvVars)
 	}
 	doc := codexMCPDoc{MCPServers: map[string]codexMCPServer{a.Name: srv}}
 	out, err := toml.Marshal(doc)
 	if err != nil {
 		return nil, fmt.Errorf("codex: marshal mcp toml: %w", err)
 	}
-	return []adapter.OutputFile{{Path: "config.toml", Content: out}}, nil
+	return []adapter.OutputFile{{Path: ".codex/config.toml", Content: out}}, nil
 }

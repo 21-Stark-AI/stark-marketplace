@@ -27,45 +27,25 @@ func TestApplyDropsAndWarns(t *testing.T) {
 	}
 }
 
-func TestApplyMapsCodexModel(t *testing.T) {
+func TestApplyDropsCodexModel(t *testing.T) {
 	a := &model.Artifact{Name: "s", Type: model.TypeSkill, Model: "opus"}
-	mapper := func(v string) (string, bool) {
-		if v == "opus" {
-			return "gpt-5-codex", true
-		}
-		return "", false
-	}
-	res := Apply(nil, a, model.RuntimeCodex, mapper)
-	if res.Carried["model"] != "gpt-5-codex" {
-		t.Fatalf("codex model should map opus→gpt-5-codex, got %q", res.Carried["model"])
-	}
-}
-
-func TestApplyMapMissTargetDrops(t *testing.T) {
-	a := &model.Artifact{Name: "s", Type: model.TypeSkill, Model: "weird-model"}
-	mapper := func(string) (string, bool) { return "", false }
-	res := Apply(nil, a, model.RuntimeCodex, mapper)
+	res := Apply(nil, a, model.RuntimeCodex, nil)
 	if _, ok := res.Carried["model"]; ok {
-		t.Fatal("unmappable model must drop")
+		t.Fatal("Codex skill model must drop")
 	}
 	if len(res.Dropped) != 1 || res.Dropped[0] != "model" {
 		t.Fatalf("want model dropped, got %v", res.Dropped)
 	}
 }
 
-// Per-runtime frontmatter overrides (res.Frontmatter) must win over typed fields.
-func TestApplyHonorsResolvedOverride(t *testing.T) {
-	a := &model.Artifact{Name: "s", Type: model.TypeSkill, Model: "opus"}
-	fm := map[string]any{"model": "sonnet"} // override-merged value
-	mapper := func(v string) (string, bool) {
-		if v == "sonnet" {
-			return "gpt-5-codex", true
-		}
-		return "", false
+func TestApplyDerivesCodexInvocationPolicy(t *testing.T) {
+	a := &model.Artifact{Name: "s", Type: model.TypeSkill, DisableModelInvocation: true}
+	res := Apply(nil, a, model.RuntimeCodex, nil)
+	if got := res.Derived["disable-model-invocation"]; got != "true" {
+		t.Fatalf("disable-model-invocation should derive to metadata, got %q", got)
 	}
-	res := Apply(fm, a, model.RuntimeCodex, mapper)
-	if res.Carried["model"] != "gpt-5-codex" {
-		t.Fatalf("override model (sonnet) must drive mapping, got %v", res.Carried["model"])
+	if len(res.Dropped) != 0 {
+		t.Fatalf("mapped invocation policy must not be reported dropped: %v", res.Dropped)
 	}
 }
 

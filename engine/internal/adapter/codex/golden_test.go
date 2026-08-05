@@ -15,7 +15,7 @@ func goldenSkill() *model.Artifact {
 	return &model.Artifact{
 		Name: "stark-review", Type: model.TypeSkill, Bundle: "stark-review",
 		Description: "Single-agent PR review.", Version: "0.7.0",
-		Model:    "opus", // maps → gpt-5-codex
+		Model:    "opus", // unsupported in native Codex skill frontmatter; dropped
 		Body:     "Do the review.\n",
 		Runtimes: []model.Runtime{model.RuntimeCodex},
 	}

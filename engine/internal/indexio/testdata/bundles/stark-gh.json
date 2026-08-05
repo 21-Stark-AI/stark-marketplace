@@ -29,7 +29,7 @@
       "diverged": false,
       "outputs": {
         "claude": [{ "path": ".mcp.json", "kind": "mergeJSONKey", "key": "mcpServers.gh" }],
-        "codex":  [{ "path": "config.toml", "kind": "mergeTOMLKey", "key": "mcp_servers.gh" }],
+        "codex":  [{ "path": ".codex/config.toml", "kind": "mergeTOMLKey", "key": "mcp_servers.gh" }],
         "gemini": [{ "path": "settings.json", "kind": "mergeJSONKey", "key": "mcpServers.gh" }]
       },
       "mcp": { "transport": "stdio", "command": "node", "args": ["gh-mcp-server.js"],

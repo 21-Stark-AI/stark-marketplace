@@ -33,6 +33,13 @@ func serializeArtifact(a *model.Artifact) ([]byte, error) {
 	buf.WriteString("---\n")
 	buf.Write(fm)
 	buf.WriteString("---\n")
+	// Native skill schemas (including Codex's) do not accept `argument-hint`
+	// frontmatter, but source skills use it as important invocation guidance.
+	// Preserve the information as portable body prose instead of silently
+	// dropping it during sync. Commands keep their native frontmatter field.
+	if a.Type == model.TypeSkill && a.ArgumentHint != "" {
+		fmt.Fprintf(&buf, "Usage: %s %s\n\n", a.Name, a.ArgumentHint)
+	}
 	buf.WriteString(a.Body)
 	return buf.Bytes(), nil
 }
@@ -58,8 +65,8 @@ func artifactFrontmatter(a *model.Artifact) *yaml.Node {
 	if len(a.Runtimes) > 0 {
 		put("runtimes", runtimeStrings(a.Runtimes))
 	}
-	// argument-hint is command-only in the canonical schema (artifact.command.schema.json);
-	// skills/prompts/agents forbid it. Emit only for commands so the output validates clean.
+	// argument-hint is command-only in the canonical schema. Skill hints are
+	// rendered as Usage prose by serializeArtifact so the output stays valid.
 	if a.ArgumentHint != "" && a.Type == model.TypeCommand {
 		put("argument-hint", a.ArgumentHint)
 	}

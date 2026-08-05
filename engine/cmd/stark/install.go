@@ -65,7 +65,7 @@ func resolveAssetFlag(c *cobra.Command, name, val, def string) (string, error) {
 	return val, nil
 }
 
-// warnProjectLocalCodex flags the one install shape where the codex@2 $HOME-anchored
+// warnProjectLocalCodex flags the one install shape where the codex@3 $HOME-anchored
 // asset fallback is wrong: a Codex install whose --dest is not the user's home. The
 // rendered bodies default to ${STARK_PLUGIN_ROOT:-$HOME/.agents/stark/<bundle>}, but
 // the assets were just written under <dest>/.agents — so without the export the tools

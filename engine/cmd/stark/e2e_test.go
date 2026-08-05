@@ -18,7 +18,7 @@ func TestE2EPlanInstallDoctorRemove(t *testing.T) {
 		t.Fatal(err)
 	}
 	fa := installplan.NewFakeAdapter(map[string]string{
-		"config.toml#mcp_servers.srv": "command = \"node\"\n",
+		".codex/config.toml#mcp_servers.srv": "command = \"node\"\n",
 	})
 	p, err := installplan.Compute(idx, "../../internal/install/testdata/bundles", fa,
 		"multi", "srv", model.TypeMCP, model.RuntimeCodex)

@@ -13,11 +13,11 @@ func TestActionsMatchSpec62(t *testing.T) {
 		want  Action
 	}{
 		{"model", model.RuntimeClaude, ActionCarry},
-		{"model", model.RuntimeCodex, ActionMap},
+		{"model", model.RuntimeCodex, ActionDrop},
 		{"model", model.RuntimeGemini, ActionDrop},
 		{"argument-hint", model.RuntimeCodex, ActionDerive},
 		{"argument-hint", model.RuntimeGemini, ActionDerive},
-		{"disable-model-invocation", model.RuntimeCodex, ActionDrop},
+		{"disable-model-invocation", model.RuntimeCodex, ActionDerive},
 		{"disable-model-invocation", model.RuntimeGemini, ActionDrop},
 		{"allowed-tools", model.RuntimeCodex, ActionBestEffort},
 		{"allowed-tools", model.RuntimeGemini, ActionDrop},

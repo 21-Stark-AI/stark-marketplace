@@ -153,10 +153,11 @@ func mapSkillFile(path, bundle string, res *ImportResult) (*model.Artifact, erro
 		res.note(where, "argument-hint", "argument-hint was reformatted from a loose/unquoted source value — verify it")
 	}
 	noteUnmappedFields(raw, res, where)
-	// argument-hint is command-only canonically; a skill that carried one in stark-skills loses
-	// it on import — surface that so the human can fold it into the description if it matters.
+	// argument-hint is command-only canonically. serializeArtifact preserves a
+	// source skill's hint as Usage prose so every runtime keeps the guidance
+	// without invalid frontmatter.
 	if _, ok := raw["argument-hint"]; ok {
-		res.note(where, "argument-hint", "argument-hint is command-only; dropped from this skill — move any usage hint into the description")
+		res.note(where, "argument-hint", "argument-hint is command-only; preserved as portable Usage prose")
 	}
 	applyArtifactDefaults(a, res, where)
 	return a, nil

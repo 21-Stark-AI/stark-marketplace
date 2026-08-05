@@ -25,7 +25,7 @@
       "diverged": false,
       "outputs": {
         "claude": [{ "path": ".mcp.json", "kind": "mergeJSONKey", "key": "mcpServers.bq" }],
-        "codex":  [{ "path": "config.toml", "kind": "mergeTOMLKey", "key": "mcp_servers.bq" }],
+        "codex":  [{ "path": ".codex/config.toml", "kind": "mergeTOMLKey", "key": "mcp_servers.bq" }],
         "gemini": [{ "path": "settings.json", "kind": "mergeJSONKey", "key": "mcpServers.bq" }]
       },
       "mcp": { "transport": "stdio", "command": "node", "args": ["bq.js"] } }

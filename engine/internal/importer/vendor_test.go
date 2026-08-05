@@ -20,7 +20,7 @@ func writeFile(t *testing.T, path, content string) {
 // TestPluginVendorSnapshot verifies the per-bundle plugin snapshot captures the
 // plugin's runtime .ts tools (flat + lib/) plus its own config.json/package.json,
 // applies the same filtering as the shared snapshot (drop *.test.ts, __tests__/,
-// node_modules/, and non-.ts files), and keys everything bundle-relative.
+// node_modules/, .remember/, and non-.ts files), and keys everything bundle-relative.
 func TestPluginVendorSnapshot(t *testing.T) {
 	from := t.TempDir()
 	gh := filepath.Join(from, "plugins", "stark-gh")
@@ -30,6 +30,7 @@ func TestPluginVendorSnapshot(t *testing.T) {
 	writeFile(t, filepath.Join(gh, "tools", "gh_cleanup.test.ts"), "test")                     // *.test.ts: dropped
 	writeFile(t, filepath.Join(gh, "tools", "__tests__", "x.ts"), "test")                      // __tests__/: dropped
 	writeFile(t, filepath.Join(gh, "tools", "node_modules", "dep", "y.ts"), "dep")             // node_modules/: dropped
+	writeFile(t, filepath.Join(gh, "tools", ".remember", "internal.ts"), "internal")           // .remember/: dropped
 	writeFile(t, filepath.Join(gh, "config.json"), `{"draft":{}}`)
 	writeFile(t, filepath.Join(gh, "package.json"), `{"type":"module"}`)
 	writeFile(t, filepath.Join(gh, "README.md"), "# not vendored")
@@ -59,7 +60,8 @@ func TestPluginVendorSnapshot(t *testing.T) {
 	}
 	for _, drop := range []string{
 		"tools/lib/draft_schema.json", "tools/gh_cleanup.test.ts",
-		"tools/__tests__/x.ts", "tools/node_modules/dep/y.ts", "README.md",
+		"tools/__tests__/x.ts", "tools/node_modules/dep/y.ts",
+		"tools/.remember/internal.ts", "README.md",
 	} {
 		if _, ok := got[drop]; ok {
 			t.Errorf("unexpectedly vendored %q", drop)
@@ -96,18 +98,24 @@ func TestPluginVendorSnapshotConfigOnly(t *testing.T) {
 	}
 }
 
-// TestPluginVendorSnapshotSkillReferences verifies each bundle skill's references/
-// subtree is captured as skills/<name>/references/** (so a marketplace-installed
-// skill ships the docs its SKILL.md points to), even for a skills-only bundle with
-// no plugins/<bundle> dir. SKILL.md itself is NOT captured here — the adapter
-// renders it.
-func TestPluginVendorSnapshotSkillReferences(t *testing.T) {
+// TestPluginVendorSnapshotSkillSupportDirs verifies each bundle skill's standard
+// support subtrees are captured beside the rendered skill, even for a skills-only
+// bundle with no plugins/<bundle> dir. Internal .remember/ directories and
+// non-standard sibling directories are excluded. SKILL.md itself is NOT captured
+// here — the adapter renders it.
+func TestPluginVendorSnapshotSkillSupportDirs(t *testing.T) {
 	from := t.TempDir()
 	rp := filepath.Join(from, "skill", "stark-refactor-plan")
 	writeFile(t, filepath.Join(rp, "SKILL.md"), "---\nname: stark-refactor-plan\n---\nbody\n")
 	writeFile(t, filepath.Join(rp, "references", "backlog-schema.md"), "schema\n")
 	writeFile(t, filepath.Join(rp, "references", "sub", "nested.md"), "nested\n")
-	// a peer skill with no references/ must contribute nothing.
+	writeFile(t, filepath.Join(rp, "scripts", "run.sh"), "#!/bin/sh\n")
+	writeFile(t, filepath.Join(rp, "scripts", "lib", "helper.ts"), "export {}\n")
+	writeFile(t, filepath.Join(rp, "assets", "logo.svg"), "<svg/>\n")
+	writeFile(t, filepath.Join(rp, "assets", "templates", "config.json"), "{}\n")
+	writeFile(t, filepath.Join(rp, "assets", ".remember", "notes.md"), "internal\n")
+	writeFile(t, filepath.Join(rp, "docs", "not-supported.md"), "ignored\n")
+	// A peer skill with no support directories must contribute nothing.
 	writeFile(t, filepath.Join(from, "skill", "stark-review", "SKILL.md"), "---\nname: stark-review\n---\nbody\n")
 
 	got, err := PluginVendorSnapshot(from, "stark-analyze", []string{"stark-refactor-plan", "stark-review"})
@@ -117,6 +125,10 @@ func TestPluginVendorSnapshotSkillReferences(t *testing.T) {
 	want := map[string]string{
 		"skills/stark-refactor-plan/references/backlog-schema.md": "schema\n",
 		"skills/stark-refactor-plan/references/sub/nested.md":     "nested\n",
+		"skills/stark-refactor-plan/scripts/run.sh":               "#!/bin/sh\n",
+		"skills/stark-refactor-plan/scripts/lib/helper.ts":        "export {}\n",
+		"skills/stark-refactor-plan/assets/logo.svg":              "<svg/>\n",
+		"skills/stark-refactor-plan/assets/templates/config.json": "{}\n",
 	}
 	if len(got) != len(want) {
 		t.Fatalf("got %d files, want %d: %v", len(got), len(want), keysOf(got))
@@ -128,6 +140,14 @@ func TestPluginVendorSnapshotSkillReferences(t *testing.T) {
 	}
 	if _, ok := got["skills/stark-refactor-plan/SKILL.md"]; ok {
 		t.Error("SKILL.md must be rendered by the adapter, not vendored")
+	}
+	for _, drop := range []string{
+		"skills/stark-refactor-plan/assets/.remember/notes.md",
+		"skills/stark-refactor-plan/docs/not-supported.md",
+	} {
+		if _, ok := got[drop]; ok {
+			t.Errorf("unexpectedly vendored %q", drop)
+		}
 	}
 }
 
@@ -141,10 +161,12 @@ func TestVendorSnapshotSkipsJunk(t *testing.T) {
 	writeFile(t, filepath.Join(from, "scripts", "__pycache__", "session_id.cpython-313.pyc"), "junk")
 	writeFile(t, filepath.Join(from, "scripts", "emit_queue.pyc"), "junk")
 	writeFile(t, filepath.Join(from, "scripts", ".DS_Store"), "junk")
+	writeFile(t, filepath.Join(from, "scripts", ".remember", "internal.sh"), "junk")
 	// the other verbatim/tool trees VendorSnapshot walks must exist.
 	writeFile(t, filepath.Join(from, "tools", "x.ts"), "export const x = 1\n")
 	writeFile(t, filepath.Join(from, "global", "prompts", "p.md"), "prompt\n")
 	writeFile(t, filepath.Join(from, "standards", "s.md"), "standard\n")
+	writeFile(t, filepath.Join(from, "data", "persona", "roster.md"), "roster\n")
 	// minimal seed files VendorSnapshot requires.
 	writeFile(t, filepath.Join(from, "global", "config.json"), "{}")
 	writeFile(t, filepath.Join(from, "global", "forge_heuristics.json"), "{}")
@@ -156,10 +178,14 @@ func TestVendorSnapshotSkipsJunk(t *testing.T) {
 	if _, ok := got["scripts/register_triggers.sh"]; !ok {
 		t.Fatalf("real script missing; got %v", keysOf(got))
 	}
+	if string(got["data/persona/roster.md"]) != "roster\n" {
+		t.Fatalf("persona roster missing; got %v", keysOf(got))
+	}
 	for _, junk := range []string{
 		"scripts/__pycache__/session_id.cpython-313.pyc",
 		"scripts/emit_queue.pyc",
 		"scripts/.DS_Store",
+		"scripts/.remember/internal.sh",
 	} {
 		if _, ok := got[junk]; ok {
 			t.Errorf("junk unexpectedly vendored: %q", junk)

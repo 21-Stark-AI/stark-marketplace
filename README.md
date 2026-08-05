@@ -12,7 +12,7 @@ The repo is also a **native Claude Code marketplace**: `.claude-plugin/marketpla
 | `stark-plan` | Plan-time guidance (spec-kit `plan` phase). |
 | `stark-analyze` | Multi-domain review + adversarial red-team of designs/plans/PRs. |
 | `stark-implement` | Implementation-time guidance (spec-kit `implement` phase). |
-| `stark-gh` | GitHub workflow commands + MCP. |
+| `stark-gh` | GitHub pull-request and repository-cleanup workflow commands. |
 | `stark-ops` | Ops/runtime utilities. |
 
 ## Install (Claude Code)
@@ -22,7 +22,7 @@ The repo is also a **native Claude Code marketplace**: `.claude-plugin/marketpla
 /plugin install stark-gh@stark-marketplace
 ```
 
-Each plugin is **self-contained** — its supporting tool scripts, prompts, and config are vendored into the bundle, so `/plugin install` works with **no `install.sh`** and no stark-skills checkout on your machine. Only prerequisite: **Node ≥ 22.6** (skills run `node --experimental-strip-types`; `stark doctor` checks it).
+Each plugin is **self-contained** — its supporting tool scripts, prompts, config, and standard per-skill `references/`, `scripts/`, and `assets/` are vendored into the bundle, so `/plugin install` works with **no `install.sh`** and no stark-skills checkout on your machine. Only prerequisite: **Node ≥ 22.6** (skills run `node --experimental-strip-types`; `stark doctor` checks it).
 
 Other runtimes go through the engine CLI:
 

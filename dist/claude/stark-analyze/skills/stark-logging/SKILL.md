@@ -4,9 +4,11 @@ description: 'Use when adding, changing, or reviewing application logging — in
 disable-model-invocation: true
 model: opus[1m]
 ---
+Usage: stark-logging [file-or-package to instrument or review]
+
 ## Help
 
-If `$ARGUMENTS` requests help (a standalone `--help`, `-h`, or `help` token),
+If the current user request asks for help (a standalone `--help`, `-h`, or `help` token),
 follow [standard help](../../standards/help.md): print this skill's purpose,
 usage, and arguments, then stop — do not run preflight or any phase.
 

@@ -35,6 +35,13 @@ func TestSerializeArtifactMarkdown(t *testing.T) {
 	if !strings.HasSuffix(s, "Body line one.\n") {
 		t.Fatalf("body not preserved:\n%s", s)
 	}
+	if !strings.Contains(s, "Usage: demo-review [PR]\n\nBody line one.") {
+		t.Fatalf("skill argument hint was not preserved as Usage prose:\n%s", s)
+	}
+	parts := strings.SplitN(s, "---\n", 3)
+	if len(parts) != 3 || strings.Contains(parts[1], "argument-hint:") {
+		t.Fatalf("skill argument hint leaked into invalid frontmatter:\n%s", s)
+	}
 }
 
 func TestSerializeMCPYAML(t *testing.T) {

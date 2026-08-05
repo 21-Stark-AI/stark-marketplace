@@ -17,7 +17,8 @@ CC reads it directly and resolves each plugin's `source` (e.g.
 
 Each `dist/claude/<bundle>/` is a **self-contained** Claude Code plugin. `stark
 build` vendors the immutable stark-skills assets — `tools/`, `prompts/`,
-`standards/`, `scripts/`, `config.json`, `forge_heuristics.json` — into every
+`standards/`, `scripts/`, `data/persona/`, `config.json`,
+`forge_heuristics.json` — into every
 bundle and emits a per-bundle `.claude-plugin/plugin.json`. Skills resolve their
 tool/config/prompt paths through `${CLAUDE_PLUGIN_ROOT}` (set by CC to the
 installed plugin dir), falling back to `~/.claude/code-review` only in local
@@ -41,13 +42,14 @@ Layout under `--dest`:
 | Path | Holds |
 |---|---|
 | `.agents/skills/<name>/SKILL.md` | the skill body (Codex-native discovery) |
-| `.agents/skills/<name>/references/**` | that skill's own reference files |
-| `.agents/stark/<bundle>/**` | the bundle's assets root — `tools/`, `standards/`, `prompts/`, `scripts/`, `config.json` |
+| `.agents/skills/<name>/agents/openai.yaml` | UI metadata and explicit/implicit invocation policy |
+| `.agents/skills/<name>/{references,scripts,assets}/**` | that skill's own supporting files |
+| `.agents/stark/<bundle>/**` | the bundle's assets root — `tools/`, `standards/`, `prompts/`, `scripts/`, `data/persona/`, `config.json` |
 
 The assets root is **per bundle, never shared**: `stark-gh` ships its own
 `config.json`, which would clobber the shared snapshot's in a flat namespace.
 
-Because the tree differs from a Claude plugin's, the codex target (`codex@2`)
+Because the tree differs from a Claude plugin's, the codex target (`codex@3`)
 retargets the reference shapes in each rendered body:
 
 - `${CLAUDE_PLUGIN_ROOT}` / `${CLAUDE_PLUGIN_ROOT:-…}` →
@@ -94,9 +96,14 @@ The vendor roots default to `<repo>/vendor/stark-skills` and `<repo>/vendor/plug
 artifacts only. An explicit non-empty path that does not exist is a hard error, not
 a silent asset-less install. Vendoring runs only for bundles that install an
 asset-consuming artifact (skill/command/prompt/agent) — an mcp-only install writes
-just its `config.toml` merge. The vendored asset step ships executable code
+just its `.codex/config.toml` merge. MCP environment secrets use Codex's
+`env_vars = ["NAME"]` forwarding contract; the adapter never writes an inert
+literal `${NAME}` into `env`. The vendored asset step ships executable code
 (`tools/*.ts`, `scripts/*.sh`) the skills invoke, so it participates in the §9.3
 consent gate even when the bundle has no mcp/agent.
+For HTTP MCP servers, canonical `env` is rejected rather than misrendered as
+stdio `env_vars`; Codex HTTP authentication requires an explicit native
+`bearer_token_env_var` or `env_http_headers` model.
 
 **Still open:** `stark install --runtime claude` does not vendor assets — the
 Claude distribution path is the committed `dist/claude/` plugin tree, which

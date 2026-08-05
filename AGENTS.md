@@ -27,7 +27,7 @@ Go tests use `_test.go` files beside packages. Web tests use Vitest with `.test.
 
 ## Codex Agent Notes
 
-Prefer editing `catalog/`, `engine/`, `server/`, or `web/src/` over generated outputs. Codex skills render to `.agents/skills/<name>/SKILL.md`; commands, prompts, and agents become skills, while MCP fragments merge into `config.toml`. Never commit local install outputs such as `.agents/`, `.codex/`, `.stark/`, or `config.toml`. MCP secrets stay `${ENV_KEY}` placeholders.
+Prefer editing `catalog/`, `engine/`, `server/`, or `web/src/` over generated outputs. Codex skills render to `.agents/skills/<name>/SKILL.md` with invocation policy in `agents/openai.yaml`; commands, prompts, and agents become skills. Per-skill `references/`, `scripts/`, and `assets/` are vendored beside them. MCP fragments merge into `.codex/config.toml`, and secret environment variables use Codex's `env_vars = ["ENV_KEY"]` forwarding contract rather than literal `${ENV_KEY}` values. Never commit local install outputs such as `.agents/`, `.codex/`, or `.stark/`.
 
 ## Commit, PR, and Security Guidelines
 
