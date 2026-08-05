@@ -1,0 +1,5 @@
+interface:
+  display_name: "PR Merge"
+  short_description: "Rebase a PR, draft squash-commit prose + CHANGELOG bullet via"
+policy:
+  allow_implicit_invocation: false

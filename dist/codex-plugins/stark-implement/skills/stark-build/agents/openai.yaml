@@ -1,0 +1,5 @@
+interface:
+  display_name: "Stark Build"
+  short_description: "Stage 2 — autonomous implementation from an accepted"
+policy:
+  allow_implicit_invocation: false

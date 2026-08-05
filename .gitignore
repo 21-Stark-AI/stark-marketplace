@@ -1,6 +1,11 @@
 .superpowers/
 .claude/
-.agents/
+# Local Codex installs stay ignored; the one native repo-marketplace manifest
+# is generated, drift-gated, and intentionally committed.
+.agents/*
+!.agents/plugins/
+.agents/plugins/*
+!.agents/plugins/marketplace.json
 .codex/
 .stark/
 /config.toml

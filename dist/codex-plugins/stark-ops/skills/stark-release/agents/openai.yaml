@@ -1,0 +1,5 @@
+interface:
+  display_name: "Stark Release"
+  short_description: "Cut a release: changelog review (auto-generating from git log if"
+policy:
+  allow_implicit_invocation: false

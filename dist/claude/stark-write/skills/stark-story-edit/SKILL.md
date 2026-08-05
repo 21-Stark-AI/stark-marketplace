@@ -8,7 +8,7 @@ Usage: stark-story-edit <post-path-or-draft> [--diagnose]
 
 ## Help
 
-If the current request asks for help (a standalone `--help`, `-h`, or `help` token),
+If `$ARGUMENTS` requests help (a standalone `--help`, `-h`, or `help` token),
 follow [standard help](../../standards/help.md): print this skill's purpose,
 usage, and arguments, then stop - do not run any phase.
 

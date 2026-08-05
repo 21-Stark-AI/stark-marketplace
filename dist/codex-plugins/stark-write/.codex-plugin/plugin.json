@@ -1,0 +1,36 @@
+{
+  "name": "stark-write",
+  "version": "0.15.1",
+  "description": "Long-form writing craft, from the author's reusable voice profile through story editing, adversarial sharpening, independent judging, and multi-model jury calibration.",
+  "author": {
+    "name": "21 Stark AI",
+    "email": "engineering@21stark.com",
+    "url": "https://github.com/21StarkCom"
+  },
+  "homepage": "https://marketplace.21stark.com/",
+  "repository": "https://github.com/21StarkCom/bifrost",
+  "keywords": [
+    "writing",
+    "storytelling",
+    "blog",
+    "editing",
+    "humor"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Stark Write",
+    "shortDescription": "Long-form writing craft, from the author's reusable voice profile through story editing,",
+    "longDescription": "Long-form writing craft, from the author's reusable voice profile through story editing, adversarial sharpening, independent judging, and multi-model jury calibration.",
+    "developerName": "21 Stark AI",
+    "category": "Writing",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://marketplace.21stark.com/",
+    "defaultPrompt": [
+      "Use Stark Write for this task."
+    ]
+  }
+}

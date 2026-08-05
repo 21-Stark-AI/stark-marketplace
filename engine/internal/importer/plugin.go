@@ -33,7 +33,7 @@ func importPlugin(from, bundle string, res *ImportResult) error {
 	if err := seedBundleFromManifest(pluginDir, res); err != nil {
 		return err
 	}
-	if err := importPluginCommands(pluginDir, bundle, res); err != nil {
+	if err := importPluginCommands(from, pluginDir, bundle, res); err != nil {
 		return err
 	}
 	return importPluginMCP(pluginDir, bundle, res)
@@ -63,7 +63,7 @@ func seedBundleFromManifest(pluginDir string, res *ImportResult) error {
 	return nil
 }
 
-func importPluginCommands(pluginDir, bundle string, res *ImportResult) error {
+func importPluginCommands(from, pluginDir, bundle string, res *ImportResult) error {
 	dir := filepath.Join(pluginDir, "commands")
 	files, err := os.ReadDir(dir)
 	if os.IsNotExist(err) {
@@ -82,6 +82,9 @@ func importPluginCommands(pluginDir, bundle string, res *ImportResult) error {
 	for _, fn := range names {
 		a, err := mapCommandFile(filepath.Join(dir, fn), bundle, res)
 		if err != nil {
+			return fmt.Errorf("command %s: %w", fn, err)
+		}
+		if err := attachCodexCommandOverride(from, bundle, fn, a); err != nil {
 			return fmt.Errorf("command %s: %w", fn, err)
 		}
 		res.Bundle.Artifacts = append(res.Bundle.Artifacts, a)

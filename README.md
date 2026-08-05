@@ -2,7 +2,7 @@
 
 The bridge between the realms. Canonical, multi-runtime marketplace for **stark** bundles — one source of truth (`catalog/`) renders into per-runtime trees for **Claude Code**, **Codex**, and **Gemini CLI**, plus a signed web registry served at [marketplace.21stark.com](https://marketplace.21stark.com). GitHub slug: `21StarkCom/bifrost`.
 
-The repo is also a **native Claude Code marketplace**: `.claude-plugin/marketplace.json` at the repo root is the manifest CC reads directly — no custom client.
+The repo is also a native marketplace for both hosts. Claude Code reads `.claude-plugin/marketplace.json`; Codex prefers `.agents/plugins/marketplace.json`. Each manifest points at a separate generated package tree, so Codex compatibility cannot alter Claude's installed workflows.
 
 ## Bundles
 
@@ -19,23 +19,34 @@ The repo is also a **native Claude Code marketplace**: `.claude-plugin/marketpla
 
 ```
 /plugin marketplace add 21StarkCom/bifrost
-/plugin install stark-gh@stark-marketplace
+/plugin install stark-gh@bifrost
 ```
 
 Each plugin is **self-contained** — its supporting tool scripts, prompts, config, and standard per-skill `references/`, `scripts/`, and `assets/` are vendored into the bundle, so `/plugin install` works with **no `install.sh`** and no stark-skills checkout on your machine. Only prerequisite: **Node ≥ 22.6** (skills run `node --experimental-strip-types`; `stark doctor` checks it).
 
-Other runtimes go through the engine CLI:
+## Install (Codex)
+
+```bash
+codex plugin marketplace add 21StarkCom/bifrost
+codex plugin add stark-gh@bifrost
+```
+
+Start a new thread after installing or updating, then invoke cleanup with
+`$cleanup --dry-run` (or select it through `/skills`). Codex installs native
+skills from `dist/codex-plugins/`; it does not migrate the Claude command files.
+
+Direct/project-local Codex installs and Gemini still go through the engine CLI:
 
 ```bash
 cd engine
-go run ./cmd/stark install stark-gh --runtime codex   # or gemini
+go run ./cmd/stark install stark-gh --runtime codex   # standalone Codex, or use gemini
 ```
 
 See [`docs/native-install-loop.md`](docs/native-install-loop.md) for the full install loop.
 
 ## Develop
 
-**Source of truth is the [stark-skills](https://github.com/21-Stark-AI/stark-skills) repo**, not this one. The catalog's `skills/` + `commands/` and the `vendor/stark-skills/` snapshot are **generated** from a stark-skills checkout — never hand-edit them, `dist/`, `index.json`, or `bundles/*.json`. What you DO edit here: each `catalog/<bundle>/bundle.yaml` (metadata + the `skills:`/`commands:` membership manifest) and curated `catalog/<bundle>/mcp/` artifacts.
+**Source of truth is the [stark-skills](https://github.com/21-Stark-AI/stark-skills) repo**, not this one. The catalog's `skills/` + `commands/`, shared vendor snapshot, and Codex-only runtime-overlay snapshot are **generated** from a stark-skills checkout — never hand-edit them, either generated runtime package tree, `index.json`, or `bundles/*.json`. What you DO edit here: each `catalog/<bundle>/bundle.yaml` (metadata + the `skills:`/`commands:` membership manifest) and curated `catalog/<bundle>/mcp/` artifacts.
 
 Standard loop:
 
@@ -43,7 +54,7 @@ Standard loop:
 cd engine
 # 1. regenerate catalog skills/commands + vendor/ from a stark-skills checkout
 go run ./cmd/stark sync --from ../../stark-skills ../catalog
-# 2. render dist/ (vendors vendor/stark-skills into each bundle) + manifests
+# 2. render dist/claude + dist/codex-plugins and both native manifests
 go run ./cmd/stark build ../catalog
 # 3. gates — all must be clean before pushing
 go run ./cmd/stark validate ../catalog
@@ -70,7 +81,7 @@ Static origin (`server/`) is the Cloud Run image fronting the registry behind th
 
 ## Architecture, in one paragraph
 
-`internal/load` parses `catalog/` into a `model.Catalog`. Per-runtime adapters in `internal/adapter/{claude,codex,gemini}` render bundles into runtime-specific file trees. `internal/build` drives a full render; `internal/install` consumes one per-runtime render and writes it into a user's config. `cmd/stark` wires these. Determinism is load-bearing: `build --check` is the drift gate and `check-bumps` enforces version-bump immutability. Only `dist/claude/` is committed (CC consumes it at-rest); `dist/codex/` and `dist/gemini/` are produced by `stark install` on the user's machine.
+`internal/load` parses `catalog/` into a `model.Catalog`. Per-runtime adapters in `internal/adapter/{claude,codex,gemini}` render bundles into runtime-specific file trees. `internal/build` independently generates committed Claude packages in `dist/claude/` and native marketplace Codex packages in `dist/codex-plugins/`; `internal/install` still produces standalone/project-local runtime installs. `cmd/stark` wires these. Determinism is load-bearing: `build --check` is the drift gate and `check-bumps` enforces canonical version-bump immutability. `dist/codex/` and `dist/gemini/` remain ignored standalone install outputs.
 
 More detail in [`CLAUDE.md`](CLAUDE.md).
 

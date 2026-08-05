@@ -1,0 +1,5 @@
+interface:
+  display_name: "Stark GH User"
+  short_description: "Switch the active GitHub user identity (primary ↔ secondary) for"
+policy:
+  allow_implicit_invocation: false

@@ -1,0 +1,5 @@
+interface:
+  display_name: "Stark Review"
+  short_description: "Single-agent PR review. Uses triage-selected PR review domains"
+policy:
+  allow_implicit_invocation: false

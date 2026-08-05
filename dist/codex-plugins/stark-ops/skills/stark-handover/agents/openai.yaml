@@ -1,0 +1,5 @@
+interface:
+  display_name: "Stark Handover"
+  short_description: "Use when pausing or splitting work across sessions — before"
+policy:
+  allow_implicit_invocation: false

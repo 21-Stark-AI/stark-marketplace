@@ -1,0 +1,5 @@
+interface:
+  display_name: "Stark Logging"
+  short_description: "Use when adding, changing, or reviewing application logging —"
+policy:
+  allow_implicit_invocation: false

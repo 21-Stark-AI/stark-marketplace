@@ -1,0 +1,5 @@
+interface:
+  display_name: "Stark Session"
+  short_description: "Session start (context, git state, briefing) and end (tests,"
+policy:
+  allow_implicit_invocation: false

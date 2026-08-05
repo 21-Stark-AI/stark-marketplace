@@ -4,6 +4,8 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/21StarkCom/bifrost/engine/internal/model"
 )
 
 // writeFile is a tiny test helper: mkdir -p the parent and write content.
@@ -190,6 +192,64 @@ func TestVendorSnapshotSkipsJunk(t *testing.T) {
 		if _, ok := got[junk]; ok {
 			t.Errorf("junk unexpectedly vendored: %q", junk)
 		}
+	}
+}
+
+func TestRuntimeOverrideSupportSnapshotExcludesArtifactMarkdown(t *testing.T) {
+	from := t.TempDir()
+	root := filepath.Join(from, "runtime-overrides", "codex")
+	writeFile(t, filepath.Join(root, "skill", "demo", "SKILL.md"), "artifact\n")
+	writeFile(t, filepath.Join(root, "plugins", "demo-gh", "commands", "cleanup.md"), "command\n")
+	writeFile(t, filepath.Join(root, "skill", "demo", "references", "contract.md"), "reference\n")
+	writeFile(t, filepath.Join(root, "skill", "demo", "scripts", "run.sh"), "script\n")
+	writeFile(t, filepath.Join(root, "skill", "not-a-member", "scripts", "run.sh"), "other\n")
+	writeFile(t, filepath.Join(root, "standards", "help.md"), "help\n")
+	writeFile(t, filepath.Join(root, "tools", "runtime.ts"), "tool\n")
+	writeFile(t, filepath.Join(root, "tools", "runtime.json"), "{\"runtime\":true}\n")
+	writeFile(t, filepath.Join(root, "plugins", "demo-gh", "tools", "command.ts"), "command tool\n")
+	writeFile(t, filepath.Join(root, "plugins", "other-gh", "tools", "other.ts"), "other tool\n")
+	writeFile(t, filepath.Join(root, "global", "config.json"), "{}\n")
+
+	got, err := RuntimeOverrideSupportSnapshot(from, model.RuntimeCodex, "demo-gh", []string{"demo"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := map[string]string{
+		"skills/demo/references/contract.md": "reference\n",
+		"skills/demo/scripts/run.sh":         "script\n",
+		"standards/help.md":                  "help\n",
+		"tools/runtime.ts":                   "tool\n",
+		"tools/runtime.json":                 "{\"runtime\":true}\n",
+		"tools/command.ts":                   "command tool\n",
+		"config.json":                        "{}\n",
+	}
+	if len(got) != len(want) {
+		t.Fatalf("got %d support files, want %d: %v", len(got), len(want), keysOf(got))
+	}
+	for rel, content := range want {
+		if string(got[rel]) != content {
+			t.Fatalf("%q = %q, want %q", rel, got[rel], content)
+		}
+	}
+	for _, excluded := range []string{
+		"skill/demo/SKILL.md",
+		"plugins/demo-gh/commands/cleanup.md",
+		"skills/not-a-member/scripts/run.sh",
+		"tools/other.ts",
+	} {
+		if _, ok := got[excluded]; ok {
+			t.Errorf("excluded path leaked into support snapshot: %s", excluded)
+		}
+	}
+}
+
+func TestRuntimeOverrideSupportSnapshotMissingIsEmpty(t *testing.T) {
+	got, err := RuntimeOverrideSupportSnapshot(t.TempDir(), model.RuntimeCodex, "demo", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got == nil || len(got) != 0 {
+		t.Fatalf("missing overlay snapshot = %v, want empty non-nil map", got)
 	}
 }
 

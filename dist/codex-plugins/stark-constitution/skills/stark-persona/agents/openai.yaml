@@ -1,0 +1,5 @@
+interface:
+  display_name: "Stark Persona"
+  short_description: "Assign a famous character persona to the current agent for the"
+policy:
+  allow_implicit_invocation: false

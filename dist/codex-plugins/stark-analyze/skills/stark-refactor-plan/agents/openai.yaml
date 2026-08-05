@@ -1,0 +1,5 @@
+interface:
+  display_name: "Stark Refactor Plan"
+  short_description: "Plan a codebase refactor without touching code. Inspect a"
+policy:
+  allow_implicit_invocation: false

@@ -1,0 +1,5 @@
+interface:
+  display_name: "Remember"
+  short_description: "Persist a durable fact or note into Aryeh's second-brain vault"
+policy:
+  allow_implicit_invocation: false

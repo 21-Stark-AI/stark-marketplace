@@ -6,6 +6,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/21StarkCom/bifrost/engine/internal/model"
 )
 
 // vendorToolsSkipDirs are tool subdirectories never shipped to a plugin: tests,
@@ -85,6 +87,79 @@ func VendorSnapshot(from string) (map[string][]byte, error) {
 			return nil, fmt.Errorf("vendor %s: %w", f.dst, err)
 		}
 		out[f.dst] = b
+	}
+	return out, nil
+}
+
+// RuntimeOverrideSupportSnapshot captures the runtime-specific support files
+// needed by one bundle. Returned keys use plugin-relative layout, ready to be
+// written below vendor/runtime-overrides/<runtime>/<bundle>/:
+//
+//	global/config.json -> config.json
+//	standards/**       -> standards/**
+//	tools/**           -> tools/**
+//	plugins/<bundle>/tools/** -> tools/**
+//	skill/<member>/{references,scripts,assets}/**
+//	                    -> skills/<member>/{references,scripts,assets}/**
+//
+// Artifact Markdown is imported into catalog overrides and is never returned
+// here. The resulting tree is separate from the shared/per-plugin snapshots
+// used by Claude.
+func RuntimeOverrideSupportSnapshot(from string, runtime model.Runtime, bundle string, skills []string) (map[string][]byte, error) {
+	out := map[string][]byte{}
+	root := filepath.Join(from, "runtime-overrides", string(runtime))
+	if fi, err := os.Stat(root); os.IsNotExist(err) {
+		return out, nil
+	} else if err != nil {
+		return nil, fmt.Errorf("runtime override %s: %w", runtime, err)
+	} else if !fi.IsDir() {
+		return nil, fmt.Errorf("runtime override %s: %s is not a directory", runtime, root)
+	}
+
+	config, err := os.ReadFile(filepath.Join(root, "global", "config.json"))
+	if err == nil {
+		out["config.json"] = config
+	} else if !os.IsNotExist(err) {
+		return nil, fmt.Errorf("runtime override %s config: %w", runtime, err)
+	}
+
+	for _, tree := range []struct{ src, dst string }{
+		{src: filepath.Join(root, "standards"), dst: "standards"},
+		{src: filepath.Join(root, "tools"), dst: "tools"},
+		// Bundle-specific runtime tools override only their owning plugin. This
+		// keeps command helpers such as stark-gh cleanup out of unrelated Codex
+		// packages while preserving the same final tools/ layout.
+		{src: filepath.Join(root, "plugins", bundle, "tools"), dst: "tools"},
+	} {
+		if fi, err := os.Stat(tree.src); os.IsNotExist(err) {
+			continue
+		} else if err != nil {
+			return nil, fmt.Errorf("runtime override %s %s: %w", runtime, tree.dst, err)
+		} else if !fi.IsDir() {
+			return nil, fmt.Errorf("runtime override %s: %s is not a directory", runtime, tree.src)
+		}
+		// Runtime overlays are explicitly curated source, so copy these trees
+		// verbatim instead of applying the broad shared-vendor tools filter.
+		if err := copyTree(tree.src, tree.dst, out, nil, nil); err != nil {
+			return nil, fmt.Errorf("runtime override %s %s: %w", runtime, tree.dst, err)
+		}
+	}
+
+	for _, skill := range skills {
+		for _, supportDir := range skillSupportDirs {
+			src := filepath.Join(root, "skill", skill, supportDir)
+			if fi, err := os.Stat(src); os.IsNotExist(err) {
+				continue
+			} else if err != nil {
+				return nil, fmt.Errorf("runtime override %s skill %s/%s: %w", runtime, skill, supportDir, err)
+			} else if !fi.IsDir() {
+				return nil, fmt.Errorf("runtime override %s: %s is not a directory", runtime, src)
+			}
+			dst := "skills/" + skill + "/" + supportDir
+			if err := copyTree(src, dst, out, nil, nil); err != nil {
+				return nil, fmt.Errorf("runtime override %s skill %s/%s: %w", runtime, skill, supportDir, err)
+			}
+		}
 	}
 	return out, nil
 }

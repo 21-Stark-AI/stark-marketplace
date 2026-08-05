@@ -1,0 +1,5 @@
+interface:
+  display_name: "Stark Terraform Review"
+  short_description: "Multi-agent code review of Terraform / OpenTofu (HCL) — modules,"
+policy:
+  allow_implicit_invocation: false

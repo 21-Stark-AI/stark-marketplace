@@ -1,0 +1,35 @@
+{
+  "name": "stark-implement",
+  "version": "0.15.1",
+  "description": "Implement from an accepted spec. /stark-build runs one fresh headless session per task gated by checks the agent cannot edit, with a held-out e2e gate, one cross-vendor advisory review, and one bounded fix round for medium+ findings. /stark-copilot covers plan-file work via a paired lead/wing agent with a 1-round cap and a hard test gate.",
+  "author": {
+    "name": "21 Stark AI",
+    "email": "engineering@21stark.com",
+    "url": "https://github.com/21StarkCom"
+  },
+  "homepage": "https://marketplace.21stark.com/",
+  "repository": "https://github.com/21StarkCom/bifrost",
+  "keywords": [
+    "implementation",
+    "automation",
+    "lead-wing",
+    "autonomous"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Stark Implement",
+    "shortDescription": "Implement from an accepted spec. /stark-build runs one fresh headless session per task gated by",
+    "longDescription": "Implement from an accepted spec. /stark-build runs one fresh headless session per task gated by checks the agent cannot edit, with a held-out e2e gate, one cross-vendor advisory review, and one bounded fix round for medium+ findings. /stark-copilot covers plan-file work via a paired lead/wing agent with a 1-round cap and a hard test gate.",
+    "developerName": "21 Stark AI",
+    "category": "Implementation",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://marketplace.21stark.com/",
+    "defaultPrompt": [
+      "Use Stark Implement for this task."
+    ]
+  }
+}

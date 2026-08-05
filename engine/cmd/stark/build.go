@@ -40,7 +40,24 @@ func runBuild(catalogDir, repoRoot, manifestPath, assetsSource string, check boo
 	if def := filepath.Join(repoRoot, "vendor", "plugins"); dirExists(def) {
 		pluginAssetsRoot = def
 	}
-	out, err := build.Build(cat, build.Options{AssetsSource: assetsSource, PluginAssetsRoot: pluginAssetsRoot})
+	// Source-owned Codex overlays are deliberately isolated from both shared and
+	// per-plugin Claude assets. The native Codex package build layers this root
+	// last without exposing it to dist/claude.
+	codexAssetsRoot := ""
+	if def := filepath.Join(repoRoot, "vendor", "runtime-overrides", "codex"); dirExists(def) {
+		codexAssetsRoot = def
+	}
+	codexPluginVersion, err := readCodexPluginVersion(repoRoot)
+	if err != nil {
+		fmt.Println("build error:", err)
+		return 1
+	}
+	out, err := build.Build(cat, build.Options{
+		AssetsSource:       assetsSource,
+		PluginAssetsRoot:   pluginAssetsRoot,
+		CodexAssetsRoot:    codexAssetsRoot,
+		CodexPluginVersion: codexPluginVersion,
+	})
 	if err != nil {
 		fmt.Println("build error:", err)
 		return 1
@@ -95,7 +112,7 @@ func newBuildCmd() *cobra.Command {
 	var manifest, assetsSource string
 	cmd := &cobra.Command{
 		Use:   "build [catalog-dir]",
-		Short: "Build dist/claude + index.json + bundles/*.json (--check = drift gate)",
+		Short: "Build native Claude/Codex plugins + index.json + bundles/*.json (--check = drift gate)",
 		Args:  cobra.MaximumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			_ = fix // --fix is the explicit alias for the default write behavior
@@ -153,4 +170,22 @@ func (e *exitError) ExitCode() int { return e.code }
 func dirExists(path string) bool {
 	fi, err := os.Stat(path)
 	return err == nil && fi.IsDir()
+}
+
+// readCodexPluginVersion returns the repository release version shared by all
+// generated native Codex packages. Missing VERSION is allowed for isolated
+// package tests; a present but empty file is a malformed release input.
+func readCodexPluginVersion(repoRoot string) (string, error) {
+	b, err := os.ReadFile(filepath.Join(repoRoot, "VERSION"))
+	if os.IsNotExist(err) {
+		return build.DefaultCodexPluginVersion, nil
+	}
+	if err != nil {
+		return "", fmt.Errorf("read VERSION: %w", err)
+	}
+	version := strings.TrimSpace(string(b))
+	if version == "" {
+		return "", fmt.Errorf("VERSION is empty")
+	}
+	return version, nil
 }

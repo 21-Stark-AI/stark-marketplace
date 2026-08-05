@@ -4,6 +4,24 @@ All notable changes to `stark-marketplace`. The format follows [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.15.1] — 2026-08-05
+
+### Fixed
+- Restored the canonical Claude skill and command sources after the 0.15.0
+  cross-runtime rewrite. Codex compatibility now lives in source-owned runtime
+  overlays, and regression coverage proves those overlays cannot change
+  `dist/claude/`, the Claude marketplace, bundle digests, or `index.json`.
+- Added a native Codex repository marketplace with all eight 21 Stark plugins
+  and all 30 skills. The three `stark-gh` commands are native skills, so
+  `$cleanup` and `$pr-merge` are no longer lost to the legacy 4 KB command
+  migration limit.
+- Native Codex skills now resolve packaged assets from their loaded plugin
+  location and fail closed when that location is unavailable, avoiding stale
+  standalone-install fallbacks.
+- Codex `$cleanup --dry-run` no longer fetches or prunes refs, merged branches
+  with unique local commits require explicit `--force`, and GitHub workflow
+  state defaults to the runtime-neutral `~/.stark/code-review` tree.
+
 ## [0.15.0] — 2026-08-05
 
 ### Added
