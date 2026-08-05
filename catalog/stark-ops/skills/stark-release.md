@@ -2,7 +2,7 @@
 name: stark-release
 type: skill
 description: 'Cut a release: changelog review (auto-generating from git log if [Unreleased] is empty), version bump, git tag, GitHub Release. Use for release, tag, bump version.'
-version: 0.4.9
+version: 0.4.10
 maturity: beta
 runtimes:
   - claude
@@ -14,7 +14,7 @@ Usage: stark-release [patch|minor|major] (optional — auto-detected if omitted)
 
 ## Help
 
-If the current request asks for help (a standalone `--help`, `-h`, or `help` token),
+If `$ARGUMENTS` requests help (a standalone `--help`, `-h`, or `help` token),
 follow [standard help](../../standards/help.md): print this skill's purpose,
 usage, and arguments, then stop — do not run preflight or any phase.
 
@@ -112,7 +112,7 @@ migrated but the app/jobs un-rolled.
 Fix:
   cd infra/terraform
   terraform apply
-…then re-run `stark-release`.
+…then re-run /stark-release.
 EOF
       exit 1
     fi
@@ -177,7 +177,7 @@ entries came from the CHANGELOG).
 
 ## Step 4: Determine Bump Type
 
-If the explicit skill invocation includes `patch`, `minor`, or `major` → use that.
+If `$ARGUMENTS` contains `patch`, `minor`, or `major` → use that.
 
 Otherwise, analyze the unreleased changes and auto-select:
 - Only `### Fixed`, `### Changed`, and/or `### Removed` entries → `patch`
@@ -245,7 +245,9 @@ After:
 Commit the changelog and any updated version files together:
 ```bash
 git add CHANGELOG.md ${VERSION_FILES}
-git commit -m "release: v${NEXT_VERSION}"
+git commit -m "release: v${NEXT_VERSION}
+
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
@@ -327,4 +329,4 @@ Commit:     [hash]
 | Push fails | `git pull --rebase origin main`, retry |
 | `gh` auth fails | Verify `gh auth status` — user's PAT must be active |
 | Release workflow + skill both try to create the GH Release | Skill must skip Step 9 when `.github/workflows/*.yml` has a `v*.*.*` tag trigger that runs `gh release create`. See Step 9. |
-| TF drift detected (Step 1.5) | `cd infra/terraform && terraform apply`, then re-run `stark-release`. Do NOT skip — CD will fail the drift gate *after* migrating, leaving the env half-deployed. |
+| TF drift detected (Step 1.5) | `cd infra/terraform && terraform apply`, then re-run `/stark-release`. Do NOT skip — CD will fail the drift gate *after* migrating, leaving the env half-deployed. |

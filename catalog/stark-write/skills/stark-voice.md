@@ -2,7 +2,7 @@
 name: stark-voice
 type: skill
 description: Use when drafting a Slack message, DM, reply, or short internal note as Aryeh (Kiovetsky) or "in my voice / my style / how I'd write it" - especially to Evinced / Israeli colleagues, reports, or peers. Covers Hebrew⇄English code-switching, message bursting, tone, and his feedback/praise/decision formulas.
-version: 0.5.0
+version: 0.5.1
 maturity: beta
 runtimes:
   - claude
@@ -12,7 +12,7 @@ disable-model-invocation: true
 ---
 ## Help
 
-If the current request asks for help (a standalone `--help`, `-h`, or `help` token),
+If `$ARGUMENTS` requests help (a standalone `--help`, `-h`, or `help` token),
 follow [standard help](../../standards/help.md): print this skill's purpose,
 usage, and arguments, then stop — do not run preflight or any phase.
 
