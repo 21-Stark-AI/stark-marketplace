@@ -4,7 +4,11 @@
 // into prose, or block.
 package fieldmap
 
-import "github.com/21StarkCom/bifrost/engine/internal/model"
+import (
+	"strconv"
+
+	"github.com/21StarkCom/bifrost/engine/internal/model"
+)
 
 type Action string
 
@@ -27,7 +31,10 @@ type key struct {
 var table = map[key]Action{
 	// model
 	{"model", model.RuntimeClaude}: ActionCarry, // skill: only with context:fork (target enforces)
-	{"model", model.RuntimeCodex}:  ActionMap,
+	// Codex skills do not support a per-skill model field. The active model is a
+	// session/config concern, so carrying a guessed model id makes the rendered
+	// SKILL.md fail the native skill validator.
+	{"model", model.RuntimeCodex}:  ActionDrop,
 	{"model", model.RuntimeGemini}: ActionDrop,
 	// argument-hint
 	{"argument-hint", model.RuntimeClaude}: ActionCarry,
@@ -35,7 +42,8 @@ var table = map[key]Action{
 	{"argument-hint", model.RuntimeGemini}: ActionDerive,
 	// disable-model-invocation
 	{"disable-model-invocation", model.RuntimeClaude}: ActionCarry,
-	{"disable-model-invocation", model.RuntimeCodex}:  ActionDrop,
+	// Codex expresses this policy in agents/openai.yaml rather than SKILL.md.
+	{"disable-model-invocation", model.RuntimeCodex}:  ActionDerive,
 	{"disable-model-invocation", model.RuntimeGemini}: ActionDrop,
 	// allowed-tools
 	{"allowed-tools", model.RuntimeClaude}: ActionCarry,
@@ -102,8 +110,11 @@ func Apply(fm map[string]any, a *model.Artifact, rt model.Runtime, modelMap Mode
 		case ActionCarry, ActionBestEffort:
 			res.Carried[f.name] = f.value
 		case ActionDerive:
-			if s, ok := f.value.(string); ok {
-				res.Derived[f.name] = s
+			switch v := f.value.(type) {
+			case string:
+				res.Derived[f.name] = v
+			case bool:
+				res.Derived[f.name] = strconv.FormatBool(v)
 			}
 		case ActionMap:
 			if f.name == "model" && modelMap != nil {

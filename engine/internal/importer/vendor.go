@@ -17,6 +17,15 @@ var vendorToolsSkipDirs = map[string]bool{
 	"node_modules": true,
 }
 
+// skillSupportDirs are the conventional per-skill subtrees shipped alongside
+// the rendered SKILL.md. Keep this list explicit and ordered so snapshot
+// construction remains deterministic as new support-directory types are added.
+var skillSupportDirs = [...]string{
+	"references",
+	"scripts",
+	"assets",
+}
+
 // alwaysSkipDirs are junk/VCS/build-cache dirs pruned from EVERY vendored tree
 // (including the verbatim scripts/standards/prompts copies), regardless of the
 // per-call skipDirs. Prevents e.g. stray Python __pycache__/ from a source
@@ -24,6 +33,7 @@ var vendorToolsSkipDirs = map[string]bool{
 var alwaysSkipDirs = map[string]bool{
 	"__pycache__": true,
 	".git":        true,
+	".remember":   true,
 }
 
 // alwaysSkipFile reports junk files pruned from every vendored tree.
@@ -40,6 +50,7 @@ func alwaysSkipFile(rel string) bool {
 //	prompts/**             <- <from>/global/prompts
 //	standards/**           <- <from>/standards
 //	scripts/**             <- <from>/scripts
+//	data/persona/**        <- <from>/data/persona
 //	config.json            <- <from>/global/config.json
 //	forge_heuristics.json  <- <from>/global/forge_heuristics.json
 func VendorSnapshot(from string) (map[string][]byte, error) {
@@ -57,6 +68,7 @@ func VendorSnapshot(from string) (map[string][]byte, error) {
 		{filepath.Join(from, "global", "prompts"), "prompts"},
 		{filepath.Join(from, "standards"), "standards"},
 		{filepath.Join(from, "scripts"), "scripts"},
+		{filepath.Join(from, "data", "persona"), "data/persona"},
 	} {
 		if err := copyTree(m.src, m.dst, out, nil, nil); err != nil {
 			return nil, fmt.Errorf("vendor %s: %w", m.dst, err)
@@ -83,31 +95,33 @@ func VendorSnapshot(from string) (map[string][]byte, error) {
 // captures per-bundle files the shared snapshot does not provide and the adapter
 // does not render:
 //
-//	skills/<name>/references/**  <- skill/<name>/references  (for each bundle skill that has one)
-//	tools/<f>.ts                 <- plugins/<bundle>/tools  (.ts only; excl *.test.ts, __tests__/, fixtures/, node_modules/)
-//	config.json                  <- plugins/<bundle>/config.json   (the plugin's OWN config, e.g. stark-gh's {draft};
-//	                                overrides the shared global config.json for this bundle)
-//	package.json                 <- plugins/<bundle>/package.json   (e.g. {"type":"module"} — pins ESM resolution so the
-//	                                vendored .ts tools run under `node --experimental-strip-types` regardless of ancestor dirs)
+//	skills/<name>/{references,scripts,assets}/** <- matching subtrees under skill/<name>/
+//	tools/<f>.ts                              <- plugins/<bundle>/tools  (.ts only; excl *.test.ts, __tests__/, fixtures/, node_modules/)
+//	config.json                               <- plugins/<bundle>/config.json   (the plugin's OWN config, e.g. stark-gh's {draft};
+//	                                             overrides the shared global config.json for this bundle)
+//	package.json                              <- plugins/<bundle>/package.json   (e.g. {"type":"module"} — pins ESM resolution so the
+//	                                             vendored .ts tools run under `node --experimental-strip-types` regardless of ancestor dirs)
 //
-// `skills` is the bundle's membership list; each skill's references/ subtree is
-// shipped so a marketplace-installed skill carries the supporting docs its
-// SKILL.md points to (the adapter renders only SKILL.md — references would
+// `skills` is the bundle's membership list; each skill's conventional supporting
+// subtrees are shipped so a marketplace-installed skill carries the files its
+// SKILL.md points to (the adapter renders only SKILL.md — support files would
 // otherwise be dropped). Returns an empty (non-nil) map when the bundle has no
-// plugin dir AND none of its skills have references, which is not an error.
+// plugin dir AND none of its skills have support directories, which is not an error.
 // commands/ + mcp/ are NOT captured here; they are imported as artifacts by
 // importPlugin and rendered by the adapter.
 func PluginVendorSnapshot(from, bundle string, skills []string) (map[string][]byte, error) {
 	out := map[string][]byte{}
 
-	// Per-skill reference docs: skill/<name>/references/** -> skills/<name>/references/**.
+	// Per-skill support files retain their subtree beside the rendered skill.
 	for _, name := range skills {
-		refDir := filepath.Join(from, "skill", name, "references")
-		if fi, err := os.Stat(refDir); err != nil || !fi.IsDir() {
-			continue // a skill without references/ is the common case, not an error
-		}
-		if err := copyTree(refDir, "skills/"+name+"/references", out, nil, nil); err != nil {
-			return nil, fmt.Errorf("plugin vendor skill references (%s/%s): %w", bundle, name, err)
+		for _, supportDir := range skillSupportDirs {
+			srcDir := filepath.Join(from, "skill", name, supportDir)
+			if fi, err := os.Stat(srcDir); err != nil || !fi.IsDir() {
+				continue // most skills omit one or more support directories
+			}
+			if err := copyTree(srcDir, "skills/"+name+"/"+supportDir, out, nil, nil); err != nil {
+				return nil, fmt.Errorf("plugin vendor skill %s (%s/%s): %w", supportDir, bundle, name, err)
+			}
 		}
 	}
 

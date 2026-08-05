@@ -38,7 +38,9 @@ describe('engine-contract fidelity (real committed data)', () => {
     // state) — proving the dependencyClosure→requires migration handles real engine data, where
     // the old code crashed reading a non-existent dependencyClosure field.
     expect(screen.getByText(/no dependencies/i)).toBeInTheDocument();
-    // and a real per-artifact derived output path renders (CC-3 outputs[rt][0].path)
-    expect(screen.getByText('.mcp.json')).toBeInTheDocument();
+    // and a real per-artifact derived output path renders (CC-3 outputs[rt][0].path).
+    // stark-gh intentionally no longer advertises the removed, nonexistent MCP server.
+    expect(screen.getByText('.agents/skills/cleanup/SKILL.md')).toBeInTheDocument();
+    expect(screen.queryByText('.mcp.json')).not.toBeInTheDocument();
   });
 });

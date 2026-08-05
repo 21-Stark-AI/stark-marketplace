@@ -18,7 +18,7 @@
       "mcp": { "transport": "stdio", "command": "node", "args": ["srv.js"] },
       "outputs": {
         "claude": [{ "path": ".mcp.json", "kind": "mergeJSONKey", "key": "mcpServers.srv" }],
-        "codex":  [{ "path": "config.toml", "kind": "mergeTOMLKey", "key": "mcp_servers.srv" }],
+        "codex":  [{ "path": ".codex/config.toml", "kind": "mergeTOMLKey", "key": "mcp_servers.srv" }],
         "gemini": [{ "path": "settings.json", "kind": "mergeJSONKey", "key": "mcpServers.srv" }] } },
     { "name": "agentmd", "type": "agent", "version": "1.0.0",
       "runtimes": ["claude","codex","gemini"],

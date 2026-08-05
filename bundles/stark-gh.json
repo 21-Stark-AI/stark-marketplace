@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "bundle": {
     "name": "stark-gh",
-    "version": "0.1.23",
-    "description": "GitHub workflow commands + MCP for stark.",
+    "version": "0.2.0",
+    "description": "GitHub pull-request and repository-cleanup workflow commands for stark.",
     "category": "productivity",
     "tags": [
       "github",
@@ -19,7 +19,7 @@
       "name": "cleanup",
       "type": "command",
       "description": "Sweep the local + remote repo for merged-PR branches, stale tracking refs, worktree leftovers (including detached-HEAD review worktrees), merged-PR watcher state, stale stashes, and loose objects. Rebases the current branch onto upstream and applies linear-tree git config so the history stays sharp.",
-      "version": "0.1.23",
+      "version": "0.2.0",
       "runtimes": [
         "claude",
         "codex",
@@ -45,6 +45,11 @@
             "path": ".agents/skills/cleanup/SKILL.md",
             "kind": "file",
             "emulated": false
+          },
+          {
+            "path": ".agents/skills/cleanup/agents/openai.yaml",
+            "kind": "file",
+            "emulated": false
           }
         ],
         "gemini": [
@@ -61,7 +66,7 @@
       "name": "pr-merge",
       "type": "command",
       "description": "Rebase a PR, draft squash-commit prose + CHANGELOG bullet via Codex, force-push, mark a draft PR ready-for-review, and squash-merge once CI is green.",
-      "version": "0.1.23",
+      "version": "0.2.0",
       "runtimes": [
         "claude",
         "codex",
@@ -87,6 +92,11 @@
             "path": ".agents/skills/pr-merge/SKILL.md",
             "kind": "file",
             "emulated": false
+          },
+          {
+            "path": ".agents/skills/pr-merge/agents/openai.yaml",
+            "kind": "file",
+            "emulated": false
           }
         ],
         "gemini": [
@@ -103,7 +113,7 @@
       "name": "pr-open",
       "type": "command",
       "description": "Open or update a PR with Codex-drafted prose, stage-all commit (default), push, and CI watcher. New PRs open as DRAFT by default (override --ready).",
-      "version": "0.1.23",
+      "version": "0.2.0",
       "runtimes": [
         "claude",
         "codex",
@@ -129,57 +139,17 @@
             "path": ".agents/skills/pr-open/SKILL.md",
             "kind": "file",
             "emulated": false
+          },
+          {
+            "path": ".agents/skills/pr-open/agents/openai.yaml",
+            "kind": "file",
+            "emulated": false
           }
         ],
         "gemini": [
           {
             "path": ".gemini/commands/pr-open.toml",
             "kind": "file",
-            "emulated": false
-          }
-        ]
-      },
-      "fidelityNotes": {}
-    },
-    {
-      "name": "gh",
-      "type": "mcp",
-      "description": "GitHub MCP server.",
-      "version": "0.1.0",
-      "runtimes": [
-        "claude",
-        "codex",
-        "gemini"
-      ],
-      "support": {
-        "claude": "native",
-        "codex": "native",
-        "gemini": "native"
-      },
-      "requires": [],
-      "diverged": false,
-      "outputs": {
-        "claude": [
-          {
-            "path": ".mcp.json",
-            "kind": "mergeJSONKey",
-            "key": "mcpServers.gh",
-            "emulated": false
-          }
-        ],
-        "codex": [
-          {
-            "path": "config.toml",
-            "kind": "mergeTOMLKey",
-            "key": "mcp_servers.gh",
-            "emulated": false
-          }
-        ],
-        "gemini": [
-          {
-            "path": "settings.json",
-            "kind": "mergeJSONKey",
-            "key": "mcpServers.gh",
             "emulated": false
           }
         ]

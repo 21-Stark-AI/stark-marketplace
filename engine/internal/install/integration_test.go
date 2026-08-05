@@ -17,10 +17,10 @@ func planFor(t *testing.T, rt model.Runtime) *installplan.Plan {
 		t.Fatal(err)
 	}
 	fa := installplan.NewFakeAdapter(map[string]string{
-		"config.toml#mcp_servers.srv":  "command = \"node\"\nargs = [\"srv.js\"]\n",
-		".mcp.json#mcpServers.srv":     `{"command":"node","args":["srv.js"]}`,
-		"settings.json#mcpServers.srv": `{"command":"node","args":["srv.js"]}`,
-		"GEMINI.md#":                   "emulated agent role block\n",
+		".codex/config.toml#mcp_servers.srv": "command = \"node\"\nargs = [\"srv.js\"]\n",
+		".mcp.json#mcpServers.srv":           `{"command":"node","args":["srv.js"]}`,
+		"settings.json#mcpServers.srv":       `{"command":"node","args":["srv.js"]}`,
+		"GEMINI.md#":                         "emulated agent role block\n",
 	})
 	p, err := installplan.Compute(idx, "testdata/bundles", fa, "multi", "", model.TypeCommand, rt)
 	if err != nil {
@@ -37,7 +37,8 @@ func TestInstallVerifyRemoveAllRuntimes(t *testing.T) {
 			// seed a pre-existing user file per runtime to prove preservation
 			switch rt {
 			case model.RuntimeCodex:
-				os.WriteFile(filepath.Join(dest, "config.toml"), []byte("# user\nlog=\"x\"\n"), 0o644)
+				os.MkdirAll(filepath.Join(dest, ".codex"), 0o755)
+				os.WriteFile(filepath.Join(dest, ".codex", "config.toml"), []byte("# user\nlog=\"x\"\n"), 0o644)
 			case model.RuntimeGemini:
 				os.WriteFile(filepath.Join(dest, "GEMINI.md"), []byte("# user gemini\n\nintro\n"), 0o644)
 				os.WriteFile(filepath.Join(dest, "settings.json"), []byte(`{"theme":"dark"}`), 0o644)
@@ -86,8 +87,8 @@ func assertUserContent(t *testing.T, rt model.Runtime, dest string) {
 	read := func(p string) string { b, _ := os.ReadFile(filepath.Join(dest, p)); return string(b) }
 	switch rt {
 	case model.RuntimeCodex:
-		if !has(read("config.toml"), "# user") {
-			t.Fatalf("codex: user toml comment lost:\n%s", read("config.toml"))
+		if !has(read(".codex/config.toml"), "# user") {
+			t.Fatalf("codex: user toml comment lost:\n%s", read(".codex/config.toml"))
 		}
 	case model.RuntimeGemini:
 		if !has(read("GEMINI.md"), "# user gemini") {

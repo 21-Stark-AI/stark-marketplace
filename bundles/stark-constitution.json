@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "bundle": {
     "name": "stark-constitution",
-    "version": "0.2.20",
+    "version": "0.2.21",
     "description": "Project setup, decision records, and session priming — scaffold a dev-docs/standards structure (template/backfill/upgrade modes), record architecture decisions (ADRs) under docs/adr/, and assign a session persona. Maps to spec-kit's constitution phase.",
     "category": "setup",
     "tags": [
@@ -20,7 +20,7 @@
       "name": "stark-adr",
       "type": "skill",
       "description": "Record and manage Architecture Decision Records (ADRs) under a repo's docs/adr/. Use for: new ADR, log/record a decision, \"create an ADR\", supersede an ADR, list ADRs, \"why did we decide X\". Wraps `brain adr` — MADR-lite, auto-numbered, repo-relative.",
-      "version": "0.2.20",
+      "version": "0.2.21",
       "runtimes": [
         "claude",
         "codex"
@@ -44,6 +44,11 @@
             "path": ".agents/skills/stark-adr/SKILL.md",
             "kind": "file",
             "emulated": false
+          },
+          {
+            "path": ".agents/skills/stark-adr/agents/openai.yaml",
+            "kind": "file",
+            "emulated": false
           }
         ]
       },
@@ -53,7 +58,7 @@
       "name": "stark-init-docs",
       "type": "skill",
       "description": "Scaffold dev docs structure (template/backfill/upgrade/clean modes). Use for init docs, setup docs, scaffold docs.",
-      "version": "0.2.20",
+      "version": "0.2.21",
       "runtimes": [
         "claude",
         "codex"
@@ -77,6 +82,11 @@
             "path": ".agents/skills/stark-init-docs/SKILL.md",
             "kind": "file",
             "emulated": false
+          },
+          {
+            "path": ".agents/skills/stark-init-docs/agents/openai.yaml",
+            "kind": "file",
+            "emulated": false
           }
         ]
       },
@@ -85,8 +95,8 @@
     {
       "name": "stark-persona",
       "type": "skill",
-      "description": "Assign a famous character persona for the session with weighted random selection. Use for persona, character, voice. /stark-persona.",
-      "version": "0.2.20",
+      "description": "Assign a famous character persona to the current agent for the session, with weighted random selection. Use for persona, character, or voice requests.",
+      "version": "0.2.21",
       "runtimes": [
         "claude",
         "codex"
@@ -108,6 +118,11 @@
         "codex": [
           {
             "path": ".agents/skills/stark-persona/SKILL.md",
+            "kind": "file",
+            "emulated": false
+          },
+          {
+            "path": ".agents/skills/stark-persona/agents/openai.yaml",
             "kind": "file",
             "emulated": false
           }

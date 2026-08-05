@@ -4,6 +4,53 @@ All notable changes to `stark-marketplace`. The format follows [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.15.0] — 2026-08-05
+
+### Added
+- **Native Codex skill metadata.** `codex@3` emits
+  `.agents/skills/<name>/agents/openai.yaml` with a normalized display name,
+  25–64 character short description, and
+  `policy.allow_implicit_invocation: false` for every explicit-only skill and
+  command.
+- **Install-level Codex contract coverage.** A dynamic test derives every
+  committed Codex artifact from the index, installs every production bundle,
+  and verifies exact inventory, frontmatter, metadata policy, support files,
+  placeholder removal, and local-reference closure.
+- `stark-voice` joins `stark-write`; all 27 canonical skills and the three
+  `stark-gh` commands are now covered by the native Codex audit.
+
+### Changed
+- Codex no longer fabricates a model mapping for Claude model hints. Unsupported
+  per-skill `model` metadata is dropped, while `disable-model-invocation` is
+  derived into native Codex policy. Canonical skill `argument-hint` values are
+  preserved as body-level usage prose.
+- Per-skill support content now uses the standard `references/`, `scripts/`, and
+  `assets/` directories. Shared persona data is vendored for installed persona
+  and session flows; private `.remember` state is excluded from snapshots.
+- Codex MCP configuration now installs to `.codex/config.toml`; stdio secret
+  names render as sorted `env_vars` forwarding rather than literal
+  `${ENV_KEY}` values. HTTP MCP entries reject ambiguous canonical `env`
+  credentials instead of emitting stdio-only fields; native bearer/header
+  credential shapes must be modeled explicitly before they can be rendered.
+- The stark-skills source was audited for cross-runtime invocation, asset
+  resolution, shell-state isolation, read-only defaults, explicit external
+  side effects, runner sandboxing, and secret-safe GitHub identity switching.
+  Terraform/Terragrunt provider dispatch, scanner execution, `.tfvars`
+  inclusion, and posting now have separate consent gates.
+
+### Removed
+- The curated `stark-gh` MCP fragment that referenced the nonexistent
+  `gh-mcp-server.js`. The bundle intentionally ships its three native commands;
+  no broken MCP server is advertised.
+
+### Fixed
+- GitHub Actions cost probes no longer require Python, round billing per job,
+  and account for Linux, Windows, and macOS multipliers.
+- Jury, persona, session, handover, release, review, build, documentation, and
+  GitHub command skills now resolve installed assets and support files in both
+  source and native Codex layouts without `$ARGUMENTS` or persistent-shell
+  assumptions.
+
 ## [0.14.0] — 2026-08-05
 
 ### Fixed — Codex installs were shipping dangling asset references

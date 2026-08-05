@@ -18,7 +18,7 @@ func TestFetchIndexAndDetailViaContentsAPI(t *testing.T) {
 		"bundle":{"name":"stark-gh","version":"0.1.0","description":"x","maturity":"beta"},
 		"artifacts":[{"name":"gh","type":"mcp","version":"0.1.0","runtimes":["codex"],
 		 "support":{"codex":"native"},"diverged":false,
-		 "outputs":{"codex":[{"path":"config.toml","kind":"mergeTOMLKey","key":"mcp_servers.gh"}]},
+		 "outputs":{"codex":[{"path":".codex/config.toml","kind":"mergeTOMLKey","key":"mcp_servers.gh"}]},
 		 "mcp":{"transport":"stdio","command":"node","args":["x.js"]}}]}`
 
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

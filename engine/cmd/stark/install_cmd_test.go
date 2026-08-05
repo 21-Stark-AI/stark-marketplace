@@ -102,7 +102,9 @@ func TestInstallCmdConflictExit4(t *testing.T) {
 	defer func() { osExit = orig }()
 
 	dest := t.TempDir()
-	os.WriteFile(filepath.Join(dest, "config.toml"), []byte("[mcp_servers.gh]\ncommand = 'theirs'\n"), 0o644)
+	collision := filepath.Join(dest, ".agents", "skills", "pr-open", "SKILL.md")
+	os.MkdirAll(filepath.Dir(collision), 0o755)
+	os.WriteFile(collision, []byte("unmanaged\n"), 0o644)
 	cmd := newInstallCmd(realAdapter)
 	cmd.SetArgs([]string{
 		"--runtime", "codex", "--dest", dest, "--yes",
