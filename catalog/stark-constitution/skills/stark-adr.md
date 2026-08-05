@@ -2,7 +2,7 @@
 name: stark-adr
 type: skill
 description: 'Record and manage Architecture Decision Records (ADRs) under a repo''s docs/adr/. Use for: new ADR, log/record a decision, "create an ADR", supersede an ADR, list ADRs, "why did we decide X". Wraps `brain adr` — MADR-lite, auto-numbered, repo-relative.'
-version: 0.2.20
+version: 0.2.21
 maturity: beta
 runtimes:
   - claude
@@ -11,7 +11,7 @@ disable-model-invocation: true
 ---
 ## Help
 
-If `$ARGUMENTS` requests help (a standalone `--help`, `-h`, or `help` token),
+If the invocation arguments contain a standalone `--help`, `-h`, or `help` token,
 follow [standard help](../../standards/help.md): print this skill's purpose,
 usage, and arguments, then stop — do not run preflight or any phase.
 
@@ -25,7 +25,8 @@ immutable — supersede, don't edit. See `stark-2nd-brain-cli/docs/CONVENTIONS.m
 This skill is a thin wrapper over the `brain adr` command group, so the CLI and
 the skill share one tested engine.
 
-**Raw input:** `$ARGUMENTS`
+Parse arguments directly from the user's current request after the explicitly
+invoked skill name.
 
 ## Prerequisite
 
@@ -88,4 +89,4 @@ plan; architectural → an ADR (+ plan).
   surface.
 - `--json` is available on `new` / `list` / `supersede` for scripting.
 - To bootstrap the whole docs structure (not just `docs/adr/`), use
-  `/stark-init-docs` first; this skill manages the ADRs within it.
+  the `stark-init-docs` skill first; this skill manages the ADRs within it.

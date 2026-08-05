@@ -1,5 +1,5 @@
 name: stark-gh
-version: 0.1.23
+version: 0.1.24
 description: GitHub workflow commands + MCP for stark.
 category: productivity
 tags: [github, pr, workflow]

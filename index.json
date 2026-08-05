@@ -12,7 +12,7 @@
       "name": "stark-fresh-eyes",
       "type": "skill",
       "bundle": "stark-analyze",
-      "description": "One-shot zero-context review of a prompt, research brief, spec, or doc before it ships: a single read-only subagent re-verifies every checkable claim by a DIFFERENT method and reports defects only. Findings return to the author once — no second round, no loops. Use for fresh eyes, review prompt, check brief.",
+      "description": "One-shot zero-context review of a prompt, research brief, spec, or doc before it ships: a single isolated read-only reviewer re-verifies every checkable claim by a DIFFERENT method and reports defects only. Findings return to the author once — no second round, no loops. Use for fresh eyes, review prompt, check brief.",
       "tags": [
         "review",
         "red-team",
@@ -22,7 +22,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.5.10",
+      "version": "0.5.11",
       "runtimes": [
         "claude",
         "codex"
@@ -31,7 +31,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:12fdfb4a7767df79520645b67dbe3e5baafd091040ddc9dbc63364a13daeebb1"
+      "digest": "sha256:4f1b0cd9ca7c158e69899fcf23989b072a0fba1f31522f0812034e497931e0b9"
     },
     {
       "name": "stark-logging",
@@ -47,7 +47,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.5.10",
+      "version": "0.5.11",
       "runtimes": [
         "claude",
         "codex"
@@ -56,7 +56,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:a2dbf96fc47fcf9f2517a504e7a2b72d6c270c75be992e55a181a833e063355f"
+      "digest": "sha256:166d2be6d89ec6daa99c12e2a8075e038d16a59add80733fc83849c80b936839"
     },
     {
       "name": "stark-refactor-plan",
@@ -72,7 +72,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.5.10",
+      "version": "0.5.11",
       "runtimes": [
         "claude",
         "codex"
@@ -81,13 +81,13 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:1c4d9a9a00083c35a31c10ebfb7c995b67afcfb388dedb13afcb9ed0ae5d0f6f"
+      "digest": "sha256:3f3069a26ee6fdcee978f9a5d87862c5958f28d64db0992cff82ba737c52f4fe"
     },
     {
       "name": "stark-review-improvement",
       "type": "skill",
       "bundle": "stark-analyze",
-      "description": "Improve review prompts based on Prompt Improvement Assessment from completed reviews. Use for fix review prompts.",
+      "description": "Improve review prompts based on a Prompt Improvement Assessment from a completed review. Use for fixing review prompts or their current TypeScript orchestration; edits and validation are local, and commit/push are opt-in.",
       "tags": [
         "review",
         "red-team",
@@ -97,7 +97,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.5.10",
+      "version": "0.5.11",
       "runtimes": [
         "claude",
         "codex"
@@ -106,13 +106,13 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:a247350ec49826c1b353d8e67030316ffdda9f6e1cf69fc37be6d852abea2fbf"
+      "digest": "sha256:a1fed7a0bf289a7d7c3ae87cac90ef1f3e698c6923bf2e67d9a743062876e604"
     },
     {
       "name": "stark-review",
       "type": "skill",
       "bundle": "stark-analyze",
-      "description": "Single-agent PR review. Uses triage-selected PR review domains by default, or one forced agent via `--agent`.",
+      "description": "Single-agent PR review. Uses triage-selected PR review domains by default, or one forced agent via `--agent`. Review-only by default: posting findings and fixing/committing/pushing require separate explicit opt-ins.",
       "tags": [
         "review",
         "red-team",
@@ -122,7 +122,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.5.10",
+      "version": "0.5.11",
       "runtimes": [
         "claude",
         "codex"
@@ -131,13 +131,13 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:33e26bd782456f69609b3b887d3906dcf406e540d0f75c37535b2ef41a3f0642"
+      "digest": "sha256:1a83dd27ab5fb234cd0d0e76b28a44504f29be2133982dcd97909ecc961ac30b"
     },
     {
       "name": "stark-ssot",
       "type": "skill",
       "bundle": "stark-analyze",
-      "description": "Use when consolidating or reviewing a single source of truth — duplicated logic, a constant/model-id/URL/timeout copied into a second place, a parser or regex reimplemented, a local policy branch that belongs in a registry, a fallback default wired at a call site, or a value re-derived in the UI. Also on requests to centralize, deduplicate, unify, or \"why is this implemented manually / in two places\". Symptoms in a diff: a hardcoded model id or GCP project, `~/.claude/code-review/...` typed out, a re-pasted dispatch/env helper, a duplicated `>=`/threshold check. Do NOT use for code that only looks similar but answers a different question.",
+      "description": "Use when consolidating or reviewing a single source of truth — duplicated logic, a constant/model-id/URL/timeout copied into a second place, a parser or regex reimplemented, a local policy branch that belongs in a registry, a fallback default wired at a call site, or a value re-derived in the UI. Also on requests to centralize, deduplicate, unify, or \"why is this implemented manually / in two places\". Symptoms in a diff: a hardcoded model id or GCP project, `~/.claude/code-review/...` typed out, a re-pasted dispatch/env helper, or a duplicated threshold comparison. Do NOT use for code that only looks similar but answers a different question.",
       "tags": [
         "review",
         "red-team",
@@ -147,7 +147,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.5.10",
+      "version": "0.5.11",
       "runtimes": [
         "claude",
         "codex"
@@ -156,7 +156,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:8d23ab8d5c65f418e789f5bdfad185c7e71938d6ed0847d7d8180fd3458c520b"
+      "digest": "sha256:c0ec1c8154070bbf876fa383d0744bfd6a9dcbca5b95c5a5c6381105aacb6a68"
     },
     {
       "name": "stark-terraform-review",
@@ -172,7 +172,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.5.10",
+      "version": "0.5.11",
       "runtimes": [
         "claude",
         "codex"
@@ -181,7 +181,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:c06960b56ef8745ee23ac300e33d724d97cebd3dcb9e3536f1420ac9a600e0eb"
+      "digest": "sha256:8bf1a41d4f17fbe444bdd1fafc33dece9d3c3fdf6d6ad0064b831c862745e624"
     },
     {
       "name": "stark-terragrunt-review",
@@ -197,7 +197,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.5.10",
+      "version": "0.5.11",
       "runtimes": [
         "claude",
         "codex"
@@ -206,13 +206,13 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:90f7c6a76a5c03b5ffeb13d52ef56a9c3970654b1e202c49e49ecfd31e00c9b0"
+      "digest": "sha256:c2a2909c5d11335a88c1917e6707268c52d6e6d2bae97b2de8516b23b38e8b4b"
     },
     {
       "name": "remember",
       "type": "skill",
       "bundle": "stark-brain",
-      "description": "Persist a durable fact or note into Aryeh's second-brain vault via the brain MCP (or the brain CLI as fallback). Use whenever the user EXPLICITLY asks to remember, save, persist, capture, or \"write back\" something to the second brain / memory / vault — phrasings like \"remember that…\", \"save this to my brain\", \"add this to memory\", \"/remember …\", \"note this down for later\". Routes one-line facts to append_to_memory and structured knowledge (a project, repo, tool, person, cloud resource) to upsert_note, validates + secret-scans, then commits and merges the capture to main. Companion to the brain MCP. (Triggers on explicit save intent only for now — not yet on passively-observed facts.)",
+      "description": "Persist a durable fact or note into Aryeh's second-brain vault via the brain MCP (or the brain CLI as fallback). Use whenever the user EXPLICITLY asks to remember, save, persist, capture, or \"write back\" something to the second brain / memory / vault — phrasings like \"remember that…\", \"save this to my brain\", \"add this to memory\", or \"note this down for later\". Routes one-line facts to append_to_memory and structured knowledge (a project, repo, tool, person, cloud resource) to upsert_note, validates + secret-scans, then commits and merges the capture to main. Companion to the brain MCP. (Triggers on explicit save intent only for now — not yet on passively-observed facts.)",
       "tags": [
         "memory",
         "brain",
@@ -222,7 +222,7 @@
       ],
       "category": "productivity",
       "maturity": "beta",
-      "version": "0.1.14",
+      "version": "0.1.15",
       "runtimes": [
         "claude",
         "codex"
@@ -231,7 +231,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:21b073438de6add35ebe32e18d0da29b45b50d7db18df21ada541a40fbccb603"
+      "digest": "sha256:9bed454d825b031e2a974ecae8532c35c5a22b54a58610ffa4a1d447cc644f1e"
     },
     {
       "name": "stark-adr",
@@ -247,7 +247,7 @@
       ],
       "category": "setup",
       "maturity": "beta",
-      "version": "0.2.20",
+      "version": "0.2.21",
       "runtimes": [
         "claude",
         "codex"
@@ -256,7 +256,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:8474e2199d75ecb61f67e7a493c5fb0f792fdc950debb1d0c3499a1aaa3981c3"
+      "digest": "sha256:4a1c5015eddb4abf12367794f1d5f17f749b623384834b5c785e18278799940e"
     },
     {
       "name": "stark-init-docs",
@@ -272,7 +272,7 @@
       ],
       "category": "setup",
       "maturity": "beta",
-      "version": "0.2.20",
+      "version": "0.2.21",
       "runtimes": [
         "claude",
         "codex"
@@ -281,13 +281,13 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:8dd7a2e9d1585513016f0eab3876eb98caa243851b39dfbebea19f444f0d4f65"
+      "digest": "sha256:f377d1c00e4b17c15212e808f517e3242e2fffce7b64503d39f1b8500aa7267e"
     },
     {
       "name": "stark-persona",
       "type": "skill",
       "bundle": "stark-constitution",
-      "description": "Assign a famous character persona for the session with weighted random selection. Use for persona, character, voice. /stark-persona.",
+      "description": "Assign a famous character persona to the current agent for the session, with weighted random selection. Use for persona, character, or voice requests.",
       "tags": [
         "setup",
         "docs",
@@ -297,7 +297,7 @@
       ],
       "category": "setup",
       "maturity": "beta",
-      "version": "0.2.20",
+      "version": "0.2.21",
       "runtimes": [
         "claude",
         "codex"
@@ -306,7 +306,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:fe70a76d7c7bf62bd53b6295618cc8f8c5f33a6dd227a47328fbdae749d030ae"
+      "digest": "sha256:3eebac4cd4e3ae3c7352f132709c8c173fb53e2a477f02c630ff14f6786a20a6"
     },
     {
       "name": "cleanup",
@@ -320,7 +320,7 @@
       ],
       "category": "productivity",
       "maturity": "beta",
-      "version": "0.1.23",
+      "version": "0.1.24",
       "runtimes": [
         "claude",
         "codex",
@@ -331,7 +331,7 @@
         "codex": "native",
         "gemini": "native"
       },
-      "digest": "sha256:9b441a45ba673f9248c8f485ecaeafd7aafcf0d8bab10a3a34fbc01f9c21cb33"
+      "digest": "sha256:6e3996bf57d842645220923be3d9d4848b52e9b50e19e59421401b0726d15594"
     },
     {
       "name": "pr-merge",
@@ -345,7 +345,7 @@
       ],
       "category": "productivity",
       "maturity": "beta",
-      "version": "0.1.23",
+      "version": "0.1.24",
       "runtimes": [
         "claude",
         "codex",
@@ -356,7 +356,7 @@
         "codex": "native",
         "gemini": "native"
       },
-      "digest": "sha256:f33622b457f2727e03fcd7e495fc4f77a4337628f79c4ec2954f228de3d69e14"
+      "digest": "sha256:2379a2da86a7e7a2b0f6152db2d624ebe3b1ef818b039a05099fe04ae76f099a"
     },
     {
       "name": "pr-open",
@@ -370,7 +370,7 @@
       ],
       "category": "productivity",
       "maturity": "beta",
-      "version": "0.1.23",
+      "version": "0.1.24",
       "runtimes": [
         "claude",
         "codex",
@@ -381,7 +381,7 @@
         "codex": "native",
         "gemini": "native"
       },
-      "digest": "sha256:cff9bdd625c76dbae2328556c3592ef583ccb5925ed30b6530740b6a76fd8135"
+      "digest": "sha256:413fcfc49771c2d6259861788450bd5f397acd2e31bbfe3809565d9f33e4870a"
     },
     {
       "name": "gh",
@@ -412,7 +412,7 @@
       "name": "stark-build",
       "type": "skill",
       "bundle": "stark-implement",
-      "description": "Stage 2 — autonomous implementation from an accepted stark-author spec: one fresh headless session per task, gated by checks the agent cannot edit (PreToolUse path-deny + Stop-hook gate), evidence per task, commit per green task, held-out e2e gate, one cross-vendor advisory review, ONE bounded fix round for medium+ findings, draft PR. No LLM review loops. Use for build, implement a spec.",
+      "description": "Stage 2 — autonomous implementation from an accepted stark-author spec: one fresh isolated writer per task, runner-owned immutable checks, evidence per task, commit per green task, held-out e2e gate, one cross-vendor advisory review, ONE bounded fix round for medium+ findings, draft PR. No LLM review loops. Use for build, implement a spec.",
       "tags": [
         "implementation",
         "automation",
@@ -421,7 +421,7 @@
       ],
       "category": "implementation",
       "maturity": "beta",
-      "version": "0.4.14",
+      "version": "0.4.15",
       "runtimes": [
         "claude",
         "codex"
@@ -430,7 +430,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:e01123df74b860d01088dedbb99d2a4b25570e6332ec3210c1ac27dff8388e62"
+      "digest": "sha256:6172a4161400e7ea6a52f0fb781dd57df64b854ae7af1abf897ee17b257ff047"
     },
     {
       "name": "stark-copilot",
@@ -445,7 +445,7 @@
       ],
       "category": "implementation",
       "maturity": "beta",
-      "version": "0.4.14",
+      "version": "0.4.15",
       "runtimes": [
         "claude",
         "codex"
@@ -454,13 +454,13 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:5b8923aa871cf5a35bad46bb6219db84dd204e45fffbdc030f0f0781633ce46d"
+      "digest": "sha256:d15f0667d365189f6a82d32df254da67061505ae571014bd53867047330e6978"
     },
     {
       "name": "stark-cc-user",
       "type": "skill",
       "bundle": "stark-ops",
-      "description": "Switch the active Claude Code account between stored profiles when a 5-hour or 7-day rate-limit window runs out. Credentials live in macOS Keychain (service `stark-cc-token`); headroom comes from statusline snapshots.",
+      "description": "Switch the active Claude Code account between stored profiles when a 5-hour or 7-day rate-limit window runs out. Credentials live in macOS Keychain (service `stark-cc-token`); headroom comes from statusline snapshots. May be orchestrated from Claude Code, Codex, or another host, but always targets the local Claude Code login.",
       "tags": [
         "release",
         "housekeeping",
@@ -471,7 +471,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.4.8",
+      "version": "0.4.9",
       "runtimes": [
         "claude",
         "codex"
@@ -480,7 +480,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:bb9bcae562aecc66c3a2927f2a0af58644cd95284ce8038896801cb5452b9eb8"
+      "digest": "sha256:36bd016939dda3c49ae5a71ff6ef032420b7ecf47584d0d8620f747a2cf95a28"
     },
     {
       "name": "stark-gh-user",
@@ -497,7 +497,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.4.8",
+      "version": "0.4.9",
       "runtimes": [
         "claude",
         "codex"
@@ -506,13 +506,13 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:9b411240a4d45bd03a0c07ff6bee004877b097537ebeaec6ad74e2dfd56832af"
+      "digest": "sha256:cf347342139cffe8f1eaed2156f86f21622f880719fedb882cbcd141ae5159fe"
     },
     {
       "name": "stark-gha-cost",
       "type": "skill",
       "bundle": "stark-ops",
-      "description": "Diagnose and cut GitHub Actions + GHAS (Advanced Security) billing costs for an org or enterprise. Use whenever the user is surprised by or wants to reduce a GitHub bill, mentions Actions minutes / runner cost / CI spend, asks \"why is my GitHub bill so high\", \"are we paying for GHAS/secret scanning/code scanning\", \"should I self-host runners\", \"which repo is burning Actions minutes\", or wants to right-size GitHub security seats (Secret Protection vs Code Security). Also triggers on a mystery Actions charge, a runaway workflow, or a billing number that looks wrong. Also use for making CI cheaper/faster the right way — slow or expensive pipelines, build/dependency caching that isn't hitting, wide test matrices, merge queues, flaky-test cost, artifact/registry storage, or measuring CI spend (cost-per-PR, budgets, usage APIs). Diagnoses where the money goes (product → repo → workflow → run), applies the highest-value levers via PR, and escalates genuine mis-billing to Support. Reach for it even when the user only says \"GitHub is expensive this month\" or \"our CI is too slow\" without naming Actions.",
+      "description": "Diagnose and reduce GitHub Actions and GHAS billing for an organization or enterprise. Use for surprising GitHub bills, Actions minutes or runner cost, slow or expensive CI, runaway workflows, wide matrices, poor caches, artifact or registry storage, self-hosted-runner decisions, and right-sizing Secret Protection or Code Security seats. Trace spend from product to repository, workflow, and run; apply the highest-value fixes through a PR; and escalate genuine billing anomalies to GitHub Support.",
       "tags": [
         "release",
         "housekeeping",
@@ -523,7 +523,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.4.8",
+      "version": "0.4.9",
       "runtimes": [
         "claude",
         "codex"
@@ -532,13 +532,13 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:a22d142a737e6dcec816703181ade67f0ea37dcc8bb916eb4ae204145ce3a279"
+      "digest": "sha256:9b6da7ac7d8e15022cbff9b85e7be6ea7766e62458bbce86e15df71feb3172b8"
     },
     {
       "name": "stark-handover",
       "type": "skill",
       "bundle": "stark-ops",
-      "description": "Use when pausing or splitting work across sessions — before /clear, when context runs low, end of day, switching tasks — or when resuming after one. Triggers: \"handover\", \"handoff\", \"save context\", \"save progress\", \"resume\", \"continue where we left off\", \"what was I doing\". Persists a numbered handover chain + PROGRESS.md tracker per task; resume needs no recap.",
+      "description": "Use when pausing or splitting work across sessions — before clearing context, when context runs low, at end of day, when switching tasks — or when resuming. Triggers: \"handover\", \"handoff\", \"save context\", \"save progress\", \"resume\", \"continue where we left off\", \"what was I doing\". Persists a numbered handover chain + PROGRESS.md tracker per task; resume needs no recap.",
       "tags": [
         "release",
         "housekeeping",
@@ -549,7 +549,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.4.8",
+      "version": "0.4.9",
       "runtimes": [
         "claude",
         "codex"
@@ -558,7 +558,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:c40f9f98860b26e10f64ca1f910f6bd4469624fc37832408a6e56741d1cd1ce6"
+      "digest": "sha256:2f27b3e8245db6812c237a64b6ec7c5dca54955c95afddbd3e41e65e4633fa70"
     },
     {
       "name": "stark-housekeeping",
@@ -575,7 +575,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.4.8",
+      "version": "0.4.9",
       "runtimes": [
         "claude",
         "codex"
@@ -584,7 +584,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:9cfa0a133d59ddbc49dfdedd35e7a2b17aeccd88aeacaa4b8f719f722b2394d5"
+      "digest": "sha256:11e1524b25a6bed009d6ce7970b980951635fd47c038b6d7f4c92d67bb5dc7ba"
     },
     {
       "name": "stark-release",
@@ -601,7 +601,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.4.8",
+      "version": "0.4.9",
       "runtimes": [
         "claude",
         "codex"
@@ -610,7 +610,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:8d82812554ebd2eda0e91805f42c47eadad4e0539d4e66575af5f7ce31be6c61"
+      "digest": "sha256:1dd4516c3a8a81df93a0e668593dc338efd29419b699544f8ad0cbf6513aef07"
     },
     {
       "name": "stark-session",
@@ -627,7 +627,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.4.8",
+      "version": "0.4.9",
       "runtimes": [
         "claude",
         "codex"
@@ -636,7 +636,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:e5e8a4b34ddc3e3046c3cbf28d62bb3a2d71701df3b7bfb9d3f054e151cd3010"
+      "digest": "sha256:b9c85c8db9138fb3b473170f2add186d657d95651ef0f8369735f27806fe64c2"
     },
     {
       "name": "stark-author",
@@ -651,7 +651,7 @@
       ],
       "category": "planning",
       "maturity": "beta",
-      "version": "0.3.11",
+      "version": "0.3.12",
       "runtimes": [
         "claude",
         "codex"
@@ -660,7 +660,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:329b7091860adcdf8ebbf563f7c732dbb37c29fb593d6da7263dd6e0b5f16b4f"
+      "digest": "sha256:400f7c39c1ae9b123668a46519e264ca3b2d3d08d2048a83b4388b2d6a10bfc6"
     },
     {
       "name": "stark-blog-sharpen",
@@ -676,7 +676,7 @@
       ],
       "category": "writing",
       "maturity": "beta",
-      "version": "0.4.3",
+      "version": "0.4.4",
       "runtimes": [
         "claude",
         "codex"
@@ -685,13 +685,13 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:b95cd3e8fd8df4ac9ce091339eef59828a2e30135afd1edbfde86c60780e16b4"
+      "digest": "sha256:2252e97e5fed02e0c1e87c47b3f6455353c5f3a741b58df03ab7a2f328655b10"
     },
     {
       "name": "stark-jury",
       "type": "skill",
       "bundle": "stark-write",
-      "description": "Run one of the four post skills (stark-voice, stark-story-edit, stark-blog-sharpen, stark-story-judge) across a three-model panel and reconcile the results. Use when the ask is \"run this through the panel / best of three / compare the models on this post / which model edits this best / jury this draft / second and third opinion on this edit\". Dispatches the skill plus the document to claude, codex and gemini in parallel, verifies every candidate against the skill's own iron rules, then THIS session merges anchored (rewrite skills) or writes the calibration report (story-judge). Never edits the four skills, never publishes.",
+      "description": "Run one of the four post skills (stark-voice, stark-story-edit, stark-blog-sharpen, stark-story-judge) across a three-model panel and reconcile the results. Use when the ask is \"run this through the panel / best of three / compare the models on this post / which model edits this best / jury this draft / second and third opinion on this edit\". Dispatches the skill plus the document to claude, codex and gemini in parallel, verifies every candidate against the skill's own iron rules, then the current session merges anchored (rewrite skills) or writes the calibration report (story-judge). Never edits the four skills, never publishes.",
       "tags": [
         "writing",
         "storytelling",
@@ -701,7 +701,7 @@
       ],
       "category": "writing",
       "maturity": "beta",
-      "version": "0.4.3",
+      "version": "0.4.4",
       "runtimes": [
         "claude",
         "codex"
@@ -710,7 +710,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:63cf341078c59df7f03a7dd77fa21a4987c32e62e84950d5eb20a269771d62cb"
+      "digest": "sha256:c83a028e96a0a260b4bd60f7ee19704009436430adef9682a138eaf9e5548c54"
     },
     {
       "name": "stark-story-edit",
@@ -726,7 +726,7 @@
       ],
       "category": "writing",
       "maturity": "beta",
-      "version": "0.4.3",
+      "version": "0.4.4",
       "runtimes": [
         "claude",
         "codex"
@@ -735,7 +735,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:80f556ae2da465f69c0ee19a99d3ad7db5bf9c217d0f5893f86915b8bc512bb7"
+      "digest": "sha256:b92426e4b4073db13ebf38b65ce4abab1ae57353560148bca5eaef5a8400e8bc"
     },
     {
       "name": "stark-story-judge",
@@ -751,7 +751,7 @@
       ],
       "category": "writing",
       "maturity": "beta",
-      "version": "0.4.3",
+      "version": "0.4.4",
       "runtimes": [
         "claude",
         "codex"
@@ -760,33 +760,33 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:d1e82ccfe2e1b9fb468743114bdc91cd6fa385f56b5a5bb704072e086752531d"
+      "digest": "sha256:c921ac751a9409bc01db22e0de317beb52eca68810db306a46b8cff44ae518b0"
     }
   ],
   "pluginAssets": [
     {
       "bundle": "stark-analyze",
-      "version": "0.5.10",
+      "version": "0.5.11",
       "digest": "sha256:c8eac42722558c2e426c4235af9e47ff6455674756e84083780c9a9d97b198c5"
     },
     {
       "bundle": "stark-gh",
-      "version": "0.1.23",
+      "version": "0.1.24",
       "digest": "sha256:6663474c7619820c8ad2c9c446902bd93ce0a97d427273f962703066409604dd"
     },
     {
       "bundle": "stark-implement",
-      "version": "0.4.14",
-      "digest": "sha256:1b9b9e93c0f877faa9bbc761010033bd79797e9303d45effd97aff40ddc6b3d5"
+      "version": "0.4.15",
+      "digest": "sha256:c8261a906c8ed8d394303d28cbc9711942a91f0e82c9fd3fe2941ef8e62d014b"
     },
     {
       "bundle": "stark-ops",
-      "version": "0.4.8",
+      "version": "0.4.9",
       "digest": "sha256:6d4c279f701a39da59c9ceae4c148bb3fff5b59aa00d6025de1a7678a04222f7"
     },
     {
       "bundle": "stark-plan",
-      "version": "0.3.11",
+      "version": "0.3.12",
       "digest": "sha256:52b3a11122118e8a00a820b643cd08183d2a380239d5203fc536035b0ca7cd18"
     }
   ]

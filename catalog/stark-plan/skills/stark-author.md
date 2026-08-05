@@ -2,7 +2,7 @@
 name: stark-author
 type: skill
 description: 'Stage 1 — human-gated spec+plan authoring in one session: tier check, time-boxed recon, structured interview, one self-contained doc, one zero-context advisory pass, human gate, commit-pinned handoff. No LLM review loops. Use for author, spec, plan a change.'
-version: 0.3.11
+version: 0.3.12
 maturity: beta
 runtimes:
   - claude
@@ -11,7 +11,7 @@ disable-model-invocation: true
 ---
 ## Help
 
-If `$ARGUMENTS` requests help (a standalone `--help`, `-h`, or `help` token),
+If the current user request includes a standalone `--help`, `-h`, or `help` token,
 follow [standard help](../../standards/help.md): print this skill's purpose,
 usage, and arguments, then stop — do not run any phase.
 
@@ -38,7 +38,9 @@ Evidence base: [references/stage1-dossier.md](references/stage1-dossier.md)
 - **You are drafting for a fresh implementer session** that knows nothing the
   doc doesn't say. Pin decisions; leave the greppable out. [RQ8]
 
-**Raw input:** `$ARGUMENTS`
+**Invocation input:** Read the intent, notes path, and flags from the current
+user request that explicitly invoked this skill. Do not depend on a host-side
+argument placeholder.
 
 ## Phase 0 — Tier
 
@@ -54,8 +56,8 @@ documented failure). `--tier` overrides. [RQ7]
 
 ## Phase 1 — Recon (time-boxed)
 
-Read the repo map, root CLAUDE.md, and the files/interfaces plausibly
-touched. **Hard budget: ~10–15 tool calls.** Everything else is looked up on
+Read the repo map, the applicable `AGENTS.md` instruction chain, and the
+files/interfaces plausibly touched. **Hard budget: ~10–15 tool calls.** Everything else is looked up on
 demand while authoring — recon is orientation, not an audit. Verify that
 every file/interface you intend to name actually exists. [RQ6]
 
@@ -73,8 +75,10 @@ Question wording, coverage, and order are fixed here — do not improvise them
 5. **Tradeoffs the operator hasn't considered** — at least ONE adversarial
    probe with a concrete failure scenario. Don't ask obvious questions.
 
-**Budgets:** 2–4 questions per `AskUserQuestion` call; ≤3 calls at Full tier,
-≤1 at Short. [RQ1]
+**Budgets:** Ask 2–4 questions per round; ≤3 rounds at Full tier and ≤1 at
+Short. Use the current host's structured user-input mechanism when one exists;
+otherwise ask the questions directly in conversation and wait for the answers.
+Do not assume a tool with a host-specific name. [RQ1]
 
 **Ambiguity rule — voice, never silently resolve.** The one way tacit
 knowledge is lost is a silent wrong disambiguation. State your intended
@@ -291,7 +295,7 @@ human's deltas (human-driven; this is not a review loop) · **abandon** → stop
 
 ## Phase 6 — Pin & land
 
-On accept (all git via Bash; never touch the default branch):
+On accept (all git via the shell; never touch the default branch):
 
 1. `base=$(git rev-parse HEAD)` — stamp the doc header: `accepted-base: <base>`.
 2. Branch `spec/<slug>` from the default branch; commit **both files** (the
@@ -327,7 +331,7 @@ self-report. [RQ9]
 
 ## What this replaces
 
-This single session replaced `/stark-write-spec`, `/stark-review-spec`,
-`/stark-red-team-spec`, `/stark-spec-to-plan`, and `/stark-review-plan` —
+This single session replaced the former `stark-write-spec`, `stark-review-spec`,
+`stark-red-team-spec`, `stark-spec-to-plan`, and `stark-review-plan` skills —
 all five were deleted in the 2026-07-26 demolition. This is the authoring
-stage; `/stark-build` is the implementation stage.
+stage; `stark-build` is the implementation stage.
