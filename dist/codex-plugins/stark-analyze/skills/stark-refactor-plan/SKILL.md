@@ -10,8 +10,10 @@ For every shell invocation that reads this skill's packaged files, first
 resolve the absolute directory containing this loaded `SKILL.md` from the skill
 path Codex supplied. In that same shell invocation set `SKILL_DIR` to that
 directory, set `STARK_PLUGIN_ROOT` to the absolute `../..` directory, and
-export it. Do not derive the plugin root from the current working directory and
-do not reuse a value from an earlier shell invocation.
+export it. In every such shell invocation also set and export
+`STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}"`. Do not derive
+the plugin root from the current working directory, do not reuse a value from
+an earlier shell invocation, and do not write Codex state under `~/.claude`.
 
 ## Help
 
@@ -116,7 +118,7 @@ Treat the text following the explicit skill mention as the arguments.
    [ -f "${TOOLS:+$TOOLS/refactor_planner.ts}" ] || { echo "refactor_planner.ts not found" >&2; exit 1; }
    [ -d "$PROMPTS" ] || { echo "refactor-planner prompts not found" >&2; exit 1; }
 
-   STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" node --experimental-strip-types --no-warnings "$TOOLS/refactor_planner.ts" \
+   env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types --no-warnings "$TOOLS/refactor_planner.ts" \
      --mode dry-run --root "$ROOT" --provider "$PROVIDER" \
      --prompts-dir "$PROMPTS" --json
    ```
@@ -147,7 +149,7 @@ Treat the text following the explicit skill mention as the arguments.
    [ -f "${TOOLS:+$TOOLS/refactor_planner.ts}" ] || { echo "refactor_planner.ts not found" >&2; exit 1; }
    [ -d "$PROMPTS" ] || { echo "refactor-planner prompts not found" >&2; exit 1; }
 
-   STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" node --experimental-strip-types --no-warnings "$TOOLS/refactor_planner.ts" \
+   env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types --no-warnings "$TOOLS/refactor_planner.ts" \
      --mode run --root "$ROOT" --provider "$PROVIDER" \
      --prompts-dir "$PROMPTS" --no-overwrite --json
    ```
@@ -326,7 +328,7 @@ PROMPTS="${STARK_REFACTOR_PROMPTS:-$DEFAULT_PROMPTS}"
 [ -f "${TOOLS:+$TOOLS/refactor_planner.ts}" ] || { echo "refactor_planner.ts not found" >&2; exit 1; }
 [ -d "$PROMPTS" ] || { echo "refactor-planner prompts not found" >&2; exit 1; }
 
-STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" node --experimental-strip-types "$TOOLS/refactor_planner.ts" \
+env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types "$TOOLS/refactor_planner.ts" \
   --mode validate --root "$ROOT" --provider "$PROVIDER" \
   --prompts-dir "$PROMPTS" --json
 ```

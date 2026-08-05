@@ -15,6 +15,7 @@ import os from "node:os";
 import path from "node:path";
 
 import { AgentDisabledError } from "./agent_disabled_error.ts";
+import { stateRoot } from "./asset_root_lib.ts";
 import { getModelId, isAgentEnabled } from "./stark_config_lib.ts";
 import { resolveVertexLocation, resolveVertexProject } from "./vertex_config_lib.ts";
 import { geminiAuthSettings, resolveGeminiAuthMode } from "./gemini_auth_lib.ts";
@@ -53,12 +54,7 @@ const RED_BG = "\x1b[1;37;41m";
 const RESET = "\x1b[0m";
 
 function fallbackLogPath(): string {
-  return path.join(
-    os.homedir(),
-    ".claude",
-    "code-review",
-    "gemini-api-key-fallback.log",
-  );
+  return path.join(stateRoot(), "gemini-api-key-fallback.log");
 }
 
 /** Retrieve the Gemini API key from the macOS Keychain (cached). */

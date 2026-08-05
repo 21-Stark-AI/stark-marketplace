@@ -28,21 +28,21 @@
 
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
-import os from "node:os";
 import path from "node:path";
 
 import { emitAlert } from "./alert_delivery_lib.ts";
+import { assetRoot, stateRoot } from "./asset_root_lib.ts";
 
 // ---------------------------------------------------------------------------
 // Paths
 // ---------------------------------------------------------------------------
 
 export function defaultBaseDir(): string {
-  return path.join(os.homedir(), ".claude", "code-review");
+  return stateRoot();
 }
 
 export function defaultPatternsPath(): string {
-  return path.join(defaultBaseDir(), "scripts", "healer_patterns.json");
+  return path.join(assetRoot(), "scripts", "healer_patterns.json");
 }
 
 export function defaultSessionPath(): string {
@@ -303,7 +303,7 @@ export interface RunHealOpts {
   logPath?: string;
   /** Override for the alert_delivery base dir. */
   alertsBaseDir?: string;
-  /** Override for the scripts dir. Defaults to `~/.claude/code-review/scripts`; the
+  /** Override for the scripts dir. Defaults to the packaged Codex asset root; the
    * sibling `tools/` directory hosts the GitHub-App TS CLI used by `refresh_token`. */
   scriptsDir?: string;
   env?: NodeJS.ProcessEnv;
@@ -326,7 +326,7 @@ export function runHeal(opts: RunHealOpts): RunHealResult {
   const circuitsPath = opts.circuitsPath ?? defaultCircuitsPath();
   const logPath = opts.logPath ?? defaultLogPath();
   const alertsBaseDir = opts.alertsBaseDir; // undefined => alert_delivery default
-  const scriptsDir = opts.scriptsDir ?? path.join(defaultBaseDir(), "scripts");
+  const scriptsDir = opts.scriptsDir ?? path.join(assetRoot(), "scripts");
   const logFn = opts.log ?? ((s: string) => process.stdout.write(`${s}\n`));
 
   // -------- Load patterns --------

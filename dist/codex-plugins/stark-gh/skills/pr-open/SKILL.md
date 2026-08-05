@@ -13,8 +13,10 @@ For every shell invocation that reads this skill's packaged files, first
 resolve the absolute directory containing this loaded `SKILL.md` from the skill
 path Codex supplied. In that same shell invocation set `SKILL_DIR` to that
 directory, set `STARK_PLUGIN_ROOT` to the absolute `../..` directory, and
-export it. Do not derive the plugin root from the current working directory and
-do not reuse a value from an earlier shell invocation.
+export it. In every such shell invocation also set and export
+`STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}"`. Do not derive
+the plugin root from the current working directory, do not reuse a value from
+an earlier shell invocation, and do not write Codex state under `~/.claude`.
 
 # pr-open
 
@@ -50,15 +52,15 @@ The raw arg may be a bare PR number OR a flag list — the parser accepts both.
 set -euo pipefail
 TOOLS="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}/tools"
 RAW_ARGS='<argument tail from the current user request, safely shell-quoted>'
-PLAN_FILE="$(STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" node --experimental-strip-types "$TOOLS/gh_pr_open_preflight.ts" \
+PLAN_FILE="$(env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types "$TOOLS/gh_pr_open_preflight.ts" \
   --raw-args "$RAW_ARGS" \
   --emit-plan-path)"
 [ -n "$PLAN_FILE" ] && [ -f "$PLAN_FILE" ] || {
   echo "preflight did not return a readable plan file" >&2
   exit 1
 }
-STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" node --experimental-strip-types "$TOOLS/gh_pr_open_draft.ts" --plan-file "$PLAN_FILE"
-EXECUTE_OUT="$(STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" node --experimental-strip-types "$TOOLS/gh_pr_open_execute.ts" --plan-file "$PLAN_FILE")"
+env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types "$TOOLS/gh_pr_open_draft.ts" --plan-file "$PLAN_FILE"
+EXECUTE_OUT="$(env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types "$TOOLS/gh_pr_open_execute.ts" --plan-file "$PLAN_FILE")"
 printf '%s\n' "$EXECUTE_OUT"
 ```
 

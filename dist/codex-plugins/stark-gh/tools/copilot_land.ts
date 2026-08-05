@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 /**
  * copilot_land.ts — the create-or-adopt idempotent impl-PR landing CLI for
- * `/stark-copilot` (#773). This CLI owns EVERY git + PR side effect; the
+ * `$stark-copilot` (#773). This CLI owns EVERY git + PR side effect; the
  * deterministic decisions live in `copilot_land_lib.ts` (pure, unit-proven).
  *
- * `/stark-forge` treats `copilot` as the merge point for the `impl`
+ * `$stark-forge` treats `copilot` as the merge point for the `impl`
  * artifact — it cannot reach `done` without a non-empty `artifact_prs.impl`.
  * Copilot itself only commits locally (SKILL.md §2g); this CLI runs AFTER
  * that work is committed and lands it: adopt-or-create the impl branch,
@@ -87,7 +87,7 @@ function remoteBranchExists(branch: string, cwd: string): boolean {
 // Used by prepare-branch's --require-base guard: adopting a leftover branch from
 // an abandoned run silently resets HEAD onto the OLD codebase, so every later
 // measurement is taken against a tree predating the caller's pin. Observed live
-// on a /stark-build run.
+// on a $stark-build run.
 //
 // TRI-STATE ON PURPOSE. `merge-base --is-ancestor` exits 0 (yes), 1 (no), or
 // 128 (could not evaluate — the ref does not resolve, e.g. a --single-branch or
@@ -112,7 +112,7 @@ function hasUpstream(cwd: string): boolean {
 
 const HELP = `usage: copilot_land.ts <subcommand> [options]
 
-Create-or-adopt idempotent impl-PR landing helper for /stark-copilot.
+Create-or-adopt idempotent impl-PR landing helper for $stark-copilot.
 
 subcommands:
   branch-name    --plan-slug SLUG --fallback-slug SLUG [--json]

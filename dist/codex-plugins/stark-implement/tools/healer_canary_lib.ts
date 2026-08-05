@@ -30,21 +30,22 @@
  */
 
 import fs from "node:fs";
-import os from "node:os";
 import path from "node:path";
+
+import { assetConfigPath, assetRoot, stateRoot } from "./asset_root_lib.ts";
 
 // ---------------------------------------------------------------------------
 // Paths
 // ---------------------------------------------------------------------------
 
 export function defaultBaseDir(): string {
-  return path.join(os.homedir(), ".claude", "code-review");
+  return stateRoot();
 }
 
 export function defaultPatternsPath(): string {
-  // Vendored into each marketplace plugin's scripts/ dir; resolve relative to
-  // the installed scripts/ dir (plugin root, or the ~/.claude/code-review fallback).
-  return path.join(defaultBaseDir(), "scripts", "healer_patterns.json");
+  // Vendored into each marketplace plugin's scripts/ directory. Patterns are
+  // immutable package assets, never mutable runtime state.
+  return path.join(assetRoot(), "scripts", "healer_patterns.json");
 }
 
 export function defaultCircuitsPath(): string {
@@ -52,7 +53,7 @@ export function defaultCircuitsPath(): string {
 }
 
 export function defaultConfigPath(): string {
-  return path.join(defaultBaseDir(), "config.json");
+  return path.join(stateRoot(), "config.json");
 }
 
 export function defaultLogPath(): string {
@@ -175,9 +176,35 @@ export function loadCircuits(circuitsPath?: string): Record<string, CircuitState
 }
 
 export function loadConfig(configPath?: string): Record<string, unknown> {
-  const data = readJsonOrNull(configPath ?? defaultConfigPath());
-  if (typeof data !== "object" || data === null || Array.isArray(data)) return {};
-  return data as Record<string, unknown>;
+  const target = configPath ?? defaultConfigPath();
+  const data = readJsonOrNull(target);
+  const stateConfig =
+    typeof data === "object" && data !== null && !Array.isArray(data)
+      ? (data as Record<string, unknown>)
+      : {};
+
+  // The default Codex config is a mutable state overlay on top of the
+  // packaged baseline. Explicit test/custom paths retain their historical
+  // standalone behavior and do not consult package assets.
+  if (target !== defaultConfigPath()) return stateConfig;
+  const baselineRaw = readJsonOrNull(assetConfigPath());
+  const baseline =
+    typeof baselineRaw === "object" && baselineRaw !== null && !Array.isArray(baselineRaw)
+      ? (baselineRaw as Record<string, unknown>)
+      : {};
+  const baselineSelfHeal =
+    typeof baseline.self_heal === "object" && baseline.self_heal !== null && !Array.isArray(baseline.self_heal)
+      ? (baseline.self_heal as Record<string, unknown>)
+      : {};
+  const stateSelfHeal =
+    typeof stateConfig.self_heal === "object" && stateConfig.self_heal !== null && !Array.isArray(stateConfig.self_heal)
+      ? (stateConfig.self_heal as Record<string, unknown>)
+      : {};
+  return {
+    ...baseline,
+    ...stateConfig,
+    self_heal: { ...baselineSelfHeal, ...stateSelfHeal },
+  };
 }
 
 export function loadLogEntries(logPath?: string): HealerLogEntry[] {
@@ -222,6 +249,36 @@ export function writeConfig(
   );
   fs.writeFileSync(tmp, JSON.stringify(cfg, null, 2));
   fs.renameSync(tmp, target);
+}
+
+function writeAutoPatterns(
+  effectiveConfig: Record<string, unknown>,
+  target: string,
+  autoPatterns: string[],
+): void {
+  if (target !== defaultConfigPath()) {
+    const section =
+      typeof effectiveConfig.self_heal === "object" && effectiveConfig.self_heal !== null && !Array.isArray(effectiveConfig.self_heal)
+        ? (effectiveConfig.self_heal as Record<string, unknown>)
+        : {};
+    effectiveConfig.self_heal = { ...section, auto_patterns: autoPatterns };
+    writeConfig(effectiveConfig, target);
+    return;
+  }
+
+  // Persist only the mutable Codex overlay. Copying the packaged baseline into
+  // state would freeze those defaults and mask later plugin updates.
+  const raw = readJsonOrNull(target);
+  const overlay =
+    typeof raw === "object" && raw !== null && !Array.isArray(raw)
+      ? (raw as Record<string, unknown>)
+      : {};
+  const section =
+    typeof overlay.self_heal === "object" && overlay.self_heal !== null && !Array.isArray(overlay.self_heal)
+      ? (overlay.self_heal as Record<string, unknown>)
+      : {};
+  overlay.self_heal = { ...section, auto_patterns: autoPatterns };
+  writeConfig(overlay, target);
 }
 
 // ---------------------------------------------------------------------------
@@ -484,8 +541,7 @@ export function cmdPromote(
   }
 
   autoPatterns.push(patternId);
-  config.self_heal = { ...section, auto_patterns: autoPatterns };
-  writeConfig(config, resolved.configPath);
+  writeAutoPatterns(config, resolved.configPath, autoPatterns);
 
   appendLogEntry(
     {
@@ -531,8 +587,7 @@ export function cmdDemote(
   }
 
   const next = autoPatterns.filter((id) => id !== patternId);
-  config.self_heal = { ...section, auto_patterns: next };
-  writeConfig(config, resolved.configPath);
+  writeAutoPatterns(config, resolved.configPath, next);
 
   appendLogEntry(
     {

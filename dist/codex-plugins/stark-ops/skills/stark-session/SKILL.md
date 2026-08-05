@@ -10,8 +10,10 @@ For every shell invocation that reads this skill's packaged files, first
 resolve the absolute directory containing this loaded `SKILL.md` from the skill
 path Codex supplied. In that same shell invocation set `SKILL_DIR` to that
 directory, set `STARK_PLUGIN_ROOT` to the absolute `../..` directory, and
-export it. Do not derive the plugin root from the current working directory and
-do not reuse a value from an earlier shell invocation.
+export it. In every such shell invocation also set and export
+`STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}"`. Do not derive
+the plugin root from the current working directory, do not reuse a value from
+an earlier shell invocation, and do not write Codex state under `~/.claude`.
 
 ## Help
 
@@ -88,15 +90,15 @@ Read and internalize — do NOT display:
 TOOLS="${STARK_REVIEW_TOOLS:-${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}/tools}"
 SESSION_ID="${STARK_SESSION_ID:-${CODEX_THREAD_ID:-${CLAUDE_SESSION_ID:-}}}"
 if [ -z "$SESSION_ID" ]; then
-  SESSION_ID=$(STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" node --experimental-strip-types --no-warnings "$TOOLS/session_id.ts")
+  SESSION_ID=$(env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types --no-warnings "$TOOLS/session_id.ts")
 fi
 START_HEAD=$(git rev-parse HEAD 2>/dev/null || echo "")
 STARTED_AT=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-STATE_JSON=$(STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" node --experimental-strip-types --no-warnings "$TOOLS/stark_session.ts" start \
+STATE_JSON=$(env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types --no-warnings "$TOOLS/stark_session.ts" start \
   --session-id "$SESSION_ID" \
   --start-head "$START_HEAD" \
   --started-at "$STARTED_AT" 2>/dev/null || echo '{}')
-STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" node --experimental-strip-types --no-warnings "$TOOLS/session_state.ts" set \
+env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types --no-warnings "$TOOLS/session_state.ts" set \
   --session-id "$SESSION_ID" --field start_head --value "$START_HEAD" \
   2>/dev/null || true
 printf '%s\n' "$STATE_JSON"
@@ -172,7 +174,7 @@ On "go", work sequentially without prompting between tasks — only pause for ge
 ```bash
 TOOLS="${STARK_REVIEW_TOOLS:-${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}/tools}"
 if [ -f "$HOME/.stark-persona/active.json" ]; then
-  STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" node --experimental-strip-types "$TOOLS/stark_persona.ts" session-end 2>/dev/null || true
+  env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types "$TOOLS/stark_persona.ts" session-end 2>/dev/null || true
 fi
 ```
 Display the 20% fun-fact callout AFTER the summary (if any).
@@ -208,12 +210,12 @@ git commit -m "docs: session update — <summary>"
 TOOLS="${STARK_REVIEW_TOOLS:-${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}/tools}"
 SESSION_ID="${STARK_SESSION_ID:-${CODEX_THREAD_ID:-${CLAUDE_SESSION_ID:-}}}"
 if [ -z "$SESSION_ID" ]; then
-  SESSION_ID=$(STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" node --experimental-strip-types --no-warnings "$TOOLS/session_id.ts")
+  SESSION_ID=$(env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types --no-warnings "$TOOLS/session_id.ts")
 fi
-STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" node --experimental-strip-types --no-warnings \
+env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types --no-warnings \
   "$TOOLS/context_compactor.ts" --session-id "$SESSION_ID" --json \
   2>/dev/null || true
-STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" node --experimental-strip-types --no-warnings \
+env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types --no-warnings \
   "$TOOLS/session_state.ts" --session-id "$SESSION_ID" --json \
   2>/dev/null || true
 ```
@@ -250,12 +252,12 @@ from persisted state, then the same shell call stores the final name:
 TOOLS="${STARK_REVIEW_TOOLS:-${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}/tools}"
 SESSION_ID="${STARK_SESSION_ID:-${CODEX_THREAD_ID:-${CLAUDE_SESSION_ID:-}}}"
 if [ -z "$SESSION_ID" ]; then
-  SESSION_ID=$(STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" node --experimental-strip-types --no-warnings "$TOOLS/session_id.ts")
+  SESSION_ID=$(env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types --no-warnings "$TOOLS/session_id.ts")
 fi
 SESSION_NAME="<derived-session-name>"
-END_JSON=$(STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" node --experimental-strip-types --no-warnings "$TOOLS/stark_session.ts" end \
+END_JSON=$(env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types --no-warnings "$TOOLS/stark_session.ts" end \
   --session-id "$SESSION_ID" --name "$SESSION_NAME" 2>/dev/null || echo '{}')
-STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" node --experimental-strip-types --no-warnings "$TOOLS/session_state.ts" set \
+env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types --no-warnings "$TOOLS/session_state.ts" set \
   --session-id "$SESSION_ID" --field name --value "$SESSION_NAME" \
   2>/dev/null || true
 printf '%s\n' "$END_JSON"

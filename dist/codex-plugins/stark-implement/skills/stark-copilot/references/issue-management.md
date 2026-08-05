@@ -12,8 +12,8 @@ done
 ```
 
 If `.github/project-config.json` exists, also update the project board:
-1. `export GH_TOKEN=$(STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from the loaded SKILL.md as instructed}" node --experimental-strip-types "$TOOLS/github_app.ts" --app stark-claude token)`
-2. Find project item: `STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from the loaded SKILL.md as instructed}" node --experimental-strip-types "$TOOLS/github_projects.ts" find-item --org "$ORG" --repo "$REPO" --issue "$ISSUE_NUM" --project "$PROJECT_ID"`
+1. `export GH_TOKEN=$(env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from the loaded SKILL.md as instructed}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types "$TOOLS/github_app.ts" --app stark-claude token)`
+2. Find project item: `env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from the loaded SKILL.md as instructed}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types "$TOOLS/github_projects.ts" find-item --org "$ORG" --repo "$REPO" --issue "$ISSUE_NUM" --project "$PROJECT_ID"`
 3. Update Status field to "Agent Working"
 4. `unset GH_TOKEN`
 
@@ -33,7 +33,7 @@ done
 ```
 
 If `.github/project-config.json` exists, also update the project board:
-1. `export GH_TOKEN=$(STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from the loaded SKILL.md as instructed}" node --experimental-strip-types "$TOOLS/github_app.ts" --app stark-claude token)`
+1. `export GH_TOKEN=$(env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from the loaded SKILL.md as instructed}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types "$TOOLS/github_app.ts" --app stark-claude token)`
 2. Find project item and update Status to "Done"
 3. `unset GH_TOKEN`
 

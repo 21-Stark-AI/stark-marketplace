@@ -65,6 +65,79 @@ func TestOpenAIShortDescriptionAlwaysFitsUIGuidance(t *testing.T) {
 	}
 }
 
+func TestCodexDescriptionsTranslateKnownInvocationSyntax(t *testing.T) {
+	build := &model.Artifact{
+		Name: "stark-build", Type: model.TypeSkill, Bundle: "stark-implement",
+		Description: "Run /stark-build, then /stark-copilot; keep /claude-only, docs/stark-build, ../stark-build, ./stark-build, and /stark-build/SKILL.md unchanged.",
+		Version:     "0.1.0", DisableModelInvocation: true, Body: "Build.\n",
+		Runtimes: []model.Runtime{model.RuntimeCodex},
+	}
+	b := &model.Bundle{Name: "stark-implement", Artifacts: []*model.Artifact{
+		build,
+		{Name: "stark-copilot", Type: model.TypeSkill, Bundle: "stark-implement", Description: "Pair.", Version: "0.1.0", Body: "Pair.\n", Runtimes: []model.Runtime{model.RuntimeCodex}},
+		{Name: "claude-only", Type: model.TypeCommand, Bundle: "stark-implement", Description: "Claude.", Version: "0.1.0", Body: "Claude.\n", Runtimes: []model.Runtime{model.RuntimeClaude}},
+	}}
+
+	files, _, err := NewPlugin().Render(b)
+	if err != nil {
+		t.Fatal(err)
+	}
+	skill, ok := findFile(files, "skills/stark-build/SKILL.md")
+	if !ok {
+		t.Fatalf("rendered skill missing: %v", files)
+	}
+	metadata, ok := findFile(files, "skills/stark-build/agents/openai.yaml")
+	if !ok {
+		t.Fatalf("rendered interface metadata missing: %v", files)
+	}
+	for path, body := range map[string]string{"SKILL.md": skill, "agents/openai.yaml": metadata} {
+		for _, want := range []string{"$stark-build", "$stark-copilot"} {
+			if !strings.Contains(body, want) {
+				t.Errorf("%s missing %q:\n%s", path, want, body)
+			}
+		}
+		for _, unwanted := range []string{"Run /stark-build,", "then /stark-copilot;"} {
+			if strings.Contains(body, unwanted) {
+				t.Errorf("%s retained Claude invocation %q:\n%s", path, unwanted, body)
+			}
+		}
+	}
+	for _, want := range []string{"/claude-only", "docs/stark-build", "../stark-build", "./stark-build", "/stark-build/SKILL.md"} {
+		if !strings.Contains(skill, want) {
+			t.Errorf("SKILL.md changed non-Codex reference %q:\n%s", want, skill)
+		}
+	}
+}
+
+func TestCodexDescriptionsTranslateQualifiedCommandsTypeAware(t *testing.T) {
+	in := "Run /stark-gh:cleanup, /stark-gh:pr-open, or /stark-gh:pr-merge; keep /stark-gh:stark-review."
+	want := "Run $cleanup, $pr-open, or $pr-merge; keep /stark-gh:stark-review."
+	cleanup := &model.Artifact{
+		Name: "cleanup", Type: model.TypeCommand, Bundle: "stark-gh", Description: in,
+		Version: "0.1.0", Body: "Clean.\n", Runtimes: []model.Runtime{model.RuntimeCodex},
+	}
+	b := &model.Bundle{Name: "stark-gh", Artifacts: []*model.Artifact{
+		cleanup,
+		{Name: "pr-open", Type: model.TypeCommand, Runtimes: []model.Runtime{model.RuntimeCodex}},
+		{Name: "pr-merge", Type: model.TypeCommand, Runtimes: []model.Runtime{model.RuntimeCodex}},
+		{Name: "stark-review", Type: model.TypeSkill, Runtimes: []model.Runtime{model.RuntimeCodex}},
+	}}
+	if got := TranslateInvocationReferences(in, b); got != want {
+		t.Fatalf("qualified invocation translation:\n got: %q\nwant: %q", got, want)
+	}
+
+	files, _, err := NewPlugin().Render(b)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, path := range []string{"skills/cleanup/SKILL.md", "skills/cleanup/agents/openai.yaml"} {
+		body, ok := findFile(files, path)
+		if !ok || !strings.Contains(body, "$cleanup") || !strings.Contains(body, "$pr-open") || !strings.Contains(body, "$pr-merge") {
+			t.Errorf("%s did not project qualified commands into its description:\n%s", path, body)
+		}
+	}
+}
+
 func TestCodexMapsCommandToSkillWithUsage(t *testing.T) {
 	a := &model.Artifact{
 		Name: "review", Type: model.TypeCommand, Bundle: "stark-review",

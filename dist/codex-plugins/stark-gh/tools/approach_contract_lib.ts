@@ -8,16 +8,12 @@
  */
 
 import fs from "node:fs";
-import os from "node:os";
 import path from "node:path";
 
+import { stateRoot } from "./asset_root_lib.ts";
+
 function logPath(): string {
-  return path.join(
-    os.homedir(),
-    ".claude",
-    "code-review",
-    "approach-contracts.jsonl",
-  );
+  return path.join(stateRoot(), "approach-contracts.jsonl");
 }
 
 const GOAL_HEADING_RE = /^#{1,6}\s+(what|goal|goals|objective|objectives)\b/i;

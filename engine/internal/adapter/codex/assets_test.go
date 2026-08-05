@@ -65,7 +65,7 @@ func TestRetargetLeavesUnrelatedRelativePathsAlone(t *testing.T) {
 }
 
 // TestRetargetExportsAssetRootOnToolInvocations: a rendered stark-tool invocation must
-// carry an inline STARK_ASSET_ROOT export so the tool's own assetRoot() resolves its
+// carry an env-wrapped STARK_ASSET_ROOT export so the tool's own assetRoot() resolves its
 // sibling config/prompts/standards to the vendored bundle root — not the Claude-only
 // ~/.claude/code-review. ${VAR:-default} on the command line is substitution, not an
 // export, so without this the child node process never sees the root. Every invocation
@@ -78,11 +78,16 @@ func TestRetargetExportsAssetRootOnToolInvocations(t *testing.T) {
 		`node --experimental-strip-types "${CLAUDE_PLUGIN_ROOT}/tools/x.ts"`,
 		`[ -n "$p" ] && node --experimental-strip-types --no-warnings ${CLAUDE_PLUGIN_ROOT}/tools/x.ts`,
 		`v=$(node --experimental-strip-types "$TOOLS/copilot_land.ts")`,
+		`runner=(node --experimental-strip-types "$TOOLS/copilot_land.ts")`,
 	}
 	for _, in := range cases {
 		got := retargetAssets(in+"\n", "stark-gh")
-		if !strings.Contains(got, `STARK_ASSET_ROOT="`+root+`" node --experimental-strip-types`) {
-			t.Errorf("no STARK_ASSET_ROOT export for %q:\n%s", in, got)
+		want := `env STARK_ASSET_ROOT="` + root + `" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types`
+		if !strings.Contains(got, want) {
+			t.Errorf("tool roots not exported for %q; want %q in:\n%s", in, want, got)
+		}
+		if strings.Contains(in, "runner=(") && !strings.Contains(got, "runner=("+want) {
+			t.Errorf("argv array did not retain a runnable env command:\n%s", got)
 		}
 	}
 }
@@ -133,6 +138,9 @@ func TestRetargetPluginRefsSkipsRelative(t *testing.T) {
 	}
 	if !strings.Contains(got, "STARK_ASSET_ROOT=") {
 		t.Errorf("tool invocation not exported: %q", got)
+	}
+	if !strings.Contains(got, `STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}"`) {
+		t.Errorf("Codex state root not exported: %q", got)
 	}
 	if !strings.Contains(got, "../../tools/y.ts") {
 		t.Errorf("relative ref must be left untouched by the prose rewriter: %q", got)

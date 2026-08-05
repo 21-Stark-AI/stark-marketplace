@@ -14,6 +14,8 @@ import os from "node:os";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
+import { stateRootForHome } from "./asset_root_lib.ts";
+
 // ── Lock staleness (TS port of scripts/lock_helpers.is_lock_stale) ──
 
 export type LockData = {
@@ -205,7 +207,7 @@ export function findStaleCheckpointFiles(
   );
 }
 
-// Per-run / per-session statusline state files live directly under ~/.claude
+// Per-run / per-session statusline state files use host-owned state roots
 // (`.statusline-procstart-<pid>`, `.statusline-lastreply-<sid>`,
 // `.statusline-prompt-<sid>`). One accretes
 // per Claude Code process / session, so they pile up over time. They are tiny
@@ -296,6 +298,15 @@ export type ArchiveResult = {
   files: string[]; // files included
 };
 
+function nextArchivePath(archiveDir: string, slug: string, month: string): string {
+  const base = path.join(archiveDir, `${slug}-${month}`);
+  let candidate = `${base}.tar.gz`;
+  for (let suffix = 2; fs.existsSync(candidate); suffix++) {
+    candidate = `${base}-${suffix}.tar.gz`;
+  }
+  return candidate;
+}
+
 export function archiveOldFiles(
   source: ArchiveSource,
   archiveDir: string,
@@ -331,13 +342,22 @@ export function archiveOldFiles(
   if (!dryRun) fs.mkdirSync(archiveDir, { recursive: true });
 
   for (const [month, files] of groups) {
-    const archive = path.join(archiveDir, `${source.slug}-${month}.tar.gz`);
+    const archive = nextArchivePath(archiveDir, source.slug, month);
     if (!dryRun) {
       const relative = files.map((f) => path.relative(source.rootDir, f));
-      tarRunner(["-czf", archive, "-C", source.rootDir, ...relative]);
-      // Verify before deleting originals — `tar -tzf` exits non-zero on
-      // corruption, which would throw and abort the unlink loop.
-      tarRunner(["-tzf", archive]);
+      // Reserve a new path without overwriting any prior monthly archive.
+      const fd = fs.openSync(archive, "wx", 0o600);
+      fs.closeSync(fd);
+      try {
+        // `--` terminates tar options before repository-controlled filenames.
+        tarRunner(["-czf", archive, "-C", source.rootDir, "--", ...relative]);
+        // Verify before deleting originals — `tar -tzf` exits non-zero on
+        // corruption, which throws and leaves every original in place.
+        tarRunner(["-tzf", archive]);
+      } catch (err) {
+        try { fs.unlinkSync(archive); } catch { /* best-effort cleanup */ }
+        throw err;
+      }
       for (const f of files) {
         try {
           fs.unlinkSync(f);
@@ -353,13 +373,9 @@ export function archiveOldFiles(
 
 // ── Asset symlink self-healing ──────────────────────────────────
 //
-// Distribution is marketplace-only since install.sh was removed, but a legacy
-// set of symlinks under ~/.claude still resolves the stark-skills assets for
-// directly-invoked tools (e.g. stark_review.ts → ~/.claude/code-review/prompts,
-// tokens via ~/.claude/code-review/tools). These links live OUTSIDE any repo,
-// so a workspace reorg that renames their targets (Code/Playground → Code/21Stark,
-// 2026-07-11) leaves them dangling and produces silent, confusing failures.
-// Housekeeping re-points them so the tree self-heals.
+// The generic repair helper remains for callers that pass an explicit link
+// inventory. Native Codex packages own no host-level asset links, so the
+// default inventory below is deliberately empty.
 
 // Old→new path-segment renames. This map is load-bearing for BOTH detection
 // (a link whose target still contains an old segment is stale) AND repair (the
@@ -371,26 +387,14 @@ export const STALE_SEGMENT_RENAMES: RenameMapping[] = [
   { from: `Code${path.sep}Playground${path.sep}`, to: `Code${path.sep}21Stark${path.sep}` },
 ];
 
-// A known stark-skills asset symlink. Both paths are relative to $HOME so the
-// table is home-agnostic (and test-injectable via a synthetic home). `target`
-// is the canonical location, used as the FALLBACK repair target when a link is
-// dangling for a reason the rename map can't explain (e.g. deleted with no
-// stale segment). Stale-segment links are repaired via the rename map instead.
+// A known Stark asset symlink. Codex native packages are self-contained and do
+// not own host-level asset links, so the Codex default inventory is empty.
 export type AssetSymlink = {
   link: string; // link location, relative to home
   target: string; // canonical/fallback target, relative to home
 };
 
-export const ASSET_SYMLINKS: AssetSymlink[] = [
-  { link: ".claude/code-review/prompts", target: "Code/21Stark/stark-skills/global/prompts" },
-  { link: ".claude/code-review/tools", target: "Code/21Stark/stark-skills/tools" },
-  { link: ".claude/code-review/config.json", target: "Code/21Stark/stark-skills/global/config.json" },
-  { link: ".claude/code-review/scripts", target: "Code/21Stark/stark-skills/scripts" },
-  { link: ".claude/code-review/standards", target: "Code/21Stark/stark-skills/standards" },
-  { link: ".claude/code-review/orchestrator.md", target: "Code/21Stark/stark-skills/global/orchestrator.md" },
-  { link: ".claude/plugins/stark-gh", target: "Code/21Stark/stark-skills/plugins/stark-gh" },
-  { link: ".claude/output-styles/concrete.md", target: "Code/21Stark/stark-skills/config/output-styles/concrete.md" },
-];
+export const ASSET_SYMLINKS: AssetSymlink[] = [];
 
 export type SymlinkRepair = { path: string; from: string; to: string };
 
@@ -539,8 +543,7 @@ export function cleanInfra(opts: CleanupOptions = {}): CleanupReceipt {
   const dryRun = opts.dryRun ?? false;
   const home = opts.homeDir ?? os.homedir();
   const cwd = opts.cwd ?? process.cwd();
-  const claudeDir = path.join(home, ".claude");
-  const codeReview = path.join(claudeDir, "code-review");
+  const codeReview = stateRootForHome(home);
   const sessions = path.join(codeReview, "sessions");
   const archiveDir = path.join(codeReview, "archives");
   const errors: string[] = [];
@@ -557,16 +560,12 @@ export function cleanInfra(opts: CleanupOptions = {}): CleanupReceipt {
     opts.ageProvider,
     opts.now,
   );
-  const staleLocks = findStaleLockFiles(
-    [codeReview, "/tmp"],
-    { clock: opts.clock },
-  );
-  const statuslineState = findStaleStatuslineStateFiles(
-    claudeDir,
-    14,
-    opts.ageProvider,
-    opts.now,
-  );
+  // Native review locks use their own heartbeat/plain-text contract and are
+  // released by the review owner. Do not reinterpret them as legacy JSON
+  // locks or delete them from housekeeping.
+  const staleLocks: string[] = [];
+  // Codex does not own Claude Code's host-level statusline cache.
+  const statuslineState: string[] = [];
   const validationLogs = listFilesMatching(
     path.join(codeReview, "logs"),
     (full, rel) =>
@@ -619,13 +618,9 @@ export function cleanInfra(opts: CleanupOptions = {}): CleanupReceipt {
     }
   }
 
-  // Heal legacy asset symlinks (dangling or pointing through a renamed path
-  // segment) so directly-invoked tools keep resolving prompts/tools/config.
-  const { repaired: symlinksRepaired, errors: symlinkErrors } = healAssetSymlinks(
-    home,
-    { dryRun },
-  );
-  errors.push(...symlinkErrors);
+  // Native Codex packages resolve immutable assets from their plugin root and
+  // own no host-level asset symlinks.
+  const symlinksRepaired: SymlinkRepair[] = [];
 
   return {
     dryRun,

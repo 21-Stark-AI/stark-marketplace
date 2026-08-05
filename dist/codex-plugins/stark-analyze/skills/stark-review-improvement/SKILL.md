@@ -10,8 +10,10 @@ For every shell invocation that reads this skill's packaged files, first
 resolve the absolute directory containing this loaded `SKILL.md` from the skill
 path Codex supplied. In that same shell invocation set `SKILL_DIR` to that
 directory, set `STARK_PLUGIN_ROOT` to the absolute `../..` directory, and
-export it. Do not derive the plugin root from the current working directory and
-do not reuse a value from an earlier shell invocation.
+export it. In every such shell invocation also set and export
+`STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}"`. Do not derive
+the plugin root from the current working directory, do not reuse a value from
+an earlier shell invocation, and do not write Codex state under `~/.claude`.
 
 ## Help
 
@@ -167,7 +169,7 @@ After all edits:
 
 1. **Syntax check prompts** — ensure no broken markdown, no missing sections
 2. **TS syntax + focused tests** — if the orchestrator was edited, run
-   `STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" node --experimental-strip-types --check "$ORCHESTRATOR"` and the
+   `env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types --check "$ORCHESTRATOR"` and the
    `tools/stark_review*.test.ts` tests covering the touched seam
 3. **JSON validity** — if config was edited: `node -e "JSON.parse(require('fs').readFileSync('$CONFIG','utf8'))"`
 4. **Diff review** — show `git diff` in `$STARK_REPO` to the user for confirmation

@@ -568,7 +568,7 @@ export function buildCodeReviewAnalytics(opts: {
     })
     .filter((x) => x.total >= 3 && x.noise / x.total > 0.5);
   for (const n of noisy) {
-    notes.push(`Noisy domain: ${n.d} — ${n.noise}/${n.total} findings classified noise/false_positive. Candidate for /stark-review-improvement.`);
+    notes.push(`Noisy domain: ${n.d} — ${n.noise}/${n.total} findings classified noise/false_positive. Candidate for $stark-review-improvement.`);
   }
   return {
     kind: "code-review",

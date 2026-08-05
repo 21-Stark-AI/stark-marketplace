@@ -10,8 +10,10 @@ For every shell invocation that reads this skill's packaged files, first
 resolve the absolute directory containing this loaded `SKILL.md` from the skill
 path Codex supplied. In that same shell invocation set `SKILL_DIR` to that
 directory, set `STARK_PLUGIN_ROOT` to the absolute `../..` directory, and
-export it. Do not derive the plugin root from the current working directory and
-do not reuse a value from an earlier shell invocation.
+export it. In every such shell invocation also set and export
+`STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}"`. Do not derive
+the plugin root from the current working directory, do not reuse a value from
+an earlier shell invocation, and do not write Codex state under `~/.claude`.
 
 ## Help
 
@@ -111,7 +113,7 @@ TOOLS="${STARK_REVIEW_TOOLS:-${ASSET_ROOT:+$ASSET_ROOT/tools}}"
 IAC_REVIEW="${TOOLS:+$TOOLS/iac_review.ts}"
 [ -f "$IAC_REVIEW" ] || { echo "iac_review.ts not found; set STARK_ASSET_ROOT or STARK_REVIEW_TOOLS" >&2; exit 1; }
 PREVIEW_ARGS=(--kind terraform "$TARGET_PATH" "${REVIEW_ARGS[@]}" --dry-run --no-tools --json)
-STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" node --experimental-strip-types --no-warnings "$IAC_REVIEW" "${PREVIEW_ARGS[@]}"
+env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types --no-warnings "$IAC_REVIEW" "${PREVIEW_ARGS[@]}"
 ```
 
 Run this second block only after recording the user's decisions. Set the three
@@ -140,7 +142,7 @@ IAC_REVIEW="${TOOLS:+$TOOLS/iac_review.ts}"
 RUN_ARGS=(--kind terraform "$TARGET_PATH" "${REVIEW_ARGS[@]}" --allow-agent-dispatch)
 if [ "$SCANNER_CONSENT" = true ]; then RUN_ARGS+=(--trust-source); else RUN_ARGS+=(--no-tools); fi
 if [ "$TFVARS_CONSENT" = true ]; then RUN_ARGS+=(--include-tfvars); fi
-STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" node --experimental-strip-types --no-warnings "$IAC_REVIEW" "${RUN_ARGS[@]}"
+env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types --no-warnings "$IAC_REVIEW" "${RUN_ARGS[@]}"
 ```
 
 The dispatcher:
