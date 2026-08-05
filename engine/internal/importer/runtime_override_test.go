@@ -6,9 +6,9 @@ import (
 	"testing"
 
 	"github.com/21StarkCom/bifrost/engine/internal/adapter/claude"
+	"github.com/21StarkCom/bifrost/engine/internal/load"
 	"github.com/21StarkCom/bifrost/engine/internal/merge"
 	"github.com/21StarkCom/bifrost/engine/internal/model"
-	"gopkg.in/yaml.v3"
 )
 
 func TestImportAttachesSourceOwnedCodexSkillOverride(t *testing.T) {
@@ -32,6 +32,8 @@ model: codex-placeholder
 ---
 
 Codex body.
+---
+Codex tail.
 `)
 
 	res, err := ImportForGenerator(from, "demo-bundle", []string{"demo"})
@@ -64,25 +66,39 @@ Codex body.
 	if !strings.Contains(serialized, "Usage: demo [old]\n\nClaude body.") {
 		t.Fatalf("canonical Claude body/hint changed:\n%s", serialized)
 	}
-	if !strings.Contains(serialized, "overrides:\n  codex:") || !strings.Contains(serialized, "Codex body.") {
+	if !strings.Contains(serialized, "overrides:\n  codex:") ||
+		!strings.Contains(serialized, "Codex body.") ||
+		!strings.Contains(serialized, "      ---\n      Codex tail.") {
 		t.Fatalf("serialized Codex override missing:\n%s", serialized)
 	}
 
-	fm, baseBody, err := splitFrontmatter(files["skills/demo.md"])
+	// Exercise the production sync -> serialize -> catalog load path. The
+	// indented Markdown rule in overrides.codex.body must remain inside YAML
+	// frontmatter rather than being mistaken for its closing delimiter.
+	catalogDir := t.TempDir()
+	writeFile(t, filepath.Join(catalogDir, "demo-bundle", "bundle.yaml"), `name: demo-bundle
+version: 0.1.0
+description: Demo bundle.
+owner:
+  name: Demo
+runtimes:
+  - claude
+  - codex
+`)
+	writeFile(t, filepath.Join(catalogDir, "demo-bundle", "skills", "demo.md"), serialized)
+	cat, err := load.Load(catalogDir)
 	if err != nil {
 		t.Fatal(err)
 	}
-	var loaded model.Artifact
-	if err := yaml.Unmarshal(fm, &loaded); err != nil {
-		t.Fatal(err)
+	if len(cat.Bundles) != 1 || len(cat.Bundles[0].Artifacts) != 1 {
+		t.Fatalf("loaded catalog = %+v", cat)
 	}
-	loaded.Bundle = "demo-bundle"
-	loaded.Body = baseBody
-	resolved, findings, err := merge.Resolve(&loaded, model.RuntimeCodex)
+	loaded := cat.Bundles[0].Artifacts[0]
+	resolved, findings, err := merge.Resolve(loaded, model.RuntimeCodex)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if resolved.Body != "Codex body.\n" || resolved.Frontmatter["description"] != "Codex description." {
+	if resolved.Body != "Codex body.\n---\nCodex tail.\n" || resolved.Frontmatter["description"] != "Codex description." {
 		t.Fatalf("resolved override = %+v body=%q", resolved.Frontmatter, resolved.Body)
 	}
 	if !findings.Diverged || findings.DivergedReason != codexOverrideReason {
@@ -93,7 +109,7 @@ Codex body.
 	// Codex override is present in metadata but is never selected by that target.
 	claudeFiles, _, err := claude.New().Render(&model.Bundle{
 		Name:      "demo-bundle",
-		Artifacts: []*model.Artifact{&loaded},
+		Artifacts: []*model.Artifact{loaded},
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -107,10 +123,23 @@ Codex body.
 			claudeSkill = string(file.Content)
 		}
 	}
-	if !strings.Contains(claudeSkill, "description: Claude description.") ||
-		!strings.Contains(claudeSkill, "Usage: demo [old]\n\nClaude body.") ||
-		strings.Contains(claudeSkill, "Codex body.") {
-		t.Fatalf("Codex override affected Claude output:\n%s", claudeSkill)
+	wantClaude := `---
+name: demo
+description: Claude description.
+disable-model-invocation: true
+model: opus
+---
+Usage: demo [old]
+
+Claude body.
+`
+	if claudeSkill != wantClaude {
+		t.Fatalf("Claude output changed:\n--- got ---\n%s--- want ---\n%s", claudeSkill, wantClaude)
+	}
+	for _, fragment := range []string{"# diverged:", "Codex body.", "Codex tail."} {
+		if strings.Contains(claudeSkill, fragment) {
+			t.Fatalf("Codex override fragment %q affected Claude output:\n%s", fragment, claudeSkill)
+		}
 	}
 }
 

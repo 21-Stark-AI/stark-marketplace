@@ -118,11 +118,24 @@ func splitFrontmatter(data []byte) (fm []byte, body string, err error) {
 		return nil, "", errors.New("missing frontmatter: file must start with '---'")
 	}
 	rest := data[len(fmDelim):]
-	end := bytes.Index(rest, fmDelim)
+	end := frontmatterEnd(rest)
 	if end < 0 {
 		return nil, "", errors.New("unterminated frontmatter: missing closing '---'")
 	}
 	return rest[:end], string(rest[end+len(fmDelim):]), nil
+}
+
+// frontmatterEnd returns the offset of a closing delimiter at column zero.
+// YAML block scalars can contain indented Markdown rules; those bytes belong to
+// the scalar and must never terminate the header.
+func frontmatterEnd(rest []byte) int {
+	if bytes.HasPrefix(rest, fmDelim) { // empty frontmatter
+		return 0
+	}
+	if i := bytes.Index(rest, []byte("\n---\n")); i >= 0 {
+		return i + 1
+	}
+	return -1
 }
 
 func normalizeLF(data []byte) []byte {

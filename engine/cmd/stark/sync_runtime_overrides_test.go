@@ -1,10 +1,15 @@
 package main
 
 import (
+	"bytes"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/21StarkCom/bifrost/engine/internal/build"
+	"github.com/21StarkCom/bifrost/engine/internal/load"
+	"github.com/21StarkCom/bifrost/engine/internal/marketplace"
 )
 
 func writeSyncFixtureFile(t *testing.T, path, content string) {
@@ -22,13 +27,14 @@ func TestRunSyncSeparatesCodexArtifactAndSupportOverrides(t *testing.T) {
 	catalogDir := filepath.Join(repoRoot, "catalog")
 	from := t.TempDir()
 
-	writeSyncFixtureFile(t, filepath.Join(catalogDir, "demo", "bundle.yaml"), `name: demo
+	bundleYAML := `name: demo
 version: 1.2.3
 description: Demo bundle.
 owner: {name: Example}
 runtimes: [claude, codex]
 skills: [demo-skill]
-`)
+`
+	writeSyncFixtureFile(t, filepath.Join(catalogDir, "demo", "bundle.yaml"), bundleYAML)
 	writeSyncFixtureFile(t, filepath.Join(from, "skill", "demo-skill", "SKILL.md"), `---
 name: demo-skill
 description: Claude description.
@@ -44,6 +50,10 @@ argument-hint: "[new]"
 disable-model-invocation: true
 ---
 Codex body.
+
+---
+
+Codex-only tail after a Markdown horizontal rule.
 `)
 	writeSyncFixtureFile(t, filepath.Join(from, "runtime-overrides", "codex", "standards", "help.md"), "Codex help.\n")
 	writeSyncFixtureFile(t, filepath.Join(from, "runtime-overrides", "codex", "global", "config.json"), `{"source":"codex-global"}`+"\n")
@@ -93,6 +103,64 @@ Codex body.
 	} {
 		if _, err := os.Stat(leaked); !os.IsNotExist(err) {
 			t.Errorf("runtime override leaked to %s", leaked)
+		}
+	}
+
+	// Exercise the complete source -> sync serialization -> catalog loader -> build
+	// round trip. A Codex override is allowed to contain ordinary Markdown rules;
+	// adding it must leave every Claude package byte and the Claude marketplace
+	// manifest identical to a sync from the same canonical source without overrides.
+	withOverrideCatalog, err := load.Load(catalogDir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	withOverride, err := build.Build(withOverrideCatalog, build.Options{})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := os.RemoveAll(filepath.Join(from, "runtime-overrides")); err != nil {
+		t.Fatal(err)
+	}
+	controlRoot := t.TempDir()
+	controlCatalogDir := filepath.Join(controlRoot, "catalog")
+	writeSyncFixtureFile(t, filepath.Join(controlCatalogDir, "demo", "bundle.yaml"), bundleYAML)
+	if code := runSync(from, controlCatalogDir, controlRoot, false); code != 0 {
+		t.Fatalf("control runSync exit = %d", code)
+	}
+	controlCatalog, err := load.Load(controlCatalogDir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	control, err := build.Build(controlCatalog, build.Options{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	assertClaudeOwnedBytesEqual(t, control.Files, withOverride.Files)
+}
+
+func assertClaudeOwnedBytesEqual(t *testing.T, want, got map[string][]byte) {
+	t.Helper()
+	isClaudeOwned := func(path string) bool {
+		return strings.HasPrefix(path, "dist/claude/") || path == marketplace.ManifestRelPath
+	}
+	for path, wantBody := range want {
+		if !isClaudeOwned(path) {
+			continue
+		}
+		gotBody, ok := got[path]
+		if !ok {
+			t.Fatalf("Codex override removed Claude-owned output %s", path)
+		}
+		if !bytes.Equal(gotBody, wantBody) {
+			t.Fatalf("Codex override changed Claude-owned output %s\n--- want ---\n%s\n--- got ---\n%s", path, wantBody, gotBody)
+		}
+	}
+	for path := range got {
+		if isClaudeOwned(path) {
+			if _, ok := want[path]; !ok {
+				t.Fatalf("Codex override added Claude-owned output %s", path)
+			}
 		}
 	}
 }

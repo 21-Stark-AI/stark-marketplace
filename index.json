@@ -131,7 +131,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:5b9d2b956e7c09a1244f40984c55709edc58798f29919e6234a4bc6bbbc826ab"
+      "digest": "sha256:77f20d96fc665b72b1563bc721422feb466197aa7ea4b64873ffaf79e1dde7dd"
     },
     {
       "name": "stark-ssot",
@@ -533,7 +533,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:5850233a5894d0e85c1e12fead5ec0f35464bb66e69ed49ba366220d9d528488"
+      "digest": "sha256:023d593b0a6993bf3eb69d2a4929b255b0ec41ae1b1dc7b08dee5e9e86324987"
     },
     {
       "name": "stark-housekeeping",
@@ -559,7 +559,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:a4bbd3d225c72f19711a64d6cc9037c263204149ca3e359bc16b024289e2ef26"
+      "digest": "sha256:a37ea8208e6a699d8de28b897f25017f965c35e1cd89b918486f3985c215ef26"
     },
     {
       "name": "stark-release",
@@ -585,7 +585,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:70034a3a5e7f60a723d3787e313cdab3de680782353d4fd7de5e0bc3b896e23b"
+      "digest": "sha256:1fc843da99216a26cfce9c015a102e265ec002bd18e274d0651e52a4b4c9c8e0"
     },
     {
       "name": "stark-session",
@@ -611,7 +611,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:c91ab6e1866f0a4a85073b98657d1a711f6ab10714d4b048a227cc0e1d347229"
+      "digest": "sha256:255d6dacc67536b857a59a997d6ae4204329fe38966fb77176a31aec1b5a4501"
     },
     {
       "name": "stark-author",

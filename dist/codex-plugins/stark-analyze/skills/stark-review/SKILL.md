@@ -217,4 +217,131 @@ re-derive counts the TS tool already computed.
 
 ```text
 Review Complete - {repo} PR #{pr}
-------------------------------
+---------------------------------
+Domains reviewed: {len(domains)}
+Rounds: {len(rounds)}
+  round 1: {findings} findings (fix={fix} noise={noise} fp={false_positive}) — {duration_ms}ms
+  ...
+Comments posted: {comments_posted}
+Fixes pushed: {fixes_pushed}
+History: {len(history_files)} round file(s)
+```
+
+Findings classification (`fix` / `noise` / `false_positive` / `ignored`) is
+performed by the TS tool's classifier stage. The wrapper does not re-classify.
+
+## Phase 4: Fix Loop (explicit `--post --fix` only)
+
+Skip this entire phase for an ordinary review. The TS dispatcher runs the fix
+loop after each review round's POST lands only when the user explicitly opted
+into both posting and fixing —
+including the final round — when the authorization gate allows it (Phase 9 —
+see `tools/stark_review_lib.ts` `evaluateFixLoopGate`). `--max-rounds` bounds
+review+fix cycles, not reviews: every round that finds fixable findings attempts
+a fix, and the trusted `test_command` is the per-round verification gate rather
+than a subsequent review round. The wrapper does not orchestrate the loop itself;
+it surfaces what the TS tool reports in the receipt (`fixes_pushed`,
+and the paths in `history_files`).
+
+### Authorization
+
+The gate allows the fix loop when ALL of:
+
+- A `test_command` resolves. **Resolution order:** explicit `config.test_command`
+  (trusted config) → **auto-detected** by `detectTestCommand()` from the trusted
+  checkout root → none. Detection reads **only** the operator's local checkout
+  (`--config-root`), **never** the PR-head worktree — letting a PR choose the
+  command that runs with push credentials would be an RCE vector. It recognizes
+  Makefile `test:` targets, `package.json` `scripts.test`, `go.mod`,
+  `Cargo.toml`, `*.test.ts`/`*.test.js` (node:test), and pytest (only when test
+  files actually exist). When nothing resolves, the loop soft-skips via
+  `allow_no_test_command` rather than failing — repos no longer need to pin a
+  brittle `test_command`.
+- The PR is same-repo, OR fork-with-`maintainerCanModify`, OR the operator
+  passed `--allow-untrusted-fix-loop` AND `config.untrusted_fix_loop=true`
+  (both opt-ins required for untrusted fork pushes). Detection-sourced commands
+  still only execute inside these trusted contexts — fork reviews are read-only
+  and never run the detected command.
+- `--no-fix-loop` was not passed.
+
+If any condition fails, the review still posts; the fix loop is soft-skipped
+with an audit-log `reason` (`no_test_command`, `fork_no_mcm`, `no_fix_loop`)
+or surfaces a terminal `auth_denied` when CLI opt-in conflicts with config.
+
+### Severity threshold
+
+`config.fix_threshold` filters which findings the fixer attempts. Severity
+ladder (high → low): `critical` > `high` > `medium` > `low`. Setting
+`fix_threshold: "low"` includes every severity through nits; `"medium"`
+excludes nits. The default in `global/config.json` is `"low"` — every
+classified `fix` finding from Critical down to nits enters the loop.
+
+### Step sequence (every round, including the last, after review POST lands)
+
+1. Filter `pass.allFindings` to `classification === "fix"` AND severity ≥ `fix_threshold`.
+2. Resolve and validate the push target (`resolvePushTarget` — bails terminally if
+   the flow can't push, BEFORE the fixer touches files).
+3. Run the fixer agent (Codex by default) with the filtered findings against the
+   review worktree.
+4. Stage the fixer's `modified_files` via `stageFiles` (explicit paths only —
+   never `git add -A`).
+5. Run the trusted `test_command` with a sandboxed env allowlist (`stark_review_lib.ts`
+   `runTrustedTest`). Non-zero exit → terminal `test_failure`.
+6. Commit + push to the resolved push target. Commit SHA + audit entry land in
+   the receipt. A non-final round's fix is re-reviewed by the next round against
+   the new HEAD; the final round's fix is verified by step 5's `test_command`
+   **and then by the convergence round** — when the final fix-capable round
+   pushed a fix, the dispatcher runs one extra review-only pass over the new
+   HEAD (no fix step follows it, so it terminates by construction; receipt
+   `convergence` block records `{ran, round, findings, error}`; ADR 0022)
+   alone (no further review round runs).
+
+`--max-rounds` caps the loop. Resolution order: explicit `--max-rounds` →
+`config.max_rounds` (global/org/repo merge) → built-in default `3`. The hard
+ceiling `MAX_ROUNDS_CEILING` in `stark_review.ts` (currently `10`) rejects
+larger values from either source to prevent runaway sessions.
+
+For fork PRs without `maintainerCanModify`, the loop is read-only unless both
+`--allow-untrusted-fix-loop` (CLI) and `config.untrusted_fix_loop=true` are
+set — see Authorization above.
+
+## Phase 5: Persist History
+
+The TS dispatcher writes its own history JSON. Treat the receipt's
+`history_files` entries as the authoritative paths; the wrapper neither assumes
+a host-specific history root nor manages those files.
+
+## Phase 6: Cleanup
+
+```bash
+cd - >/dev/null
+
+STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" node --experimental-strip-types "$TOOLS/review_cleanup_worktree.ts" \
+    --worktree "$WORKTREE_PATH" --head-sha "$HEAD_SHA" --json
+```
+
+The cleanup tool refuses to delete the worktree on unstaged changes, staged
+changes, or HEAD drift. The `head-drift` check guards against fix commits that
+were never pushed. Receipt: `{ removed, reason: removed | no-such-worktree |
+unstaged-changes | staged-changes | head-drift, worktreePath, expectedHead,
+observedHead }`.
+
+The tool always exits 0; a `removed: false` receipt is a deliberate safety
+decision, not a tool failure. Skip cleanup on dispatch failure or unpushed
+state — surface the path and let the user inspect.
+
+## Failure Modes
+
+| Failure                                          | Recovery |
+|--------------------------------------------------|----------|
+| Receipt `ok=false`                               | Print `error.code` + `error.message`, exit non-zero |
+| Receipt has `failed_results` non-empty           | Print round/agent/domain/error list, exit non-zero |
+| Receipt has `parse_errors` non-empty             | Print round/reason/line snippet, exit non-zero |
+| Receipt has `unposted_reviews` non-empty         | Print round/reason/status, exit non-zero |
+| TS tool exits non-zero with unparseable stdout   | Print stderr, exit non-zero |
+| `--quick` with empty `quick_domains` in config   | TS tool exits with `bad_args`; surface the message |
+| PR not found                                     | Print `PR #{n} not found. Check --repo or run from the correct directory.` |
+| Worktree creation fails                          | Stop; do not fall back to the main checkout |
+| Repo mismatch                                    | Stop and ask to run from the matching local checkout |
+| Fork PR                                          | Review-only; no fix-loop |
+| `gh` read authentication unavailable             | Stop and ask the user to authenticate; do not mint or expose a token in the wrapper |
