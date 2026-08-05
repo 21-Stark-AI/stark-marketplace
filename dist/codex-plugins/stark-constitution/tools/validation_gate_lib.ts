@@ -12,9 +12,9 @@
 
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
-import os from "node:os";
 import path from "node:path";
 
+import { stateRoot } from "./asset_root_lib.ts";
 import { getValidationGateConfig } from "./stark_config_lib.ts";
 
 const ALLOWED_DISCOVERY_COMMANDS: ReadonlySet<string> = new Set([
@@ -27,7 +27,7 @@ const ALLOWED_DISCOVERY_COMMANDS: ReadonlySet<string> = new Set([
 const DEFAULT_TIMEOUT_SECONDS = 60;
 
 function logDir(): string {
-  return path.join(os.homedir(), ".claude", "code-review", "logs");
+  return path.join(stateRoot(), "logs");
 }
 
 export interface CheckResult {

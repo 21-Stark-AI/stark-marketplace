@@ -11,13 +11,12 @@
  *   - `skill/stark-phase-execute/SKILL.md` (subprocess hop to this CLI).
  *
  * Reads `circuit_breaker_threshold` and `auto_patterns` from
- * `config.self_heal.*` in `~/.claude/code-review/config.json` (inline
- * loader — no `config_loader.py` dependency).
+ * `config.self_heal.*` from Codex's state overlay on the packaged config.
  */
 
 import fs from "node:fs";
 
-import { assetConfigPath } from "./asset_root_lib.ts";
+import { loadConfig } from "./healer_canary_lib.ts";
 import { runHeal, type HealMode } from "./self_healer_lib.ts";
 
 // ---------------------------------------------------------------------------
@@ -68,23 +67,8 @@ interface SelfHealConfig {
 }
 
 function loadSelfHealConfig(): SelfHealConfig {
-  const file = assetConfigPath();
-  let text: string;
-  try {
-    text = fs.readFileSync(file, "utf8");
-  } catch {
-    return { threshold: 3, autoPatterns: [] };
-  }
-  let data: unknown;
-  try {
-    data = JSON.parse(text);
-  } catch {
-    return { threshold: 3, autoPatterns: [] };
-  }
-  if (typeof data !== "object" || data === null) {
-    return { threshold: 3, autoPatterns: [] };
-  }
-  const section = (data as Record<string, unknown>).self_heal as
+  const data = loadConfig();
+  const section = data.self_heal as
     | Record<string, unknown>
     | undefined;
   const threshold =

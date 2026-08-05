@@ -7,15 +7,14 @@
  * relevance + age score, capped at `max_suggestions`.
  *
  * `config_loader.py` is NOT pulled in — the `skill_activation` section
- * is loaded inline directly from `~/.claude/code-review/config.json`
+ * is loaded inline from the immutable Codex plugin config
  * with the same defaults the Python ships.
  */
 
 import fs from "node:fs";
-import os from "node:os";
 import path from "node:path";
 
-import { assetConfigPath } from "./asset_root_lib.ts";
+import { assetConfigPath, stateRoot } from "./asset_root_lib.ts";
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -60,13 +59,7 @@ export const DEFAULT_SKILL_ACTIVATION: SkillActivationConfig = {
 // ---------------------------------------------------------------------------
 
 export function defaultSkillUsagePath(): string {
-  return path.join(
-    os.homedir(),
-    ".claude",
-    "code-review",
-    "history",
-    "skill-usage.json",
-  );
+  return path.join(stateRoot(), "history", "skill-usage.json");
 }
 
 export function defaultConfigPath(): string {

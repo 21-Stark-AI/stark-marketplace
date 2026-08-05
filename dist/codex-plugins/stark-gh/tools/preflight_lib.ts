@@ -11,18 +11,19 @@
  * `degraded`; all-pass stays `ready`.
  *
  * Results are appended as one JSON line to
- * `~/.claude/code-review/preflight.jsonl`. The append is best-effort —
+ * `$STARK_STATE_ROOT/preflight.jsonl` (default
+ * `~/.stark/code-review/preflight.jsonl`). The append is best-effort —
  * a failure to write the log surfaces as a stderr warning and never
  * fails the run.
  */
 
 import fs from "node:fs";
-import os from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 
 import { getToken } from "./github_app_lib.ts";
 import { isLockStale } from "./lock_helpers_lib.ts";
+import { stateRoot } from "./asset_root_lib.ts";
 import {
   discoverConfig,
   getModelRates,
@@ -36,11 +37,11 @@ import {
 // ---------------------------------------------------------------------------
 
 function logPath(): string {
-  return path.join(os.homedir(), ".claude", "code-review", "preflight.jsonl");
+  return path.join(stateRoot(), "preflight.jsonl");
 }
 
 function hardStopPath(): string {
-  return path.join(os.homedir(), ".claude", "code-review", "cost-hard-stop");
+  return path.join(stateRoot(), "cost-hard-stop");
 }
 
 // ---------------------------------------------------------------------------
@@ -309,7 +310,7 @@ export function checkDeprecatedConfig(): [CheckStatus, string] {
 
 export function checkStaleLocks(): [CheckStatus, string] {
   const lockDirs = [
-    path.join(os.homedir(), ".claude", "code-review"),
+    stateRoot(),
     "/tmp",
   ];
   const stale: string[] = [];

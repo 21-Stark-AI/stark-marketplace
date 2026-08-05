@@ -1,5 +1,5 @@
 /**
- * Collectors for the /stark-session SKILL. Each collector takes injected
+ * Collectors for the $stark-session skill. Each collector takes injected
  * subprocess + filesystem deps, returns its slot or null on failure, and
  * pushes a structured `{source, message}` entry to the shared `errors`
  * accumulator when something goes wrong.
@@ -7,7 +7,7 @@
  * The top-level `collectStart` / `collectEnd` orchestrate every collector
  * in parallel with a single wall-clock deadline, then assemble the final
  * JSON shape that `tools/stark_session.ts` prints to stdout for the
- * SKILL.md to render via Claude.
+ * Codex skill to render.
  *
  * See docs/specs/stark-session-ts-2026-05-18.md for the contract.
  */
@@ -16,6 +16,8 @@ import { spawn } from "node:child_process";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+
+import { assetRootForHome, stateRootForHome } from "./asset_root_lib.ts";
 
 // ── Public types ─────────────────────────────────────────────────────
 
@@ -46,7 +48,7 @@ export type HealerCategory = { name: string; count: number };
 const HEALER_TOP_N = 5;
 
 function healerLogPath(home: string): string {
-  return `${home}/.claude/code-review/healer.jsonl`;
+  return path.join(stateRootForHome(home), "healer.jsonl");
 }
 
 // ── Constants ────────────────────────────────────────────────────────
@@ -77,14 +79,13 @@ function redact(text: string): string {
 
 /**
  * Build a Deps backed by real subprocess + filesystem. The defaults
- * resolve `scriptsDir` to `$HOME/.claude/code-review/scripts` and
- * `toolsDir` to `$HOME/.claude/code-review/tools`, matching how
- * install.sh symlinks the repo. Tests inject their own Deps via
- * `makeDeps` — this factory is for the production CLI only.
+ * resolve `scriptsDir` and `toolsDir` from the immutable Codex asset root.
+ * Tests inject their own Deps via `makeDeps` — this factory is for the
+ * production CLI only.
  */
 export function realDeps(overrides: Partial<Deps> = {}): Deps {
   const home = overrides.home ?? os.homedir();
-  const baseDir = path.join(home, ".claude", "code-review");
+  const baseDir = assetRootForHome(home);
   return {
     home,
     scriptsDir: overrides.scriptsDir ?? path.join(baseDir, "scripts"),
@@ -177,12 +178,11 @@ export async function collectCanaryStatus(
   errors: ErrSlot[],
 ): Promise<CanaryStatus | null> {
   // healer_canary went pure-TS in the 2026-05-18 cutover (Python deleted).
-  const toolsDir = `${deps.scriptsDir.replace(/\/scripts$/, "")}/tools`;
   const cmd = [
     "node",
     "--experimental-strip-types",
     "--no-warnings",
-    `${toolsDir}/healer_canary.ts`,
+    `${deps.toolsDir}/healer_canary.ts`,
     "--status",
     "--json",
   ];
@@ -222,12 +222,11 @@ export async function collectAlerts(
   // alert_delivery is pure TS as of the 2026-05-18 cutover (Python
   // gone with the self_healer slice — that was the last in-process
   // consumer). Talks to the CLI sibling under `tools/`.
-  const toolsDir = `${deps.scriptsDir.replace(/\/scripts$/, "")}/tools`;
   const cmd = [
     "node",
     "--experimental-strip-types",
     "--no-warnings",
-    `${toolsDir}/alert_delivery.ts`,
+    `${deps.toolsDir}/alert_delivery.ts`,
     "--check",
     "--json",
   ];
@@ -262,12 +261,11 @@ export async function collectSkillSuggestions(
 ): Promise<SkillSuggestion[]> {
   // skill_router went pure-TS in the 2026-05-18 cutover (the Python
   // was deleted with that slice — no other callers).
-  const toolsDir = `${deps.scriptsDir.replace(/\/scripts$/, "")}/tools`;
   const cmd = [
     "node",
     "--experimental-strip-types",
     "--no-warnings",
-    `${toolsDir}/skill_router.ts`,
+    `${deps.toolsDir}/skill_router.ts`,
     "--context",
     "session",
     "--json",
@@ -298,16 +296,12 @@ export async function collectPersona(
   deps: Deps,
   errors: ErrSlot[],
 ): Promise<PersonaState | null> {
-  // Persona went pure-TS in the 2026-05-18 cutover. `deps.scriptsDir` still
-  // points at `~/.claude/code-review/scripts/`; the TS sibling tools live one
-  // directory up under `tools/`, so derive the path rather than carrying a
-  // second config knob.
-  const toolsDir = `${deps.scriptsDir.replace(/\/scripts$/, "")}/tools`;
+  // Persona is a packaged TypeScript sibling under the immutable tools root.
   const cmd = [
     "node",
     "--experimental-strip-types",
     "--no-warnings",
-    `${toolsDir}/stark_persona.ts`,
+    `${deps.toolsDir}/stark_persona.ts`,
     "select",
     "--auto",
   ];
@@ -339,7 +333,8 @@ export async function collectBoard(
   errors: ErrSlot[],
 ): Promise<BoardState | null> {
   const cmd = [
-    "python3", `${deps.scriptsDir}/github_projects.py`, "list-items",
+    "node", "--experimental-strip-types", "--no-warnings",
+    `${deps.toolsDir}/github_projects.ts`, "list-items",
     "--status", "In Progress,Blocked,Needs Clarification", "--json",
   ];
   const result = await deps.run(cmd, { timeoutMs: SUBPROCESS_TIMEOUT_MS });
@@ -384,16 +379,13 @@ export async function collectSessionState(
   deps: Deps,
   errors: ErrSlot[],
 ): Promise<SessionStateSlot | null> {
-  // Session state went pure-TS in the 2026-05-18 cutover. The Python
-  // `scripts/session_state.py` is still in place for `context_compactor.py`,
-  // but the collector talks to the TS CLI sibling under `tools/`. Same
-  // JSON shape as before so the parse path below is unchanged.
-  const toolsDir = `${deps.scriptsDir.replace(/\/scripts$/, "")}/tools`;
+  // Session state is a packaged TypeScript sibling under the immutable tools
+  // root. Its JSON shape matches the collector contract below.
   const cmd = [
     "node",
     "--experimental-strip-types",
     "--no-warnings",
-    `${toolsDir}/session_state.ts`,
+    `${deps.toolsDir}/session_state.ts`,
     "--json",
   ];
   const result = await deps.run(cmd, { timeoutMs: SUBPROCESS_TIMEOUT_MS });
@@ -571,7 +563,14 @@ export async function collectAvailableSkills(
   _errors: ErrSlot[],
 ): Promise<string[]> {
   const result = await deps.run(
-    ["sh", "-c", `ls ${deps.home}/.claude/skills/*/SKILL.md .claude/skills/*/SKILL.md 2>/dev/null`],
+    [
+      "sh",
+      "-c",
+      'codex_root="${CODEX_HOME:-$1/.codex}"; ls "$codex_root"/skills/*/SKILL.md "$1"/.agents/skills/*/SKILL.md .agents/skills/*/SKILL.md "$2"/skills/*/SKILL.md 2>/dev/null',
+      "sh",
+      deps.home,
+      path.dirname(deps.toolsDir),
+    ],
     { timeoutMs: SUBPROCESS_TIMEOUT_MS },
   );
   if (result.code !== 0 && !result.stdout.trim()) return [];
@@ -580,7 +579,7 @@ export async function collectAvailableSkills(
     const t = line.trim();
     if (!t) continue;
     const parts = t.split("/");
-    const idx = parts.indexOf("skills");
+    const idx = parts.lastIndexOf("skills");
     if (idx >= 0 && idx + 1 < parts.length) names.add(parts[idx + 1]);
   }
   return Array.from(names).sort();
@@ -797,12 +796,12 @@ export type EndState = {
 export async function collectStart(deps: Deps, opts: StartOpts): Promise<StartState> {
   const errors: ErrSlot[] = [];
 
-  // Propagate CLI session id to subprocess children so session_state.py and
-  // any other Python helper sees the same id the SKILL invoked us with.
+  // Propagate the CLI session id to subprocess children so Codex-native
+  // session helpers see the same thread id the skill invoked us with.
   const childDeps: Deps = opts.session_id
     ? { ...deps, run: (cmd, runOpts) => deps.run(cmd, {
         ...runOpts,
-        env: { ...(runOpts?.env ?? process.env), CLAUDE_SESSION_ID: opts.session_id },
+        env: { ...(runOpts?.env ?? process.env), CODEX_THREAD_ID: opts.session_id },
       }) }
     : deps;
 
@@ -894,7 +893,7 @@ export async function collectEnd(deps: Deps, opts: EndOpts): Promise<EndState> {
   const childDeps: Deps = opts.session_id
     ? { ...deps, run: (cmd, runOpts) => deps.run(cmd, {
         ...runOpts,
-        env: { ...(runOpts?.env ?? process.env), CLAUDE_SESSION_ID: opts.session_id },
+        env: { ...(runOpts?.env ?? process.env), CODEX_THREAD_ID: opts.session_id },
       }) }
     : deps;
 
@@ -924,7 +923,8 @@ export async function collectEnd(deps: Deps, opts: EndOpts): Promise<EndState> {
 }
 
 /**
- * Top-N failure categories from `~/.claude/code-review/healer.jsonl`.
+ * Top-N failure categories from `$STARK_STATE_ROOT/healer.jsonl` (default
+ * `~/.stark/code-review/healer.jsonl`).
  * Returns null when the log file is absent (common in fresh installs).
  */
 export async function collectHealerCategories(

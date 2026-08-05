@@ -10,8 +10,9 @@
  */
 
 import fs from "node:fs";
-import os from "node:os";
 import path from "node:path";
+
+import { stateRoot } from "./asset_root_lib.ts";
 
 interface Pattern {
   text: string;
@@ -158,12 +159,12 @@ function utcNowZ(): string {
 }
 
 /**
- * Append the classification result to `~/.claude/code-review/healer.jsonl`.
+ * Append the classification result to the Codex Stark state ledger.
  * Best-effort — logging failures are swallowed, never propagated.
  */
 export function logResult(result: ClassifyResult, stderrFile: string): void {
   try {
-    const logDir = path.join(os.homedir(), ".claude", "code-review");
+    const logDir = stateRoot();
     fs.mkdirSync(logDir, { recursive: true });
     const entry = {
       timestamp: utcNowZ(),

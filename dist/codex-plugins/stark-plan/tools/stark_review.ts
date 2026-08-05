@@ -28,7 +28,7 @@ import {
   type Severity,
 } from "./stark_review_lib.ts";
 import type { BuildContext, BuiltCommand, ParseError, ParseResult } from "./agent_codex.ts";
-import { assetToolsDir } from "./asset_root_lib.ts";
+import { assetToolsDir, stateRootForHome } from "./asset_root_lib.ts";
 import {
   buildCodeReviewAnalytics,
   type CodeReviewAnalytics,
@@ -444,7 +444,7 @@ export async function tokenForAgent(
 ): Promise<string> {
   const cached = opts.forceRefresh ? undefined : tokenCache.get(agent);
   if (cached) return cached;
-  // Default to the installed TS CLI at ~/.claude/code-review/tools/github_app.ts.
+  // Default to the installed TS CLI below the configured immutable asset root.
   // Override via `toolsDir` for tests / out-of-tree invocations.
   const tools = opts.toolsDir ?? assetToolsDir();
   const node = opts.nodeBin ?? "node";
@@ -1187,10 +1187,11 @@ export const HISTORY_SCHEMA_VERSION = 2;
 
 export function historyDir(home: string, repo: string, pr: number): string {
   const parts = repo.split("/");
+  const root = path.join(stateRootForHome(home), "history");
   if (parts.length === 2) {
-    return path.join(home, ".claude", "code-review", "history", parts[0], parts[1], String(pr));
+    return path.join(root, parts[0], parts[1], String(pr));
   }
-  return path.join(home, ".claude", "code-review", "history", repo, String(pr));
+  return path.join(root, repo, String(pr));
 }
 
 export function nextRoundNumber(dir: string): number {
@@ -1326,7 +1327,7 @@ export function pruneHistory(opts: PruneOpts): PruneResult {
   if (!opts.retentionDays || opts.retentionDays <= 0) return out;
   out.attempted = true;
   const now = opts.now ?? Date.now;
-  const lockDir = path.join(opts.home, ".claude", "code-review", "locks");
+  const lockDir = path.join(stateRootForHome(opts.home), "locks");
   fs.mkdirSync(lockDir, { recursive: true });
   const pruneLock = path.join(lockDir, "prune.lock");
   let pruneFd: number | null = null;
@@ -1355,7 +1356,7 @@ export function pruneHistory(opts: PruneOpts): PruneResult {
     fs.writeSync(pruneFd!, `${process.pid}\n${os.hostname()}\n`);
 
     const cutoff = now() - opts.retentionDays * 24 * 60 * 60 * 1000;
-    const root = path.join(opts.home, ".claude", "code-review", "history");
+    const root = path.join(stateRootForHome(opts.home), "history");
     if (!fs.existsSync(root)) return out;
 
     const visit = (dir: string): void => {
@@ -1898,7 +1899,7 @@ export class LockIoError extends Error {
 }
 
 export async function acquireLock(opts: AcquireLockOpts): Promise<LockHandle> {
-  const lockDir = path.join(opts.home, ".claude", "code-review", "locks");
+  const lockDir = path.join(stateRootForHome(opts.home), "locks");
   fs.mkdirSync(lockDir, { recursive: true });
   const [org, repo] = opts.repo.split("/");
   const lockName = repo ? `${org}-${repo}-${opts.pr}.lock` : `${org}-${opts.pr}.lock`;
@@ -2137,7 +2138,7 @@ export interface AppendAuditOpts {
 
 export function auditLogPath(home: string, repo: string, pr: number): string {
   const parts = repo.split("/");
-  const base = path.join(home, ".claude", "code-review", "audit");
+  const base = path.join(stateRootForHome(home), "audit");
   if (parts.length === 2) {
     return path.join(base, parts[0], parts[1], `${pr}.jsonl`);
   }
@@ -3574,8 +3575,8 @@ async function tryAcquireLock(
 }
 
 // Run main() when invoked directly (not when imported as a module).
-// Resolve symlinks on both sides — the install path is symlinked (e.g.
-// ~/.claude/code-review/tools → repo/tools) and a naive path comparison would
+// Resolve symlinks on both sides — the install path may be symlinked and a
+// naive path comparison would
 // silently treat a direct invocation as an import and exit 0 with no output.
 const isDirectRun = (() => {
   try {

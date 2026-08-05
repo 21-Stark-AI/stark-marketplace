@@ -1,6 +1,6 @@
-# Stage completion line — the `/stark-forge` §4 channel contract
+# Stage completion line — the `$stark-forge` §4 channel contract
 
-`/stark-forge` chains stage skills **in-session** and records what each one
+`$stark-forge` chains stage skills **in-session** and records what each one
 produced (spec §4, "Stage completion output sources"). Forge invokes each stage
 through its plain slash command — **never with `--json`** (spec §2 command
 table) — so the completion channel must live on the stage's *normal* output
