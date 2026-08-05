@@ -1,0 +1,5 @@
+interface:
+  display_name: "Stark Review Improvement"
+  short_description: "Improve review prompts based on a Prompt Improvement Assessment"
+policy:
+  allow_implicit_invocation: false

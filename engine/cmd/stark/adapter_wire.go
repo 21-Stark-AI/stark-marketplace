@@ -36,11 +36,16 @@ type catalogAdapter struct {
 	// = nothing to vendor (a catalog checked out without them).
 	assetsSource     string
 	pluginAssetsRoot string
+	// codexAssetsRoot holds source-owned runtime support overlays. It is kept
+	// separate from pluginAssetsRoot so Codex-specific files can never enter the
+	// Claude distribution path.
+	codexAssetsRoot string
 
 	mu     sync.Mutex
 	cat    *model.Catalog
 	shared map[string][]byte            // assetsSource, read once
 	plugin map[string]map[string][]byte // bundle -> overlay, read once
+	codex  map[string]map[string][]byte // bundle -> Codex-only overlay, read once
 }
 
 func newCatalogAdapter(catalogDir string) *catalogAdapter {
@@ -244,17 +249,23 @@ func (c *catalogAdapter) BundleAssets(bundle string, rt model.Runtime) ([]instal
 		return nil, nil
 	}
 	retargetText := assetTextRetargetFor(rt)
-	shared, plugin, err := c.assets(bundle)
+	shared, plugin, codexOnly, err := c.assets(bundle)
 	if err != nil {
 		return nil, err
 	}
 	// Shared snapshot first, then the bundle's own overlay — same precedence as
 	// build.Build, so e.g. stark-gh's {draft} config.json wins over the global one.
-	merged := make(map[string][]byte, len(shared)+len(plugin))
+	merged := make(map[string][]byte, len(shared)+len(plugin)+len(codexOnly))
 	for rel, content := range shared {
 		merged[rel] = content
 	}
 	for rel, content := range plugin {
+		merged[rel] = content
+	}
+	// Runtime-owned support wins last, matching build.Build's native Codex
+	// plugin layering. These files are considered only by this Codex asset
+	// provider and therefore cannot affect Claude output.
+	for rel, content := range codexOnly {
 		merged[rel] = content
 	}
 	rels := make([]string, 0, len(merged))
@@ -279,7 +290,7 @@ func (c *catalogAdapter) BundleAssets(bundle string, rt model.Runtime) ([]instal
 
 // assets reads (once) the shared snapshot and this bundle's overlay. A missing
 // directory is not an error — it just means there is nothing to vendor.
-func (c *catalogAdapter) assets(bundle string) (map[string][]byte, map[string][]byte, error) {
+func (c *catalogAdapter) assets(bundle string) (map[string][]byte, map[string][]byte, map[string][]byte, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	if c.shared == nil {
@@ -287,7 +298,7 @@ func (c *catalogAdapter) assets(bundle string) (map[string][]byte, map[string][]
 		if c.assetsSource != "" && dirExists(c.assetsSource) {
 			v, err := build.VendorAssets(c.assetsSource)
 			if err != nil {
-				return nil, nil, fmt.Errorf("vendor assets from %s: %w", c.assetsSource, err)
+				return nil, nil, nil, fmt.Errorf("vendor assets from %s: %w", c.assetsSource, err)
 			}
 			c.shared = v
 		}
@@ -303,14 +314,32 @@ func (c *catalogAdapter) assets(bundle string) (map[string][]byte, map[string][]
 			if dirExists(dir) {
 				v, err := build.VendorAssets(dir)
 				if err != nil {
-					return nil, nil, fmt.Errorf("plugin assets from %s: %w", dir, err)
+					return nil, nil, nil, fmt.Errorf("plugin assets from %s: %w", dir, err)
 				}
 				overlay = v
 			}
 		}
 		c.plugin[bundle] = overlay
 	}
-	return c.shared, overlay, nil
+	if c.codex == nil {
+		c.codex = map[string]map[string][]byte{}
+	}
+	codexOnly, ok := c.codex[bundle]
+	if !ok {
+		codexOnly = map[string][]byte{}
+		if c.codexAssetsRoot != "" {
+			dir := filepath.Join(c.codexAssetsRoot, bundle)
+			if dirExists(dir) {
+				v, err := build.VendorAssets(dir)
+				if err != nil {
+					return nil, nil, nil, fmt.Errorf("Codex runtime assets from %s: %w", dir, err)
+				}
+				codexOnly = v
+			}
+		}
+		c.codex[bundle] = codexOnly
+	}
+	return c.shared, overlay, codexOnly, nil
 }
 
 // realAdapter returns the production adapter, rendering from the given catalog directory.
@@ -320,5 +349,14 @@ func realAdapter(catalogDir, assetsSource, pluginAssetsRoot string) installplan.
 	c := newCatalogAdapter(catalogDir)
 	c.assetsSource = assetsSource
 	c.pluginAssetsRoot = pluginAssetsRoot
+	// Runtime support is generated beside the other vendor snapshots. Honor the
+	// existing artifacts-only escape hatch: when both asset roots are explicitly
+	// disabled, do not silently re-enable vendoring through the Codex overlay.
+	if assetsSource != "" || pluginAssetsRoot != "" {
+		root := filepath.Join(filepath.Dir(filepath.Clean(catalogDir)), "vendor", "runtime-overrides", "codex")
+		if dirExists(root) {
+			c.codexAssetsRoot = root
+		}
+	}
 	return c
 }

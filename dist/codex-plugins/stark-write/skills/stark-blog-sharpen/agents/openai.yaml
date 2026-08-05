@@ -1,0 +1,5 @@
+interface:
+  display_name: "Stark Blog Sharpen"
+  short_description: "Adversarial editor for long-form posts (blog, personal-site"
+policy:
+  allow_implicit_invocation: false

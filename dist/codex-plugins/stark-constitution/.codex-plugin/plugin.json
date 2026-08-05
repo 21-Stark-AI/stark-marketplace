@@ -1,0 +1,36 @@
+{
+  "name": "stark-constitution",
+  "version": "0.15.1",
+  "description": "Project setup, decision records, and session priming — scaffold a dev-docs/standards structure (template/backfill/upgrade modes), record architecture decisions (ADRs) under docs/adr/, and assign a session persona. Maps to spec-kit's constitution phase.",
+  "author": {
+    "name": "21 Stark AI",
+    "email": "engineering@21stark.com",
+    "url": "https://github.com/21StarkCom"
+  },
+  "homepage": "https://marketplace.21stark.com/",
+  "repository": "https://github.com/21StarkCom/bifrost",
+  "keywords": [
+    "setup",
+    "docs",
+    "adr",
+    "persona",
+    "constitution"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Stark Constitution",
+    "shortDescription": "Project setup, decision records, and session priming — scaffold a dev-docs/standards structure",
+    "longDescription": "Project setup, decision records, and session priming — scaffold a dev-docs/standards structure (template/backfill/upgrade modes), record architecture decisions (ADRs) under docs/adr/, and assign a session persona. Maps to spec-kit's constitution phase.",
+    "developerName": "21 Stark AI",
+    "category": "Setup",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://marketplace.21stark.com/",
+    "defaultPrompt": [
+      "Use Stark Constitution for this task."
+    ]
+  }
+}

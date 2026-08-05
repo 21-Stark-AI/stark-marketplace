@@ -1,0 +1,36 @@
+{
+  "name": "stark-analyze",
+  "version": "0.15.1",
+  "description": "Contract-bounded spec authoring, multi-domain review, and adversarial red-team of specs, designs, execution plans, and PRs, multi-agent Terraform/Terragrunt (IaC) review, application-logging authoring/review guidance, plus review-prompt improvement from assessment feedback. Maps to spec-kit's specify + analyze phases.",
+  "author": {
+    "name": "21 Stark AI",
+    "email": "engineering@21stark.com",
+    "url": "https://github.com/21StarkCom"
+  },
+  "homepage": "https://marketplace.21stark.com/",
+  "repository": "https://github.com/21StarkCom/bifrost",
+  "keywords": [
+    "review",
+    "red-team",
+    "quality",
+    "analyze",
+    "logging"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Stark Analyze",
+    "shortDescription": "Contract-bounded spec authoring, multi-domain review, and adversarial red-team of specs,",
+    "longDescription": "Contract-bounded spec authoring, multi-domain review, and adversarial red-team of specs, designs, execution plans, and PRs, multi-agent Terraform/Terragrunt (IaC) review, application-logging authoring/review guidance, plus review-prompt improvement from assessment feedback. Maps to spec-kit's specify + analyze phases.",
+    "developerName": "21 Stark AI",
+    "category": "Review",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://marketplace.21stark.com/",
+    "defaultPrompt": [
+      "Use Stark Analyze for this task."
+    ]
+  }
+}

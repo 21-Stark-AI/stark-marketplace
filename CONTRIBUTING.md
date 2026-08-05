@@ -15,7 +15,7 @@ This repo distributes code that runs inside developer agents (and, for `mcp/` en
 # 2. Validate + regenerate + drift-check + test
 cd engine
 go run ./cmd/stark validate ../catalog          # schema + cross-refs (fail-closed)
-go run ./cmd/stark build ../catalog             # regenerate dist/claude + index.json + bundles/
+go run ./cmd/stark build ../catalog             # regenerate Claude/Codex plugin trees + manifests + registry
 go run ./cmd/stark build --check ../catalog     # drift gate (must be clean)
 go run ./cmd/stark check-bumps ../catalog       # version-bump immutability
 go test ./... -count=1
@@ -38,14 +38,14 @@ CI (`.github/workflows/ci.yml`) runs the same steps plus `gitleaks`. Anything bl
    - `mcp/*.{json,toml}` — MCP server configs (highest-trust — see "MCP & allowlists" below).
 2. If the artifact's body or metadata changed, **bump its `version` in the frontmatter**. `stark check-bumps` enforces immutability of `(name, version)` content.
 3. Update the bundle's `bundle.yaml` if you added/removed an artifact.
-4. Regenerate (`stark build`) and commit the resulting `dist/claude/`, `index.json`, and `bundles/<bundle>.json` together with your catalog change. One PR, one coherent diff.
+4. Regenerate (`stark build`) and commit both native package trees, both marketplace manifests, `index.json`, and `bundles/<bundle>.json` together with your catalog change. One PR, one coherent diff.
 
 ## Adding a new bundle
 
 1. Create `catalog/<new-bundle>/bundle.yaml` matching `schema/bundle.schema.json`.
 2. Add artifacts (at minimum one).
 3. `stark validate` then `stark build`.
-4. Register the bundle in `.claude-plugin/marketplace.json` (the repo-root CC marketplace manifest).
+4. Regenerate both `.claude-plugin/marketplace.json` and `.agents/plugins/marketplace.json`; do not register either manifest by hand.
 5. Commit catalog + regenerated outputs + manifest entry.
 
 ## MCP & allowlists

@@ -79,6 +79,29 @@ var relAssetRe = regexp.MustCompile(`(?:\.\./)+(tools|standards|prompts|scripts)
 // carry the flag, so they are correctly left alone.
 var starkToolRe = regexp.MustCompile(`node\s+--experimental-strip-types`)
 
+// starkPluginRootRe matches both the plain and defaulted forms of the portable
+// Stark root. A native plugin must not fall back to the standalone
+// $HOME/.agents/stark tree because marketplace packages live in Codex's plugin
+// cache instead.
+var starkPluginRootRe = regexp.MustCompile(`\$\{STARK_PLUGIN_ROOT(?::-[^{}]*)?\}`)
+
+// These two forms occur in portable source overlays. Match the complete nested
+// expression before replacing its CLAUDE_PLUGIN_ROOT leaf; otherwise a simple
+// inner replacement would create a malformed nested STARK_PLUGIN_ROOT value.
+var assetPluginClaudeRootRe = regexp.MustCompile(`\$\{STARK_ASSET_ROOT:-\$\{STARK_PLUGIN_ROOT:-\$\{CLAUDE_PLUGIN_ROOT(?::-[^}]*)?\}\}\}`)
+var pluginClaudeRootRe = regexp.MustCompile(`\$\{STARK_PLUGIN_ROOT:-\$\{CLAUDE_PLUGIN_ROOT(?::-[^}]*)?\}\}`)
+
+const pluginAssetPreamble = `## Codex plugin asset root
+
+For every shell invocation that reads this skill's packaged files, first
+resolve the absolute directory containing this loaded ` + "`SKILL.md`" + ` from the skill
+path Codex supplied. In that same shell invocation set ` + "`SKILL_DIR`" + ` to that
+directory, set ` + "`STARK_PLUGIN_ROOT`" + ` to the absolute ` + "`../..`" + ` directory, and
+export it. Do not derive the plugin root from the current working directory and
+do not reuse a value from an earlier shell invocation.
+
+`
+
 // retargetAssets rewrites a SKILL.md body's asset references onto the Codex tree
 // layout that BundleAssets installs. Without it every rendered skill points at
 // paths that exist only inside a Claude plugin.
@@ -117,9 +140,66 @@ func RetargetPluginRefs(body, bundle string) string {
 	})
 }
 
-type Target struct{}
+// retargetPluginSkill rewrites a resolved skill body for a native plugin root.
+// Unlike the standalone layout, a plugin keeps assets directly beside skills:
+//
+//	<plugin>/skills/<name>/SKILL.md
+//	<plugin>/{tools,standards,...}
+//
+// Codex exposes the loaded skill path to the model, but does not promise an
+// ambient PLUGIN_ROOT variable for arbitrary shell commands launched from skill
+// prose. The preamble therefore makes the root resolution explicit and every
+// rewritten reference fails closed on that invocation-scoped root.
+func retargetPluginSkill(body string) string {
+	root := "${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}"
+	body = assetPluginClaudeRootRe.ReplaceAllLiteralString(body, "${STARK_ASSET_ROOT:-"+root+"}")
+	body = pluginClaudeRootRe.ReplaceAllLiteralString(body, root)
+	body = pluginRootSkillsRe.ReplaceAllLiteralString(body, root+"/skills/")
+	body = pluginRootRe.ReplaceAllLiteralString(body, root)
+	body = starkPluginRootRe.ReplaceAllLiteralString(body, root)
+	body = starkToolRe.ReplaceAllStringFunc(body, func(m string) string {
+		return `STARK_ASSET_ROOT="` + root + `" ` + m
+	})
+	return pluginAssetPreamble + body
+}
 
-func New() *Target { return &Target{} }
+// RetargetPluginAssetRefs applies the depth-independent portion of the native
+// plugin rewrite to prose assets such as references and standards. Relative
+// paths are intentionally untouched because each asset has its own depth.
+func RetargetPluginAssetRefs(body string) string {
+	root := "${STARK_PLUGIN_ROOT:?resolve from the loaded SKILL.md as instructed}"
+	body = assetPluginClaudeRootRe.ReplaceAllLiteralString(body, "${STARK_ASSET_ROOT:-"+root+"}")
+	body = pluginClaudeRootRe.ReplaceAllLiteralString(body, root)
+	body = pluginRootSkillsRe.ReplaceAllLiteralString(body, root+"/skills/")
+	body = pluginRootRe.ReplaceAllLiteralString(body, root)
+	body = starkPluginRootRe.ReplaceAllLiteralString(body, root)
+	return starkToolRe.ReplaceAllStringFunc(body, func(m string) string {
+		return `STARK_ASSET_ROOT="` + root + `" ` + m
+	})
+}
+
+type layout uint8
+
+const (
+	layoutStandalone layout = iota
+	layoutPlugin
+)
+
+// Target renders either the standalone Codex install tree or a native Codex
+// plugin package. The standalone layout is the long-standing `stark install`
+// contract; plugin layout is deliberately separate because its skill and asset
+// roots are different.
+type Target struct {
+	layout layout
+}
+
+func New() *Target { return &Target{layout: layoutStandalone} }
+
+// NewPlugin renders a native Codex plugin root. Skills are direct children of
+// ./skills and asset references resolve against the plugin root. It is used by
+// the committed Codex marketplace build only; New remains byte-compatible for
+// direct installs.
+func NewPlugin() *Target { return &Target{layout: layoutPlugin} }
 
 func (t *Target) Runtime() model.Runtime { return model.RuntimeCodex }
 func (t *Target) Version() string        { return version }
@@ -203,6 +283,9 @@ func (t *Target) emitArtifact(a *model.Artifact, res merge.Resolved) ([]adapter.
 		f, fd := t.emitSkill(a, res, true) // emulated
 		return f, fd, nil
 	case model.TypeMCP:
+		if t.layout == layoutPlugin {
+			return nil, nil, fmt.Errorf("codex plugin: MCP artifact %q requires plugin-root .mcp.json aggregation", a.Name)
+		}
 		of, err := t.emitMCP(a)
 		return of, nil, err
 	default:
@@ -240,10 +323,16 @@ func (t *Target) emitSkill(a *model.Artifact, res merge.Resolved, emulated bool)
 	if hint, ok := fa.Derived["argument-hint"]; ok {
 		b.WriteString("Usage: " + a.Name + " " + hint + "\n\n")
 	}
-	b.WriteString(retargetAssets(res.Body, a.Bundle))
+	root := ".agents/skills/"
+	body := retargetAssets(res.Body, a.Bundle)
+	if t.layout == layoutPlugin {
+		root = "skills/"
+		body = retargetPluginSkill(res.Body)
+	}
+	b.WriteString(body)
 
 	files := []adapter.OutputFile{{
-		Path:    ".agents/skills/" + a.Name + "/SKILL.md",
+		Path:    root + a.Name + "/SKILL.md",
 		Content: []byte(fm.String() + b.String()),
 	}}
 
@@ -260,7 +349,7 @@ func (t *Target) emitSkill(a *model.Artifact, res merge.Resolved, emulated bool)
 	allowImplicit := a.Type != model.TypeCommand && disableModelInvocation != "true"
 	if hasInvocationPolicy {
 		files = append(files, adapter.OutputFile{
-			Path:    ".agents/skills/" + a.Name + "/agents/openai.yaml",
+			Path:    root + a.Name + "/agents/openai.yaml",
 			Content: renderOpenAIYAML(a.Name, desc, allowImplicit),
 		})
 	}

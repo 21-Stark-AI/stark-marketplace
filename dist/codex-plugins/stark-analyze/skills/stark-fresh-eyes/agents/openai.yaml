@@ -1,0 +1,5 @@
+interface:
+  display_name: "Stark Fresh Eyes"
+  short_description: "One-shot zero-context review of a prompt, research brief, spec,"
+policy:
+  allow_implicit_invocation: false

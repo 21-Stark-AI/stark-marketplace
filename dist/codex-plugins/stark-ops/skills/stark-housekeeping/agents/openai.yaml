@@ -1,0 +1,5 @@
+interface:
+  display_name: "Stark Housekeeping"
+  short_description: "Audit and clean up stale issues, dead branches, and worktree"
+policy:
+  allow_implicit_invocation: false

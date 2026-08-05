@@ -1,0 +1,5 @@
+interface:
+  display_name: "Stark CC User"
+  short_description: "Switch the active Claude Code account between stored profiles"
+policy:
+  allow_implicit_invocation: false

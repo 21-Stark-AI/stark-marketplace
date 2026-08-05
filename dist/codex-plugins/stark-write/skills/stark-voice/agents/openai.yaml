@@ -1,0 +1,5 @@
+interface:
+  display_name: "Stark Voice"
+  short_description: "Use when drafting a Slack message, DM, reply, or short internal"
+policy:
+  allow_implicit_invocation: false

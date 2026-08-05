@@ -1,0 +1,5 @@
+interface:
+  display_name: "Stark Terragrunt Review"
+  short_description: "Multi-agent code review of Terragrunt orchestration —"
+policy:
+  allow_implicit_invocation: false

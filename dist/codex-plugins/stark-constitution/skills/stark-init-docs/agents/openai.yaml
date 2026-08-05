@@ -1,0 +1,5 @@
+interface:
+  display_name: "Stark Init Docs"
+  short_description: "Scaffold dev docs structure (template/backfill/upgrade/clean"
+policy:
+  allow_implicit_invocation: false

@@ -1,0 +1,5 @@
+interface:
+  display_name: "Stark GHA Cost"
+  short_description: "Diagnose and reduce GitHub Actions and GHAS billing for an"
+policy:
+  allow_implicit_invocation: false

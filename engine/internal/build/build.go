@@ -13,6 +13,7 @@ import (
 	"strings"
 
 	"github.com/21StarkCom/bifrost/engine/internal/adapter/claude"
+	"github.com/21StarkCom/bifrost/engine/internal/adapter/codex"
 	"github.com/21StarkCom/bifrost/engine/internal/canonjson"
 	"github.com/21StarkCom/bifrost/engine/internal/digest"
 	"github.com/21StarkCom/bifrost/engine/internal/index"
@@ -58,11 +59,34 @@ type Options struct {
 	// {draft} config) override the shared snapshot for that bundle only. Empty =
 	// no per-bundle layering. Like AssetsSource, copied byte-for-byte.
 	PluginAssetsRoot string
+
+	// CodexAssetsRoot holds source-owned Codex-only overlays organized as
+	// <root>/<bundle>/<relpath>. These assets are layered into the committed
+	// native Codex plugin package after shared and base plugin assets, and are
+	// never exposed to the Claude renderer.
+	CodexAssetsRoot string
+
+	// CodexPluginVersion is the release-level semver written into every native
+	// .codex-plugin/plugin.json produced by this build. The CLI supplies the
+	// repository VERSION; direct package tests use the deterministic default.
+	CodexPluginVersion string
 }
 
+// DefaultCodexPluginVersion keeps pure Build tests deterministic when they do
+// not have a repository VERSION file. Production runBuild always supplies it.
+const DefaultCodexPluginVersion = "0.0.0"
+
 // generatedRoots are the repo-relative trees this build owns and fully regenerates.
-// .claude-plugin holds the repo-root CC marketplace manifest (spec §8).
-var generatedRoots = []string{"dist/claude", "index.json", "bundles", ".claude-plugin"}
+// The native Codex marketplace manifest is an exact-file root so build cleanup
+// never owns or removes unrelated repository-local .agents content.
+var generatedRoots = []string{
+	"dist/claude",
+	"dist/codex-plugins",
+	"index.json",
+	"bundles",
+	".claude-plugin",
+	marketplace.CodexManifestRelPath,
+}
 
 // Build runs the pipeline over a loaded catalog.
 func Build(cat *model.Catalog, opts Options) (Output, error) {
@@ -94,6 +118,24 @@ func Build(cat *model.Catalog, opts Options) (Output, error) {
 				return Output{}, fmt.Errorf("plugin assets from %s: %w", dir, err)
 			}
 			pluginAssets[b.Name] = pa
+		}
+	}
+
+	// Codex-only assets are intentionally read into a separate layer. Reusing
+	// pluginAssets here would leak runtime-specific scripts/references into the
+	// committed Claude packages.
+	codexAssets := map[string]map[string][]byte{}
+	if opts.CodexAssetsRoot != "" {
+		for _, b := range cat.Bundles {
+			dir := filepath.Join(opts.CodexAssetsRoot, b.Name)
+			if fi, statErr := os.Stat(dir); statErr != nil || !fi.IsDir() {
+				continue
+			}
+			ca, err := vendorAssets(dir)
+			if err != nil {
+				return Output{}, fmt.Errorf("codex assets from %s: %w", dir, err)
+			}
+			codexAssets[b.Name] = ca
 		}
 	}
 
@@ -175,12 +217,82 @@ func Build(cat *model.Catalog, opts Options) (Output, error) {
 	}
 	out.Files[marketplace.ManifestRelPath] = mani
 
+	// Native Codex marketplace packages are generated independently after the
+	// entire legacy Claude/index path above. Keep this as an additive pass: the
+	// Claude target, asset precedence, manifest encoder, and output paths remain
+	// byte-for-byte unchanged.
+	codexVersion := strings.TrimSpace(opts.CodexPluginVersion)
+	if codexVersion == "" {
+		codexVersion = DefaultCodexPluginVersion
+	}
+	codexTarget := codex.NewPlugin()
+	for _, b := range cat.Bundles {
+		files, findings, err := codexTarget.Render(b)
+		if err != nil {
+			return Output{}, fmt.Errorf("render codex plugin %s: %w", b.Name, err)
+		}
+		if len(files) == 0 {
+			continue // bundle has no Codex-targeted artifacts
+		}
+		root := "dist/codex-plugins/" + b.Name + "/"
+		// Shared assets first, then the bundle overlay, then Codex-only assets;
+		// rendered artifacts and the generated manifest win every collision.
+		for rel, content := range vendored {
+			out.Files[root+rel] = codexPluginAsset(rel, content)
+		}
+		for rel, content := range pluginAssets[b.Name] {
+			out.Files[root+rel] = codexPluginAsset(rel, content)
+		}
+		for rel, content := range codexAssets[b.Name] {
+			out.Files[root+rel] = codexPluginAsset(rel, content)
+		}
+		for _, f := range files {
+			out.Files[root+f.Path] = toLF(f.Content)
+		}
+		for _, fd := range findings {
+			out.Warnings = append(out.Warnings, fmt.Sprintf("%s [%s] %s", fd.Where, fd.Level, fd.Msg))
+		}
+
+		pluginManifest, err := marketplace.GenerateCodexPlugin(b, codexVersion)
+		if err != nil {
+			return Output{}, err
+		}
+		pluginBytes, err := marketplace.MarshalCodex(pluginManifest)
+		if err != nil {
+			return Output{}, fmt.Errorf("marshal codex plugin %s: %w", b.Name, err)
+		}
+		out.Files[root+".codex-plugin/plugin.json"] = pluginBytes
+	}
+
+	codexMarketplace := marketplace.GenerateCodexMarketplace(cat, marketplace.CodexMarketplaceOptions{
+		Name:        "bifrost",
+		DisplayName: "21 Stark",
+		DistRoot:    "./dist/codex-plugins",
+	})
+	codexMarketplaceBytes, err := marketplace.MarshalCodex(codexMarketplace)
+	if err != nil {
+		return Output{}, fmt.Errorf("marshal codex marketplace: %w", err)
+	}
+	out.Files[marketplace.CodexManifestRelPath] = codexMarketplaceBytes
+
 	pct := 0.0
 	if totalArtifacts > 0 {
 		pct = 100 * float64(diverged) / float64(totalArtifacts)
 	}
 	out.DivergenceBudget = fmt.Sprintf("diverged %d / %d = %.1f%%", diverged, totalArtifacts, pct)
 	return out, nil
+}
+
+// codexPluginAsset normalizes every native plugin asset and rewrites runtime
+// root references only in prose. Executable and data assets remain otherwise
+// byte-for-byte identical to their source layer.
+func codexPluginAsset(rel string, content []byte) []byte {
+	content = toLF(content)
+	ext := strings.ToLower(filepath.Ext(rel))
+	if ext != ".md" && ext != ".markdown" {
+		return content
+	}
+	return []byte(codex.RetargetPluginAssetRefs(string(content)))
 }
 
 // Write cleans the generated roots under repoRoot and writes every file in out.

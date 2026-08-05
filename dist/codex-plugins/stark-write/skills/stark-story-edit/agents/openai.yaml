@@ -1,0 +1,5 @@
+interface:
+  display_name: "Stark Story Edit"
+  short_description: "Full-pass storytelling editor for long-form posts (blog, essays,"
+policy:
+  allow_implicit_invocation: false

@@ -9,6 +9,7 @@ import (
 
 	"github.com/21StarkCom/bifrost/engine/internal/importer"
 	"github.com/21StarkCom/bifrost/engine/internal/load"
+	"github.com/21StarkCom/bifrost/engine/internal/model"
 	"github.com/spf13/cobra"
 )
 
@@ -27,8 +28,11 @@ func runSync(from, catalogDir, repoRoot string, check bool) int {
 		return 1
 	}
 
-	expected := map[string][]byte{}            // repo-relative path -> content
-	managed := []string{"vendor/stark-skills"} // trees this command fully owns
+	expected := map[string][]byte{} // repo-relative path -> content
+	managed := []string{
+		"vendor/stark-skills",
+		"vendor/runtime-overrides/codex",
+	} // trees this command fully owns
 
 	for _, b := range cat.Bundles {
 		res, err := importer.ImportForGenerator(from, b.Name, b.Skills)
@@ -74,6 +78,31 @@ func runSync(from, catalogDir, repoRoot string, check bool) int {
 		}
 		if len(pv) > 0 {
 			managed = append(managed, "vendor/plugins/"+b.Name)
+		}
+
+		shipsCodex := false
+		for _, runtime := range b.Runtimes {
+			if runtime == model.RuntimeCodex {
+				shipsCodex = true
+				break
+			}
+		}
+		if shipsCodex {
+			codexSupport, err := importer.RuntimeOverrideSupportSnapshot(from, model.RuntimeCodex, b.Name, b.Skills)
+			if err != nil {
+				fmt.Printf("Codex runtime override snapshot %s: %v\n", b.Name, err)
+				return 1
+			}
+			// Preserve the existing build layering contract: a plugin's own
+			// config.json wins over the shared global config. The runtime overlay
+			// global/config.json is the Codex counterpart of that shared seed, so
+			// it must not mask a plugin-specific config (notably stark-gh's).
+			if _, pluginConfig := pv["config.json"]; pluginConfig {
+				delete(codexSupport, "config.json")
+			}
+			for rel, content := range codexSupport {
+				expected["vendor/runtime-overrides/codex/"+b.Name+"/"+rel] = lfNormalize(content)
+			}
 		}
 	}
 

@@ -1,0 +1,104 @@
+{
+  "name": "bifrost",
+  "interface": {
+    "displayName": "21 Stark"
+  },
+  "plugins": [
+    {
+      "name": "stark-analyze",
+      "source": {
+        "source": "local",
+        "path": "./dist/codex-plugins/stark-analyze"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Review"
+    },
+    {
+      "name": "stark-brain",
+      "source": {
+        "source": "local",
+        "path": "./dist/codex-plugins/stark-brain"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
+      "name": "stark-constitution",
+      "source": {
+        "source": "local",
+        "path": "./dist/codex-plugins/stark-constitution"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Setup"
+    },
+    {
+      "name": "stark-gh",
+      "source": {
+        "source": "local",
+        "path": "./dist/codex-plugins/stark-gh"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
+      "name": "stark-implement",
+      "source": {
+        "source": "local",
+        "path": "./dist/codex-plugins/stark-implement"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Implementation"
+    },
+    {
+      "name": "stark-ops",
+      "source": {
+        "source": "local",
+        "path": "./dist/codex-plugins/stark-ops"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Ops"
+    },
+    {
+      "name": "stark-plan",
+      "source": {
+        "source": "local",
+        "path": "./dist/codex-plugins/stark-plan"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Planning"
+    },
+    {
+      "name": "stark-write",
+      "source": {
+        "source": "local",
+        "path": "./dist/codex-plugins/stark-write"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Writing"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "name": "stark-ops",
+  "version": "0.15.1",
+  "description": "Repository operations beyond the spec-driven pipeline — cut releases, housekeep stale issues/branches/worktrees, run session start/end, hand off work across sessions, and switch GitHub or Claude Code identities when a rate limit runs out.",
+  "author": {
+    "name": "21 Stark AI",
+    "email": "engineering@21stark.com",
+    "url": "https://github.com/21StarkCom"
+  },
+  "homepage": "https://marketplace.21stark.com/",
+  "repository": "https://github.com/21StarkCom/bifrost",
+  "keywords": [
+    "release",
+    "housekeeping",
+    "session",
+    "handover",
+    "git",
+    "rate-limits"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Stark Ops",
+    "shortDescription": "Repository operations beyond the spec-driven pipeline — cut releases, housekeep stale",
+    "longDescription": "Repository operations beyond the spec-driven pipeline — cut releases, housekeep stale issues/branches/worktrees, run session start/end, hand off work across sessions, and switch GitHub or Claude Code identities when a rate limit runs out.",
+    "developerName": "21 Stark AI",
+    "category": "Ops",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://marketplace.21stark.com/",
+    "defaultPrompt": [
+      "Use Stark Ops for this task."
+    ]
+  }
+}

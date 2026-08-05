@@ -1,0 +1,5 @@
+interface:
+  display_name: "Stark Jury"
+  short_description: "Run one of the four post skills (stark-voice, stark-story-edit,"
+policy:
+  allow_implicit_invocation: false

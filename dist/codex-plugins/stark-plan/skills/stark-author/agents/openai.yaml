@@ -1,0 +1,5 @@
+interface:
+  display_name: "Stark Author"
+  short_description: "Stage 1 — human-gated spec+plan authoring in one session: tier"
+policy:
+  allow_implicit_invocation: false

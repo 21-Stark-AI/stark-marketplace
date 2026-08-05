@@ -84,6 +84,9 @@ func importSkills(from, bundle string, only []string, res *ImportResult) error {
 			if err != nil {
 				return fmt.Errorf("skill %s: %w", name, err)
 			}
+			if err := attachCodexSkillOverride(from, a); err != nil {
+				return fmt.Errorf("skill %s: %w", name, err)
+			}
 			res.Bundle.Artifacts = append(res.Bundle.Artifacts, a)
 		}
 		return nil
@@ -110,6 +113,9 @@ func importSkills(from, bundle string, only []string, res *ImportResult) error {
 		}
 		a, err := mapSkillFile(path, bundle, res)
 		if err != nil {
+			return fmt.Errorf("skill %s: %w", name, err)
+		}
+		if err := attachCodexSkillOverride(from, a); err != nil {
 			return fmt.Errorf("skill %s: %w", name, err)
 		}
 		res.Bundle.Artifacts = append(res.Bundle.Artifacts, a)

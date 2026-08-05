@@ -1,0 +1,5 @@
+interface:
+  display_name: "Stark ADR"
+  short_description: "Record and manage Architecture Decision Records (ADRs) under a"
+policy:
+  allow_implicit_invocation: false

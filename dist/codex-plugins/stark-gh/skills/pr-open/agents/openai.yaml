@@ -1,0 +1,5 @@
+interface:
+  display_name: "PR Open"
+  short_description: "Open or update a PR with Codex-drafted prose, stage-all commit"
+policy:
+  allow_implicit_invocation: false

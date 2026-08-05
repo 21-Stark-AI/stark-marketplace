@@ -1,0 +1,5 @@
+interface:
+  display_name: "Stark Story Judge"
+  short_description: "Zero-context reader verdict on a long-form post. Use before"
+policy:
+  allow_implicit_invocation: false

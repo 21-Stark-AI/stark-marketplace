@@ -79,7 +79,51 @@ func artifactFrontmatter(a *model.Artifact) *yaml.Node {
 	if len(a.AllowedTools) > 0 {
 		put("allowed-tools", a.AllowedTools)
 	}
+	if len(a.Overrides) > 0 {
+		putRuntimeOverrides(m, a.Overrides)
+	}
 	return m
+}
+
+// putRuntimeOverrides emits runtime keys and each inline field map in sorted
+// order. yaml.v3 currently sorts Go map keys, but the catalog is a committed
+// generated artifact, so determinism must not depend on that implementation
+// detail. Body is deliberately last and uses literal style for reviewable diffs.
+func putRuntimeOverrides(m *yaml.Node, overrides map[model.Runtime]model.Override) {
+	runtimes := make([]string, 0, len(overrides))
+	byName := make(map[string]model.Override, len(overrides))
+	for runtime, override := range overrides {
+		name := string(runtime)
+		runtimes = append(runtimes, name)
+		byName[name] = override
+	}
+	sort.Strings(runtimes)
+
+	overridesNode := &yaml.Node{Kind: yaml.MappingNode}
+	for _, runtime := range runtimes {
+		override := byName[runtime]
+		runtimeNode := &yaml.Node{Kind: yaml.MappingNode}
+		fieldNames := make([]string, 0, len(override.Fields))
+		for field := range override.Fields {
+			if field != "body" {
+				fieldNames = append(fieldNames, field)
+			}
+		}
+		sort.Strings(fieldNames)
+		for _, field := range fieldNames {
+			putKV(runtimeNode, field, override.Fields[field])
+		}
+		if override.Body != "" {
+			runtimeNode.Content = append(runtimeNode.Content,
+				&yaml.Node{Kind: yaml.ScalarNode, Value: "body"},
+				&yaml.Node{Kind: yaml.ScalarNode, Tag: "!!str", Value: override.Body, Style: yaml.LiteralStyle},
+			)
+		}
+		overridesNode.Content = append(overridesNode.Content,
+			&yaml.Node{Kind: yaml.ScalarNode, Value: runtime}, runtimeNode)
+	}
+	m.Content = append(m.Content,
+		&yaml.Node{Kind: yaml.ScalarNode, Value: "overrides"}, overridesNode)
 }
 
 func serializeMCP(a *model.Artifact) ([]byte, error) {
