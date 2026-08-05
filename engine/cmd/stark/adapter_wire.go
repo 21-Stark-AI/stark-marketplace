@@ -214,6 +214,26 @@ func assetPathFor(rt model.Runtime) func(bundle, rel string) string {
 	return nil
 }
 
+// assetTextRetargetFor returns the runtime's rewriter for the DEPTH-INDEPENDENT asset
+// references (the ${CLAUDE_PLUGIN_ROOT} variable + stark-tool invocations) carried by a
+// vendored PROSE file, or nil when no rewrite is needed. Skill BODIES are retargeted at
+// render time; vendored references/standards/prompts markdown that ship these refs
+// verbatim would otherwise dangle on Codex exactly like an un-retargeted SKILL.md.
+func assetTextRetargetFor(rt model.Runtime) func(body, bundle string) string {
+	if rt == model.RuntimeCodex {
+		return codex.RetargetPluginRefs
+	}
+	return nil
+}
+
+// isProseAsset reports whether a vendored asset path is prose the agent reads (and so
+// may carry retargetable path references). Code (.ts/.sh) and data (.json) are excluded:
+// there `${CLAUDE_PLUGIN_ROOT}` is a runtime env lookup or a literal, not a path to
+// rewrite, and rewriting it would corrupt the file.
+func isProseAsset(rel string) bool {
+	return strings.HasSuffix(rel, ".md") || strings.HasSuffix(rel, ".markdown")
+}
+
 // BundleAssets implements installplan.AssetProvider: the vendored stark-skills
 // snapshot plus this bundle's plugin overlay, mapped into the runtime's tree. Skill
 // bodies reference these by path (${CLAUDE_PLUGIN_ROOT}/tools/x.ts,
@@ -223,6 +243,7 @@ func (c *catalogAdapter) BundleAssets(bundle string, rt model.Runtime) ([]instal
 	if mapPath == nil {
 		return nil, nil
 	}
+	retargetText := assetTextRetargetFor(rt)
 	shared, plugin, err := c.assets(bundle)
 	if err != nil {
 		return nil, err
@@ -243,10 +264,14 @@ func (c *catalogAdapter) BundleAssets(bundle string, rt model.Runtime) ([]instal
 	sort.Strings(rels)
 	out := make([]installplan.AdaptedFile, 0, len(rels))
 	for _, rel := range rels {
+		payload := string(build.ToLF(merged[rel]))
+		if retargetText != nil && isProseAsset(rel) {
+			payload = retargetText(payload, bundle)
+		}
 		out = append(out, installplan.AdaptedFile{
 			Path:    mapPath(bundle, rel),
 			Kind:    "file",
-			Payload: string(build.ToLF(merged[rel])),
+			Payload: payload,
 		})
 	}
 	return out, nil

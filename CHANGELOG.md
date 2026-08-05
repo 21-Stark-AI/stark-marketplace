@@ -9,10 +9,20 @@ All notable changes to `stark-marketplace`. The format follows [Keep a Changelog
 ### Fixed — Codex installs were shipping dangling asset references
 - **All 29 artifacts were broken on Codex.** `stark build` vendors the stark-skills snapshot (`tools/`, `standards/`, `prompts/`, `scripts/`, `config.json`) into every `dist/claude/<bundle>/`, but `stark install --runtime codex` wrote `SKILL.md` files and nothing else. Every one of them referenced assets that were never installed — 19 via `${CLAUDE_PLUGIN_ROOT}` (unset on Codex) and 26 via `../../standards/help.md`-style relative paths. Skills installed and were discoverable; anything that shelled a tool or followed a standard died.
 - **`stark install --runtime codex` now vendors the same assets**, per bundle: `.agents/stark/<bundle>/{tools,standards,prompts,scripts,config.json}`, with each skill's own `references/` kept next to it at `.agents/skills/<name>/references/`. The assets root is per bundle, not shared — `stark-gh`'s `config.json` would otherwise clobber the shared snapshot's.
-- **Codex target `codex@1` → `codex@2`**: rendered bodies are retargeted onto that tree — `${CLAUDE_PLUGIN_ROOT…}` → `${STARK_PLUGIN_ROOT:-$HOME/.agents/stark/<bundle>}`, and `../../{tools,standards,prompts,scripts}/` → `../../stark/<bundle>/…`.
+- **Codex target `codex@1` → `codex@2`**: rendered bodies are retargeted onto that tree — `${CLAUDE_PLUGIN_ROOT…}` → `${STARK_PLUGIN_ROOT:-$HOME/.agents/stark/<bundle>}`, `${CLAUDE_PLUGIN_ROOT}/skills/<name>/…` → the `.agents/skills/` root, and any leading `../` run before `{tools,standards,prompts,scripts}/` → `../../stark/<bundle>/…`.
+
+### Fixed — review findings on the codex@2 vendoring (same PR)
+- **Vendored tools resolved their assets to the wrong root.** A retargeted body ran `node …/tools/x.ts`, but the tool's own `assetRoot()` (`STARK_ASSET_ROOT` > `CLAUDE_PLUGIN_ROOT` > `~/.claude/code-review`) read `config.json`/`prompts`/`standards`/sibling-tools from the Claude-only `~/.claude/code-review` — a path a Codex install never creates. Tool invocations now carry an inline `STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:-…}"` export (inherited by the whole process tree), so the tools are actually self-contained.
+- **The live gate now runs a tool** (`asset_root_lib` resolution under the installed tree), not just `os.Stat` of paths named in `SKILL.md` — the previous check was false-green against the resolution bug above.
+- **Project-local install** (`--dest` ≠ `$HOME`) now **warns** and prints the `STARK_PLUGIN_ROOT`/`STARK_ASSET_ROOT` exports to set, instead of silently dangling on the baked `$HOME` fallback.
+- **A stale unmanaged file under `.agents/stark/<bundle>/` no longer aborts the whole install** — the installer-owned asset step is exempt from the unmanaged-collision preflight and overwrites (still journaled + removable).
+- **`--assets-source`/`--plugin-assets` validate:** an explicit non-existent path is a hard error (was a silent asset-less install), and an explicit empty value disables vendoring (was overridden back to the default).
+- **An mcp-only install no longer over-vendors** the bundle's ~150-file asset tree — vendoring runs only for asset-consuming artifacts (skill/command/prompt/agent).
+- **Executable vendored assets are consented:** `tools/*.ts` + `scripts/*.sh` set `Consent.Required` and list under `Consent.AssetExec` (§9.3) even when the bundle ships no mcp/agent.
+- **Retarget coverage:** command/prompt single-`../` refs, per-skill `${CLAUDE_PLUGIN_ROOT}/skills/` refs, and `${CLAUDE_PLUGIN_ROOT}`/tool refs in vendored prose markdown are now all handled.
 
 ### Added
-- **`installplan.AssetProvider`** — optional adapter interface for bundle-level files that belong to no artifact. Its step is prepended (artifacts win on collision) and excluded from the consent closure; only bundles that contributed a real step get one.
+- **`installplan.AssetProvider`** — optional adapter interface for bundle-level files that belong to no artifact. Its step is prepended (artifacts win on collision) and kept out of the artifact `ClosureRefs`; only bundles that install an asset-consuming artifact get one. It participates in the §9.3 consent gate when it carries executable code.
 - `stark install --assets-source` / `--plugin-assets`, defaulting to `<repo>/vendor/stark-skills` and `<repo>/vendor/plugins` off `--catalog`'s parent.
 
 ### Not covered

@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"os/exec"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -40,10 +41,13 @@ func liveCodexInstall(t *testing.T, bundle string) string {
 }
 
 // relRefRe / varRefRe mirror the two reference shapes a skill body can carry after
-// the codex target retargets them.
+// the codex target retargets them. toolSigRe is the stark-tool runner signature;
+// exportedToolRe is that signature with its mandatory inline STARK_ASSET_ROOT export.
 var (
-	relRefRe = regexp.MustCompile(`\.\./\.\./[A-Za-z0-9_./-]+`)
-	varRefRe = regexp.MustCompile(`\$\{STARK_PLUGIN_ROOT:-\$HOME/([^}]*)\}([A-Za-z0-9_./-]*)`)
+	relRefRe       = regexp.MustCompile(`\.\./\.\./[A-Za-z0-9_./-]+`)
+	varRefRe       = regexp.MustCompile(`\$\{STARK_PLUGIN_ROOT:-\$HOME/([^}]*)\}([A-Za-z0-9_./-]*)`)
+	toolSigRe      = regexp.MustCompile(`node --experimental-strip-types`)
+	exportedToolRe = regexp.MustCompile(`STARK_ASSET_ROOT="[^"]*" node --experimental-strip-types`)
 )
 
 // TestCodexInstallResolvesEveryAssetReference is the live-surface gate this whole
@@ -83,11 +87,57 @@ func TestCodexInstallResolvesEveryAssetReference(t *testing.T) {
 					}
 					checked++
 				}
+				// Every stark-tool invocation must carry an inline STARK_ASSET_ROOT export;
+				// without it the tool's own assetRoot() resolves to ~/.claude/code-review
+				// (unset on Codex) instead of the vendored bundle root. A bare signature
+				// with no export is the exact false-green this gate previously missed.
+				if bare, exp := len(toolSigRe.FindAllString(string(body), -1)), len(exportedToolRe.FindAllString(string(body), -1)); bare != exp {
+					t.Errorf("%s: %d tool invocations, only %d carry STARK_ASSET_ROOT export", sk, bare, exp)
+				}
 			}
 			if checked == 0 {
 				t.Fatalf("no asset references found in %d skills — the check is vacuous", len(skills))
 			}
 		})
+	}
+}
+
+// TestCodexToolsResolveVendoredAssetRoot is the run-a-tool half of the gate: with the
+// SKILL-body's STARK_ASSET_ROOT pointing at the vendored bundle root, the tool's OWN
+// asset_root_lib.assetRoot() must resolve config/tools THERE — not to ~/.claude/code-review.
+// Static path checks can't catch a resolution bug inside the tool; this executes it.
+func TestCodexToolsResolveVendoredAssetRoot(t *testing.T) {
+	node, err := exec.LookPath("node")
+	if err != nil {
+		t.Skip("node not on PATH — skipping tool-resolution exec check")
+	}
+	dest := liveCodexInstall(t, "stark-gh")
+	assetRoot := filepath.Join(dest, ".agents", "stark", "stark-gh")
+	lib := filepath.Join(assetRoot, "tools", "asset_root_lib.ts")
+	if _, err := os.Stat(lib); err != nil {
+		t.Fatalf("vendored asset_root_lib.ts missing: %v", err)
+	}
+	// Import the INSTALLED lib and assert its resolvers land inside the vendored root.
+	// Import specifiers and the root literal are single-quoted; temp/install paths
+	// never contain a single quote.
+	script := `import { assetRoot, assetConfigPath, assetToolsDir } from 'file://` + filepath.ToSlash(lib) + `';
+import fs from 'node:fs';
+const root = '` + filepath.ToSlash(assetRoot) + `';
+for (const [label, p] of [['assetRoot', assetRoot()], ['config', assetConfigPath()], ['tools', assetToolsDir()]]) {
+  if (!p.startsWith(root)) { console.error(label + ' escaped vendored root: ' + p); process.exit(2); }
+}
+if (!fs.existsSync(assetConfigPath())) { console.error('config.json missing at ' + assetConfigPath()); process.exit(3); }
+if (!fs.existsSync(assetToolsDir())) { console.error('tools/ missing at ' + assetToolsDir()); process.exit(4); }
+`
+	cmd := exec.Command(node, "--experimental-strip-types", "--no-warnings", "--input-type=module", "-e", script)
+	// Reproduce the SKILL-body invocation env: STARK_ASSET_ROOT set to the bundle root,
+	// STARK_STATE_ROOT redirected so the test never touches the real ~/.claude tree.
+	cmd.Env = append(os.Environ(),
+		"STARK_ASSET_ROOT="+assetRoot,
+		"STARK_STATE_ROOT="+t.TempDir(),
+	)
+	if out, err := cmd.CombinedOutput(); err != nil {
+		t.Fatalf("tool asset resolution failed: %v\n%s", err, out)
 	}
 }
 

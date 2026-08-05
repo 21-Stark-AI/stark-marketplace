@@ -47,6 +47,62 @@ func defaultAssetRoots(catalogDir string) (assetsSource, pluginAssetsRoot string
 	return
 }
 
+// resolveAssetFlag resolves one asset-root flag against three cases the old
+// empty-string overload conflated: UNSET → repo default; explicitly EMPTY
+// (`--flag ”`) → disable vendoring (the documented artifacts-only escape hatch);
+// explicitly SET → must point at a real directory, else a hard error (a typo'd path
+// used to be silently swallowed, shipping an asset-less install with dangling refs).
+func resolveAssetFlag(c *cobra.Command, name, val, def string) (string, error) {
+	if !c.Flags().Changed(name) {
+		return def, nil
+	}
+	if val == "" {
+		return "", nil // explicit disable
+	}
+	if !dirExists(val) {
+		return "", fmt.Errorf("--%s %q: directory does not exist", name, val)
+	}
+	return val, nil
+}
+
+// warnProjectLocalCodex flags the one install shape where the codex@2 $HOME-anchored
+// asset fallback is wrong: a Codex install whose --dest is not the user's home. The
+// rendered bodies default to ${STARK_PLUGIN_ROOT:-$HOME/.agents/stark/<bundle>}, but
+// the assets were just written under <dest>/.agents — so without the export the tools
+// resolve to $HOME and dangle. Silent before; now it says exactly what to export.
+func warnProjectLocalCodex(w io.Writer, dest string, rt model.Runtime, p *installplan.Plan) {
+	if rt != model.RuntimeCodex || !planHasAssets(p) {
+		return
+	}
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return
+	}
+	absDest, err := filepath.Abs(dest)
+	if err != nil {
+		return
+	}
+	if filepath.Clean(absDest) == filepath.Clean(home) {
+		return // global install — the $HOME fallback is correct
+	}
+	fmt.Fprintf(w, "warning: project-local codex install (--dest %s ≠ $HOME).\n", absDest)
+	fmt.Fprintf(w, "  Rendered skill bodies fall back to $HOME/.agents/stark/<bundle>, but the assets are under %s/.agents.\n", filepath.Clean(absDest))
+	fmt.Fprintf(w, "  Before invoking the skills, per bundle export:\n")
+	fmt.Fprintf(w, "    export STARK_PLUGIN_ROOT=%s/.agents/stark/<bundle>\n", filepath.Clean(absDest))
+	fmt.Fprintf(w, "    export STARK_ASSET_ROOT=$STARK_PLUGIN_ROOT\n")
+	fmt.Fprintf(w, "  (see docs/native-install-loop.md).\n")
+}
+
+// planHasAssets reports whether the plan installed a vendored asset step.
+func planHasAssets(p *installplan.Plan) bool {
+	for _, s := range p.Steps {
+		if s.Name == installplan.AssetsStepName {
+			return true
+		}
+	}
+	return false
+}
+
 func newInstallCmd(adapterFactory func(catalogDir, assetsSource, pluginAssetsRoot string) installplan.Adapter) *cobra.Command {
 	var rt, dest, indexPath, bundlesDir, catalogDir, removeManifest string
 	var assetsSource, pluginAssetsRoot string
@@ -89,11 +145,17 @@ func newInstallCmd(adapterFactory func(catalogDir, assetsSource, pluginAssetsRoo
 			bundle, artifact := splitRef(args[0])
 			typ := rootType(idx, bundle, artifact)
 			defAssets, defPlugins := defaultAssetRoots(catalogDir)
-			if assetsSource == "" {
-				assetsSource = defAssets
+			assetsSource, err = resolveAssetFlag(c, "assets-source", assetsSource, defAssets)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, "install:", err)
+				osExit(ExitValidation)
+				return err
 			}
-			if pluginAssetsRoot == "" {
-				pluginAssetsRoot = defPlugins
+			pluginAssetsRoot, err = resolveAssetFlag(c, "plugin-assets", pluginAssetsRoot, defPlugins)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, "install:", err)
+				osExit(ExitValidation)
+				return err
 			}
 			p, err := installplan.Compute(idx, bundlesDir, adapterFactory(catalogDir, assetsSource, pluginAssetsRoot), bundle, artifact, typ, r)
 			if err != nil {
@@ -118,6 +180,7 @@ func newInstallCmd(adapterFactory func(catalogDir, assetsSource, pluginAssetsRoo
 				osExit(installExitCode(err))
 				return err
 			}
+			warnProjectLocalCodex(os.Stderr, dest, r, p)
 			if jsonOut {
 				emitJSON(os.Stdout, "install", ExitOK, map[string]any{
 					"runtime": r, "written": res.Written, "merged": res.Merged,
@@ -187,6 +250,9 @@ func printPlan(p *installplan.Plan) {
 		}
 		for _, g := range p.Consent.AgentToolGrants {
 			fmt.Printf("  agent %s\n", g)
+		}
+		for _, a := range p.Consent.AssetExec {
+			fmt.Printf("  asset %s\n", a)
 		}
 		fmt.Printf("  full closure: %s\n", strings.Join(p.Consent.ClosureRefs, ", "))
 	}

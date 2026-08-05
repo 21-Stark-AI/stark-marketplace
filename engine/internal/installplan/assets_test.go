@@ -2,6 +2,7 @@ package installplan
 
 import (
 	"errors"
+	"strings"
 	"testing"
 
 	"github.com/21StarkCom/bifrost/engine/internal/model"
@@ -57,9 +58,10 @@ func TestComputePrependsAssetsStep(t *testing.T) {
 	}
 }
 
-// Assets are code the operator is consenting to install, but they belong to no
-// artifact — they must not inflate the consent closure.
-func TestAssetsStepAddsNoConsent(t *testing.T) {
+// Assets belong to no artifact, so they must not inflate the artifact consent CLOSURE
+// (ClosureRefs) — but because they carry executable code the skills run, they DO flag
+// consent via the dedicated AssetExec channel (see TestExecutableAssetsRequireConsent).
+func TestAssetsStepAddsNoClosureRefs(t *testing.T) {
 	idx, bdir := loadFx(t)
 	plain, err := Compute(idx, bdir, NewFakeAdapter(nil), "rev", "", model.TypeCommand, model.RuntimeCodex)
 	if err != nil {
@@ -71,8 +73,48 @@ func TestAssetsStepAddsNoConsent(t *testing.T) {
 		t.Fatal(err)
 	}
 	if len(withAssets.Consent.ClosureRefs) != len(plain.Consent.ClosureRefs) {
-		t.Fatalf("assets changed the consent closure: %v vs %v",
+		t.Fatalf("assets changed the artifact consent closure: %v vs %v",
 			withAssets.Consent.ClosureRefs, plain.Consent.ClosureRefs)
+	}
+}
+
+// Vendored assets include executable code (tools/*.ts, scripts/*.sh) the installed
+// skills shell out to — installing them is a code-execution surface and must sit inside
+// the §9.3 consent gate even when the bundle ships no mcp/agent. The fixture asset is a
+// .ts, so consent must be required and the bundle named in AssetExec.
+func TestExecutableAssetsRequireConsent(t *testing.T) {
+	idx, bdir := loadFx(t)
+	ad := &assetAdapter{FakeAdapter: NewFakeAdapter(nil)}
+	// Install the skill alone so the ONLY consent trigger is the executable asset,
+	// not a transitive mcp/agent.
+	p, err := Compute(idx, bdir, ad, "rev", "session", model.TypeSkill, model.RuntimeCodex)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !p.Consent.Required {
+		t.Fatal("a bundle installing executable vendored assets must require consent")
+	}
+	if len(p.Consent.AssetExec) == 0 || !strings.Contains(p.Consent.AssetExec[0], "rev") {
+		t.Fatalf("consent must name the bundle's executable assets: %v", p.Consent.AssetExec)
+	}
+}
+
+// An MCP is a config.toml merge that references none of the vendored tools/standards,
+// so installing ONLY an mcp must not drag in the bundle's asset tree (nor its consent).
+func TestMCPOnlyInstallSkipsAssets(t *testing.T) {
+	idx, bdir := loadFx(t)
+	ad := &assetAdapter{FakeAdapter: NewFakeAdapter(nil)}
+	p, err := Compute(idx, bdir, ad, "rev", "bq", model.TypeMCP, model.RuntimeCodex)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, s := range p.Steps {
+		if s.Name == AssetsStepName {
+			t.Fatalf("mcp-only install must not vendor assets: %+v", s)
+		}
+	}
+	if len(ad.calls) != 0 {
+		t.Fatalf("mcp-only install must not even request assets: %v", ad.calls)
 	}
 }
 

@@ -48,20 +48,55 @@ The assets root is **per bundle, never shared**: `stark-gh` ships its own
 `config.json`, which would clobber the shared snapshot's in a flat namespace.
 
 Because the tree differs from a Claude plugin's, the codex target (`codex@2`)
-retargets both reference shapes in each rendered body:
+retargets the reference shapes in each rendered body:
 
 - `${CLAUDE_PLUGIN_ROOT}` / `${CLAUDE_PLUGIN_ROOT:-…}` →
   `${STARK_PLUGIN_ROOT:-$HOME/.agents/stark/<bundle>}`. The `$HOME` fallback
   assumes the recommended global install (`--dest ~`); for a project-local
-  install, export `STARK_PLUGIN_ROOT`.
-- `../../{tools,standards,prompts,scripts}/` → `../../stark/<bundle>/…`. On
-  Claude a skill sits at `<plugin>/skills/<name>/SKILL.md`, so `../../` **is**
-  the plugin root; on Codex it sits at `.agents/skills/<name>/SKILL.md`, one
-  level short.
+  install, export `STARK_PLUGIN_ROOT` (see below).
+- `${CLAUDE_PLUGIN_ROOT}/skills/<name>/…` addresses a **per-skill** asset, which
+  lands at `.agents/skills/<name>/` (next to the skill), NOT under the bundle
+  root — so it retargets via the bundle root's siblings
+  (`${STARK_PLUGIN_ROOT:-…}/../../skills/…`), which resolves to `.agents/skills/`
+  under both a global and a project-local `--dest`.
+- `../{tools,standards,prompts,scripts}/` and `../../…` (any leading `../` run) →
+  `../../stark/<bundle>/…`. On Claude a skill sits at
+  `<plugin>/skills/<name>/SKILL.md` (`../../` **is** the plugin root) and a command
+  at `<plugin>/commands/<name>.md` (`../`); on Codex both classes emit at
+  `.agents/skills/<name>/SKILL.md`, so any `../` run is short of the bundle root.
+- **Tool invocations** (`node --experimental-strip-types …/tools/x.ts`) are prefixed
+  with an inline `STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:-…}"` export. A `${VAR:-…}`
+  on the command line is shell *substitution*, not an export — so without this the
+  tool's own `assetRoot()` (precedence `STARK_ASSET_ROOT` > `CLAUDE_PLUGIN_ROOT` >
+  `~/.claude/code-review`) would resolve its sibling `config.json`/`prompts`/
+  `standards`/tools to the Claude-only `~/.claude/code-review` a Codex install never
+  creates. The inline assignment IS exported and inherited by every sibling tool the
+  invocation spawns, so the whole process tree resolves to the vendored bundle root.
+
+Vendored **prose** assets (references/standards/prompts markdown) get the
+depth-independent half of this retarget too (var refs + tool invocations); their
+relative `../` refs are left alone because a vendored file's on-disk depth differs
+from a SKILL.md's.
+
+**Project-local install (`--dest` other than `$HOME`).** The rendered bodies fall
+back to `$HOME/.agents/stark/<bundle>`, but the assets are under `<dest>/.agents`.
+`stark install --runtime codex` **warns** in this case and prints the exports to set
+before invoking the skills, per bundle:
+
+```
+export STARK_PLUGIN_ROOT=<dest>/.agents/stark/<bundle>
+export STARK_ASSET_ROOT=$STARK_PLUGIN_ROOT
+```
 
 The vendor roots default to `<repo>/vendor/stark-skills` and `<repo>/vendor/plugins`
-(derived from `--catalog`'s parent); override with `--assets-source` /
-`--plugin-assets`, or point them at nothing to install artifacts only.
+(derived from `--catalog`'s parent). Override with `--assets-source` /
+`--plugin-assets`; pass an **empty** value (`--assets-source ''`) to install
+artifacts only. An explicit non-empty path that does not exist is a hard error, not
+a silent asset-less install. Vendoring runs only for bundles that install an
+asset-consuming artifact (skill/command/prompt/agent) — an mcp-only install writes
+just its `config.toml` merge. The vendored asset step ships executable code
+(`tools/*.ts`, `scripts/*.sh`) the skills invoke, so it participates in the §9.3
+consent gate even when the bundle has no mcp/agent.
 
 **Still open:** `stark install --runtime claude` does not vendor assets — the
 Claude distribution path is the committed `dist/claude/` plugin tree, which
