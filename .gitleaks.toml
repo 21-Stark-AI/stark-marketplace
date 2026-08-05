@@ -24,6 +24,9 @@ secretGroup = 1
 [rules.allowlist]
 regexes = [
   '''secretRef:\s*[a-z0-9][a-z0-9-]*''',
+  # `ownerToken: perShaLockContent.ownerToken` copies an in-memory field; the
+  # detector captures only the object identifier as its "secret".
+  '''^perShaLockContent$''',
 ]
 
 [allowlist]
@@ -44,6 +47,8 @@ paths = [
 regexes = [
   '''\$\{[A-Z0-9_]+\}''',             # ${ENV_VAR} placeholders are not secrets
   '''secretRef:\s*[a-z0-9][a-z0-9-]*''',
+  # macOS Keychain service identifier, not the private key stored under it.
+  '''^STARK_CLAUDE_PRIVATE_KEY_21S$''',
   # ANCHORED: the whole value must BE a placeholder (example…/placeholder…/x{8,}…),
   # so a real secret that merely CONTAINS the word "example" is NOT excused.
   '''(?i)^(example|placeholder|dummy|redacted|sample|x{8,})[a-z0-9_\-]*$''',
