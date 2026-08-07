@@ -320,7 +320,7 @@
       ],
       "category": "productivity",
       "maturity": "beta",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "runtimes": [
         "claude",
         "codex",
@@ -331,13 +331,13 @@
         "codex": "native",
         "gemini": "native"
       },
-      "digest": "sha256:9b441a45ba673f9248c8f485ecaeafd7aafcf0d8bab10a3a34fbc01f9c21cb33"
+      "digest": "sha256:3b718b3b463013879a4a122e57b1bb274182750384268512eae1cb9da2b3b01a"
     },
     {
       "name": "pr-merge",
       "type": "command",
       "bundle": "stark-gh",
-      "description": "Rebase a PR, draft squash-commit prose + CHANGELOG bullet via Codex, force-push, mark a draft PR ready-for-review, and squash-merge once CI is green.",
+      "description": "Rebase a PR, draft squash-commit prose + CHANGELOG bullet via Codex (changelog step skipped when the repo keeps no root CHANGELOG.md), force-push, mark a draft PR ready-for-review, and squash-merge once CI is green.",
       "tags": [
         "github",
         "pr",
@@ -345,7 +345,7 @@
       ],
       "category": "productivity",
       "maturity": "beta",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "runtimes": [
         "claude",
         "codex",
@@ -356,7 +356,7 @@
         "codex": "native",
         "gemini": "native"
       },
-      "digest": "sha256:f33622b457f2727e03fcd7e495fc4f77a4337628f79c4ec2954f228de3d69e14"
+      "digest": "sha256:fa7379c4104cdb908e5cb5dc6c62f74c7b640f37dfa9dae597885f1fddadef9c"
     },
     {
       "name": "pr-open",
@@ -370,7 +370,7 @@
       ],
       "category": "productivity",
       "maturity": "beta",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "runtimes": [
         "claude",
         "codex",
@@ -381,7 +381,7 @@
         "codex": "native",
         "gemini": "native"
       },
-      "digest": "sha256:cff9bdd625c76dbae2328556c3592ef583ccb5925ed30b6530740b6a76fd8135"
+      "digest": "sha256:11249318da3ea0a11c6ac03ba046cdc55ec0ed51d2e6be9f3a932f1df2b29d5a"
     },
     {
       "name": "stark-build",
@@ -446,7 +446,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.4.11",
+      "version": "0.4.12",
       "runtimes": [
         "claude",
         "codex"
@@ -472,7 +472,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.4.11",
+      "version": "0.4.12",
       "runtimes": [
         "claude",
         "codex"
@@ -498,7 +498,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.4.11",
+      "version": "0.4.12",
       "runtimes": [
         "claude",
         "codex"
@@ -524,7 +524,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.4.11",
+      "version": "0.4.12",
       "runtimes": [
         "claude",
         "codex"
@@ -550,7 +550,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.4.11",
+      "version": "0.4.12",
       "runtimes": [
         "claude",
         "codex"
@@ -559,7 +559,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:a37ea8208e6a699d8de28b897f25017f965c35e1cd89b918486f3985c215ef26"
+      "digest": "sha256:ba03d4ce1a0b3aab4a00c60172af6b44ba01f0e7175b12013c18671b21c281b4"
     },
     {
       "name": "stark-release",
@@ -576,7 +576,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.4.11",
+      "version": "0.4.12",
       "runtimes": [
         "claude",
         "codex"
@@ -585,7 +585,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:1fc843da99216a26cfce9c015a102e265ec002bd18e274d0651e52a4b4c9c8e0"
+      "digest": "sha256:5d66c6db7378c95fb499bf9cbd11af24fabeb6e6a31d91b08505f4807042c157"
     },
     {
       "name": "stark-session",
@@ -602,7 +602,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.4.11",
+      "version": "0.4.12",
       "runtimes": [
         "claude",
         "codex"
@@ -626,7 +626,7 @@
       ],
       "category": "planning",
       "maturity": "beta",
-      "version": "0.3.14",
+      "version": "0.3.15",
       "runtimes": [
         "claude",
         "codex"
@@ -635,7 +635,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:0a5ad4648c619ee1ad229e31cb9969aeb92df6d1887d956201214bd05a5cf1d9"
+      "digest": "sha256:656efb4bbe721f8551ef8bfae7e2d55a79e1b337ecaad5e4496db4672b9946ce"
     },
     {
       "name": "stark-blog-sharpen",
@@ -771,8 +771,8 @@
     },
     {
       "bundle": "stark-gh",
-      "version": "0.2.2",
-      "digest": "sha256:6663474c7619820c8ad2c9c446902bd93ce0a97d427273f962703066409604dd"
+      "version": "0.2.3",
+      "digest": "sha256:70d57e11ceb285b4a4a67a102582df55cdcb06a2f6a88535917000ac6d959506"
     },
     {
       "bundle": "stark-implement",
@@ -781,12 +781,12 @@
     },
     {
       "bundle": "stark-ops",
-      "version": "0.4.11",
+      "version": "0.4.12",
       "digest": "sha256:8903642d997f754220bb39976c8a111bc29b5cae5ebfc264810e9d3a2cf8da01"
     },
     {
       "bundle": "stark-plan",
-      "version": "0.3.14",
+      "version": "0.3.15",
       "digest": "sha256:52b3a11122118e8a00a820b643cd08183d2a380239d5203fc536035b0ca7cd18"
     }
   ]

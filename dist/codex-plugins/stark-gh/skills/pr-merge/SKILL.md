@@ -1,6 +1,6 @@
 ---
 name: pr-merge
-description: Rebase a PR, draft squash-commit prose + CHANGELOG bullet via Codex, force-push, mark a draft PR ready-for-review, and squash-merge once CI is green.
+description: Rebase a PR, draft squash-commit prose + CHANGELOG bullet via Codex (changelog step skipped when the repo keeps no root CHANGELOG.md), force-push, mark a draft PR ready-for-review, and squash-merge once CI is green.
 allowed-tools:
     - Bash
     - Read

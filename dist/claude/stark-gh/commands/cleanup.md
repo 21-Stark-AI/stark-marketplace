@@ -2,7 +2,7 @@
 name: cleanup
 description: Sweep the local + remote repo for merged-PR branches, stale tracking refs, worktree leftovers (including detached-HEAD review worktrees), merged-PR watcher state, stale stashes, and loose objects. Rebases the current branch onto upstream and applies linear-tree git config so the history stays sharp.
 argument-hint: '[--pr N] [--dry-run] [--keep-branch NAME ...] [--no-rebase] [--no-watcher-cleanup] [--no-config] [--no-gc] [--drop-stale-stashes] [--force] [--json]'
-model: sonnet
+model: opus
 allowed-tools:
     - Bash
 ---

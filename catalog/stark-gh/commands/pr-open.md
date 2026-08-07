@@ -2,14 +2,14 @@
 name: pr-open
 type: command
 description: Open or update a PR with Codex-drafted prose, stage-all commit (default), push, and CI watcher. New PRs open as DRAFT by default (override --ready).
-version: 0.2.2
+version: 0.2.3
 maturity: beta
 runtimes:
   - claude
   - codex
   - gemini
 argument-hint: '[--title T] [--body B] [--body-file F] [--commit-message M] [--commit-message-file F] [--base BRANCH] [--reviewer LIST] [--label LIST] [--assignee LIST] [--staged-only] [--commit-all] [--full-context] [--no-watch] [--ready] [--allow-secret-commit] [--allow-secret-to-llm]'
-model: sonnet
+model: opus
 disable-model-invocation: false
 allowed-tools:
   - Bash
@@ -21,7 +21,7 @@ overrides:
       - Read
     argument-hint: '[--title T] [--body B] [--body-file F] [--commit-message M] [--commit-message-file F] [--base BRANCH] [--reviewer LIST] [--label LIST] [--assignee LIST] [--staged-only] [--commit-all] [--full-context] [--no-watch] [--ready] [--allow-secret-commit] [--allow-secret-to-llm]'
     description: Open or update a PR with Codex-drafted prose, stage-all commit (default), push, and CI watcher. New PRs open as DRAFT by default (override --ready).
-    model: sonnet
+    model: opus
     name: pr-open
     body: |
       # diverged: source-owned Codex runtime override

@@ -2,7 +2,7 @@
 name: stark-housekeeping
 description: Audit and clean up stale issues, dead branches, and worktree remnants. Use for cleanup, housekeeping, close stale issues.
 disable-model-invocation: true
-model: sonnet
+model: opus
 ---
 Usage: stark-housekeeping [--dry-run] [--repo ORG/REPO] [--aggressive]
 

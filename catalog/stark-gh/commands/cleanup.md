@@ -2,14 +2,14 @@
 name: cleanup
 type: command
 description: Sweep the local + remote repo for merged-PR branches, stale tracking refs, worktree leftovers (including detached-HEAD review worktrees), merged-PR watcher state, stale stashes, and loose objects. Rebases the current branch onto upstream and applies linear-tree git config so the history stays sharp.
-version: 0.2.2
+version: 0.2.3
 maturity: beta
 runtimes:
   - claude
   - codex
   - gemini
 argument-hint: '[--pr N] [--dry-run] [--keep-branch NAME ...] [--no-rebase] [--no-watcher-cleanup] [--no-config] [--no-gc] [--drop-stale-stashes] [--force] [--json]'
-model: sonnet
+model: opus
 disable-model-invocation: false
 allowed-tools:
   - Bash
@@ -19,7 +19,7 @@ overrides:
       - Bash
     argument-hint: '[--pr N] [--dry-run] [--keep-branch NAME ...] [--no-rebase] [--no-watcher-cleanup] [--no-config] [--no-gc] [--drop-stale-stashes] [--force] [--json]'
     description: Sweep the local + remote repo for merged-PR branches, stale tracking refs, worktree leftovers (including detached-HEAD review worktrees), merged-PR watcher state, stale stashes, and loose objects. Rebases the current branch onto upstream and applies linear-tree git config so the history stays sharp.
-    model: sonnet
+    model: opus
     name: cleanup
     body: |
       # diverged: source-owned Codex runtime override
