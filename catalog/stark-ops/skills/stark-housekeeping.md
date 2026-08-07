@@ -2,19 +2,19 @@
 name: stark-housekeeping
 type: skill
 description: Audit and clean up stale issues, dead branches, and worktree remnants. Use for cleanup, housekeeping, close stale issues.
-version: 0.4.11
+version: 0.4.12
 maturity: beta
 runtimes:
   - claude
   - codex
-model: sonnet
+model: opus
 disable-model-invocation: true
 overrides:
   codex:
     argument-hint: '[--dry-run] [--repo ORG/REPO] [--aggressive]'
     description: Audit and clean up stale issues, dead branches, and worktree remnants. Use for cleanup, housekeeping, close stale issues.
     disable-model-invocation: true
-    model: sonnet
+    model: opus
     name: stark-housekeeping
     body: |
       # diverged: source-owned Codex runtime override

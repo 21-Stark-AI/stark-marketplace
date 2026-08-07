@@ -2,19 +2,19 @@
 name: stark-release
 type: skill
 description: 'Cut a release: changelog review (auto-generating from git log if [Unreleased] is empty), version bump, git tag, GitHub Release. Use for release, tag, bump version.'
-version: 0.4.11
+version: 0.4.12
 maturity: beta
 runtimes:
   - claude
   - codex
-model: sonnet
+model: opus
 disable-model-invocation: true
 overrides:
   codex:
     argument-hint: '[patch|minor|major] (optional — auto-detected if omitted)'
     description: 'Cut a release: changelog review (auto-generating from git log if [Unreleased] is empty), version bump, git tag, GitHub Release. Use for release, tag, bump version.'
     disable-model-invocation: true
-    model: sonnet
+    model: opus
     name: stark-release
     body: |
       # diverged: source-owned Codex runtime override

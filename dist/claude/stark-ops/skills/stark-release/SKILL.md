@@ -2,7 +2,7 @@
 name: stark-release
 description: 'Cut a release: changelog review (auto-generating from git log if [Unreleased] is empty), version bump, git tag, GitHub Release. Use for release, tag, bump version.'
 disable-model-invocation: true
-model: sonnet
+model: opus
 ---
 Usage: stark-release [patch|minor|major] (optional — auto-detected if omitted)
 
