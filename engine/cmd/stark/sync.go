@@ -40,15 +40,29 @@ func runSync(from, catalogDir, repoRoot string, check bool) int {
 			fmt.Printf("generate %s: %v\n", b.Name, err)
 			return 1
 		}
-		// Artifacts inherit bundle-level version + runtimes (stark-skills source
-		// carries neither): bump a bundle's version in bundle.yaml to publish a
-		// content change (satisfies the per-artifact version-bump gate in one
-		// place), and a bundle's runtimes list governs which runtimes its
-		// artifacts target (e.g. stark-gh ships to claude/codex/gemini).
+		// Artifacts inherit bundle-level version + runtimes: bump a bundle's
+		// version in bundle.yaml to publish a content change (satisfies the
+		// per-artifact version-bump gate in one place), and a bundle's runtimes
+		// list governs which runtimes its artifacts target (e.g. stark-gh ships
+		// to claude/codex/gemini) — EXCEPT when the source SKILL.md declares its
+		// own runtimes: an explicit narrowing (`runtimes: [claude]`) survives
+		// inheritance, so a Claude-only skill never ships into the Codex dist.
+		// A declared runtime outside the bundle's set is a config contradiction
+		// and fails the sync loudly.
 		for _, a := range res.Bundle.Artifacts {
 			a.Version = b.Version
-			if len(b.Runtimes) > 0 {
+			if len(b.Runtimes) == 0 {
+				continue
+			}
+			if !a.RuntimesDeclared {
 				a.Runtimes = b.Runtimes
+				continue
+			}
+			for _, r := range a.Runtimes {
+				if !model.ContainsRuntime(b.Runtimes, r) {
+					fmt.Printf("generate %s: skill %s declares runtime %q outside the bundle's runtimes %v\n", b.Name, a.Name, r, b.Runtimes)
+					return 1
+				}
 			}
 		}
 		files, err := importer.ArtifactFiles(res)

@@ -46,7 +46,16 @@ func attachCodexCommandOverride(from, bundle, filename string, a *model.Artifact
 // attachCodexMarkdownOverride loads an optional source-owned overlay. The base
 // artifact remains the Claude-compatible source; only merge.Resolve(...,
 // RuntimeCodex) sees this full frontmatter/body replacement.
+// An artifact whose declared runtimes exclude Codex (e.g. `runtimes: [claude]`
+// in SKILL.md frontmatter) is exempt from the overlay requirement — the
+// adapters already skip it at render time, so demanding a Codex variant here
+// would force authoring one for a skill that deliberately ships Claude-only.
+// Runtimes are always populated at this point: mapSkillFile/mapCommandFile
+// apply the [claude, codex] default before the attach runs.
 func attachCodexMarkdownOverride(from, path string, a *model.Artifact) error {
+	if !artifactTargetsCodex(a) {
+		return nil
+	}
 	data, err := os.ReadFile(path)
 	if os.IsNotExist(err) {
 		root := filepath.Join(from, "runtime-overrides", "codex")
@@ -110,6 +119,15 @@ func attachCodexMarkdownOverride(from, path string, a *model.Artifact) error {
 		Body:   "# diverged: " + codexOverrideReason + "\n" + cleanBody(body),
 	}
 	return nil
+}
+
+func artifactTargetsCodex(a *model.Artifact) bool {
+	for _, r := range a.Runtimes {
+		if r == model.RuntimeCodex {
+			return true
+		}
+	}
+	return false
 }
 
 func normalizeRuntimeOverrideField(key string, value any) (any, error) {

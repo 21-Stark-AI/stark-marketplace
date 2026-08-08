@@ -211,6 +211,39 @@ Claude body.
 	}
 }
 
+func TestClaudeOnlySkillIsExemptFromCodexOverlayRequirement(t *testing.T) {
+	from := t.TempDir()
+	// `runtimes: [claude]` is the author's declaration that no Codex variant
+	// exists on purpose — the enabled-overlay contract must skip it, not fail.
+	writeFile(t, filepath.Join(from, "skill", "demo", "SKILL.md"), `---
+name: demo
+description: Claude description.
+runtimes:
+  - claude
+---
+Claude body.
+`)
+	writeFile(t, filepath.Join(from, "runtime-overrides", "codex", "standards", "help.md"), "help\n")
+
+	res, err := ImportForGenerator(from, "demo-bundle", []string{"demo"})
+	if err != nil {
+		t.Fatalf("claude-only import failed: %v", err)
+	}
+	if len(res.Bundle.Artifacts) != 1 {
+		t.Fatalf("artifacts = %d, want 1", len(res.Bundle.Artifacts))
+	}
+	a := res.Bundle.Artifacts[0]
+	if _, exists := a.Overrides[model.RuntimeCodex]; exists {
+		t.Fatalf("claude-only artifact must not carry a Codex override")
+	}
+	if len(a.Runtimes) != 1 || a.Runtimes[0] != model.RuntimeClaude {
+		t.Fatalf("runtimes = %v, want [claude]", a.Runtimes)
+	}
+	if !a.RuntimesDeclared {
+		t.Fatalf("RuntimesDeclared = false, want true — sync's bundle inheritance keys on it")
+	}
+}
+
 func TestSerializeRuntimeOverridesIsDeterministic(t *testing.T) {
 	a := &model.Artifact{
 		Name: "demo", Type: model.TypeSkill, Description: "Demo.", Version: "1.0.0",
