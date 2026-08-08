@@ -446,7 +446,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.4.12",
+      "version": "0.4.13",
       "runtimes": [
         "claude",
         "codex"
@@ -472,7 +472,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.4.12",
+      "version": "0.4.13",
       "runtimes": [
         "claude",
         "codex"
@@ -498,7 +498,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.4.12",
+      "version": "0.4.13",
       "runtimes": [
         "claude",
         "codex"
@@ -513,7 +513,7 @@
       "name": "stark-handover",
       "type": "skill",
       "bundle": "stark-ops",
-      "description": "Use when pausing or splitting work across sessions — before /clear, when context runs low, end of day, switching tasks — or when resuming after one. Triggers: \"handover\", \"handoff\", \"save context\", \"save progress\", \"resume\", \"continue where we left off\", \"what was I doing\". Persists a numbered handover chain + PROGRESS.md tracker per task; resume needs no recap.",
+      "description": "Use when pausing or splitting work across sessions — before /clear, when context runs low, end of day, switching tasks — or when resuming after one. Triggers: \"handover\", \"save context\", \"save progress\", \"resume\", \"continue where we left off\", \"what was I doing\". Persists a numbered handover chain + PROGRESS.md tracker per task; resume needs no recap.",
       "tags": [
         "release",
         "housekeeping",
@@ -524,7 +524,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.4.12",
+      "version": "0.4.13",
       "runtimes": [
         "claude",
         "codex"
@@ -533,7 +533,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:023d593b0a6993bf3eb69d2a4929b255b0ec41ae1b1dc7b08dee5e9e86324987"
+      "digest": "sha256:e1e0509e6e3b9982564448c1feaab6b36c9f6f1c9f1ff9de4aec8aa0ff635b30"
     },
     {
       "name": "stark-housekeeping",
@@ -550,7 +550,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.4.12",
+      "version": "0.4.13",
       "runtimes": [
         "claude",
         "codex"
@@ -576,7 +576,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.4.12",
+      "version": "0.4.13",
       "runtimes": [
         "claude",
         "codex"
@@ -602,7 +602,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.4.12",
+      "version": "0.4.13",
       "runtimes": [
         "claude",
         "codex"
@@ -781,7 +781,7 @@
     },
     {
       "bundle": "stark-ops",
-      "version": "0.4.12",
+      "version": "0.4.13",
       "digest": "sha256:8903642d997f754220bb39976c8a111bc29b5cae5ebfc264810e9d3a2cf8da01"
     },
     {
