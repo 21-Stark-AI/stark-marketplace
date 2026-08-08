@@ -13,6 +13,16 @@ const (
 // AllRuntimes returns the canonical runtime set in deterministic order.
 func AllRuntimes() []Runtime { return []Runtime{RuntimeClaude, RuntimeCodex, RuntimeGemini} }
 
+// ContainsRuntime reports whether set includes rt.
+func ContainsRuntime(set []Runtime, rt Runtime) bool {
+	for _, r := range set {
+		if r == rt {
+			return true
+		}
+	}
+	return false
+}
+
 func ParseRuntime(s string) (Runtime, error) {
 	for _, r := range AllRuntimes() {
 		if string(r) == s {

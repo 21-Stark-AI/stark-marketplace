@@ -446,7 +446,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.4.13",
+      "version": "0.5.0",
       "runtimes": [
         "claude",
         "codex"
@@ -472,7 +472,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.4.13",
+      "version": "0.5.0",
       "runtimes": [
         "claude",
         "codex"
@@ -498,7 +498,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.4.13",
+      "version": "0.5.0",
       "runtimes": [
         "claude",
         "codex"
@@ -508,6 +508,30 @@
         "codex": "native"
       },
       "digest": "sha256:a22d142a737e6dcec816703181ade67f0ea37dcc8bb916eb4ae204145ce3a279"
+    },
+    {
+      "name": "stark-handoff",
+      "type": "skill",
+      "bundle": "stark-ops",
+      "description": "Use when the next move belongs to someone else — a fresh session after /compact, a fix dispatched into another repo, a parallel fork, a brainstorm or deep-research brief. Triggers: \"handoff\", \"write me a prompt\", \"prompt file\", \"continuation prompt\", \"fix prompt\", \"brief for another session\", \"fork this work\", \"research prompt\". Writes ONE self-contained prompt file a fresh executor starts from; can also load or launch one.",
+      "tags": [
+        "release",
+        "housekeeping",
+        "session",
+        "handover",
+        "git",
+        "rate-limits"
+      ],
+      "category": "ops",
+      "maturity": "beta",
+      "version": "0.5.0",
+      "runtimes": [
+        "claude"
+      ],
+      "support": {
+        "claude": "native"
+      },
+      "digest": "sha256:fc2a4d042a08e167d48906f57f274650c620e0c28279a9ea8c3145e6a0f69516"
     },
     {
       "name": "stark-handover",
@@ -524,7 +548,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.4.13",
+      "version": "0.5.0",
       "runtimes": [
         "claude",
         "codex"
@@ -550,7 +574,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.4.13",
+      "version": "0.5.0",
       "runtimes": [
         "claude",
         "codex"
@@ -576,7 +600,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.4.13",
+      "version": "0.5.0",
       "runtimes": [
         "claude",
         "codex"
@@ -602,7 +626,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.4.13",
+      "version": "0.5.0",
       "runtimes": [
         "claude",
         "codex"
@@ -781,8 +805,8 @@
     },
     {
       "bundle": "stark-ops",
-      "version": "0.4.13",
-      "digest": "sha256:8903642d997f754220bb39976c8a111bc29b5cae5ebfc264810e9d3a2cf8da01"
+      "version": "0.5.0",
+      "digest": "sha256:4df4d69ed86394e7b440ce82ca9e5aaef4644103336fcf6e982e60d5a2c3113a"
     },
     {
       "bundle": "stark-plan",

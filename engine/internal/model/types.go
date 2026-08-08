@@ -37,16 +37,21 @@ type Override struct {
 
 // Artifact is one canonical authored unit.
 type Artifact struct {
-	Name        string        `yaml:"name" json:"name"`
-	Type        ArtifactType  `yaml:"type" json:"type"`
-	Description string        `yaml:"description" json:"description"`
-	Version     string        `yaml:"version" json:"version"`
-	Tags        []string      `yaml:"tags,omitempty" json:"tags,omitempty"`
-	Category    string        `yaml:"category,omitempty" json:"category,omitempty"`
-	Maturity    Maturity      `yaml:"maturity,omitempty" json:"maturity,omitempty"`
-	Summary     string        `yaml:"summary,omitempty" json:"summary,omitempty"`
-	Runtimes    []Runtime     `yaml:"runtimes,omitempty" json:"runtimes,omitempty"`
-	Requires    []Requirement `yaml:"requires,omitempty" json:"requires,omitempty"`
+	Name        string       `yaml:"name" json:"name"`
+	Type        ArtifactType `yaml:"type" json:"type"`
+	Description string       `yaml:"description" json:"description"`
+	Version     string       `yaml:"version" json:"version"`
+	Tags        []string     `yaml:"tags,omitempty" json:"tags,omitempty"`
+	Category    string       `yaml:"category,omitempty" json:"category,omitempty"`
+	Maturity    Maturity     `yaml:"maturity,omitempty" json:"maturity,omitempty"`
+	Summary     string       `yaml:"summary,omitempty" json:"summary,omitempty"`
+	Runtimes    []Runtime    `yaml:"runtimes,omitempty" json:"runtimes,omitempty"`
+	// RuntimesDeclared marks Runtimes as an explicit source-frontmatter
+	// declaration (vs the importer's [claude, codex] default), so bundle-level
+	// runtime inheritance preserves a deliberate narrowing (a Claude-only
+	// skill) instead of stomping it. Never serialized.
+	RuntimesDeclared bool          `yaml:"-" json:"-"`
+	Requires         []Requirement `yaml:"requires,omitempty" json:"requires,omitempty"`
 
 	// type-specific canonical fields
 	ArgumentHint           string   `yaml:"argument-hint,omitempty" json:"argumentHint,omitempty"`

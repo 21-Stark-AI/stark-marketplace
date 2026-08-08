@@ -197,6 +197,7 @@ func mapCommonFrontmatter(a *model.Artifact, raw map[string]any) {
 	}
 	if rts := parseRuntimes(raw["runtimes"]); len(rts) > 0 {
 		a.Runtimes = rts
+		a.RuntimesDeclared = true
 	}
 	if v, ok := raw["argument-hint"].(string); ok {
 		a.ArgumentHint = v
