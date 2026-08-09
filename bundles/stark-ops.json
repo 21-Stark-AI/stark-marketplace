@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "bundle": {
     "name": "stark-ops",
-    "version": "0.5.1",
+    "version": "0.5.2",
     "description": "Repository operations beyond the spec-driven pipeline — cut releases, housekeep stale issues/branches/worktrees, run session start/end, hand off work across sessions, and switch GitHub or Claude Code identities when a rate limit runs out.",
     "category": "ops",
     "tags": [
@@ -21,7 +21,7 @@
       "name": "stark-cc-user",
       "type": "skill",
       "description": "Switch the active Claude Code account between stored profiles when a 5-hour or 7-day rate-limit window runs out. Credentials live in macOS Keychain (service `stark-cc-token`); headroom comes from statusline snapshots.",
-      "version": "0.5.1",
+      "version": "0.5.2",
       "runtimes": [
         "claude",
         "codex"
@@ -59,7 +59,7 @@
       "name": "stark-gh-user",
       "type": "skill",
       "description": "Switch the active GitHub user identity (primary ↔ secondary) for `gh` invocations to dodge per-user GraphQL/REST rate limits. Tokens live in macOS Keychain (service `stark-gh-token`).",
-      "version": "0.5.1",
+      "version": "0.5.2",
       "runtimes": [
         "claude",
         "codex"
@@ -97,7 +97,7 @@
       "name": "stark-gha-cost",
       "type": "skill",
       "description": "Diagnose and cut GitHub Actions + GHAS (Advanced Security) billing costs for an org or enterprise. Use whenever the user is surprised by or wants to reduce a GitHub bill, mentions Actions minutes / runner cost / CI spend, asks \"why is my GitHub bill so high\", \"are we paying for GHAS/secret scanning/code scanning\", \"should I self-host runners\", \"which repo is burning Actions minutes\", or wants to right-size GitHub security seats (Secret Protection vs Code Security). Also triggers on a mystery Actions charge, a runaway workflow, or a billing number that looks wrong. Also use for making CI cheaper/faster the right way — slow or expensive pipelines, build/dependency caching that isn't hitting, wide test matrices, merge queues, flaky-test cost, artifact/registry storage, or measuring CI spend (cost-per-PR, budgets, usage APIs). Diagnoses where the money goes (product → repo → workflow → run), applies the highest-value levers via PR, and escalates genuine mis-billing to Support. Reach for it even when the user only says \"GitHub is expensive this month\" or \"our CI is too slow\" without naming Actions.",
-      "version": "0.5.1",
+      "version": "0.5.2",
       "runtimes": [
         "claude",
         "codex"
@@ -135,7 +135,7 @@
       "name": "stark-handoff",
       "type": "skill",
       "description": "Use when the next move belongs to someone else — a fresh session after /compact, a fix dispatched into another repo, a parallel fork, a brainstorm or deep-research brief. Triggers: \"handoff\", \"write me a prompt\", \"prompt file\", \"continuation prompt\", \"fix prompt\", \"brief for another session\", \"fork this work\", \"research prompt\". Writes ONE self-contained prompt file a fresh executor starts from; can also load or launch one.",
-      "version": "0.5.1",
+      "version": "0.5.2",
       "runtimes": [
         "claude"
       ],
@@ -159,7 +159,7 @@
       "name": "stark-handover",
       "type": "skill",
       "description": "Use when pausing or splitting work across sessions — before /clear, when context runs low, end of day, switching tasks — or when resuming after one. Triggers: \"handover\", \"save context\", \"save progress\", \"resume\", \"continue where we left off\", \"what was I doing\". Persists a numbered handover chain + PROGRESS.md tracker per task; resume needs no recap.",
-      "version": "0.5.1",
+      "version": "0.5.2",
       "runtimes": [
         "claude",
         "codex"
@@ -197,7 +197,7 @@
       "name": "stark-housekeeping",
       "type": "skill",
       "description": "Audit and clean up stale issues, dead branches, and worktree remnants. Use for cleanup, housekeeping, close stale issues.",
-      "version": "0.5.1",
+      "version": "0.5.2",
       "runtimes": [
         "claude",
         "codex"
@@ -235,7 +235,7 @@
       "name": "stark-release",
       "type": "skill",
       "description": "Cut a release: changelog review (auto-generating from git log if [Unreleased] is empty), version bump, git tag, GitHub Release. Use for release, tag, bump version.",
-      "version": "0.5.1",
+      "version": "0.5.2",
       "runtimes": [
         "claude",
         "codex"
@@ -273,7 +273,7 @@
       "name": "stark-session",
       "type": "skill",
       "description": "Session start (context, git state, briefing) and end (tests, merge, push). Use for session start/end, catch me up.",
-      "version": "0.5.1",
+      "version": "0.5.2",
       "runtimes": [
         "claude",
         "codex"
