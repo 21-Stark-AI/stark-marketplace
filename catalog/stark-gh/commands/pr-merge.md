@@ -2,7 +2,7 @@
 name: pr-merge
 type: command
 description: Rebase a PR, draft squash-commit prose + CHANGELOG bullet via Codex (changelog step skipped when the repo keeps no root CHANGELOG.md), force-push, mark a draft PR ready-for-review, and squash-merge once CI is green.
-version: 0.2.3
+version: 0.2.4
 maturity: beta
 runtimes:
   - claude
@@ -123,6 +123,16 @@ overrides:
       once on validation failure, writes prose tempfiles, and atomic-updates the
       plan-file.
 
+      **Ticket prefix inheritance.** When the PR title starts with a lower-case
+      `type(TICKET-<n>):` prefix (e.g. `feat(STARK-193):`), the squash subject must
+      carry that same prefix — otherwise the merged commit on main loses the ticket
+      trail. The drafter puts the requirement in the prompt and `validateDraft`
+      enforces it as a token: one space then a non-empty summary, no repeated prefix,
+      an added `!` breaking marker allowed, and the ≤72-char cap applies to the
+      summary after the prefix. A miss is retried once; a second miss aborts the merge
+      (`DRAFT_INVALID`) rather than landing a prefix-less commit. Titles with no such
+      prefix — including non-ticket scopes like `docs(adr-0007):` — impose nothing.
+
       ## Stage 3 — Execute
 
       ```bash
@@ -240,6 +250,16 @@ The draft tool reads `$PLAN_FILE`, subprocess-calls `codex exec` with a scrubbed
 env (no GitHub tokens), validates output against `lib/draft_schema.ts`, retries
 once on validation failure, writes prose tempfiles, and atomic-updates the
 plan-file.
+
+**Ticket prefix inheritance.** When the PR title starts with a lower-case
+`type(TICKET-<n>):` prefix (e.g. `feat(STARK-193):`), the squash subject must
+carry that same prefix — otherwise the merged commit on main loses the ticket
+trail. The drafter puts the requirement in the prompt and `validateDraft`
+enforces it as a token: one space then a non-empty summary, no repeated prefix,
+an added `!` breaking marker allowed, and the ≤72-char cap applies to the summary
+after the prefix. A miss is retried once; a second miss aborts the merge
+(`DRAFT_INVALID`) rather than landing a prefix-less commit. Titles with no such
+prefix — including non-ticket scopes like `docs(adr-0007):` — impose nothing.
 
 ## Stage 3 — Execute
 
