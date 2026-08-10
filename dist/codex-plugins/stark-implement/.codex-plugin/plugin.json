@@ -1,6 +1,6 @@
 {
   "name": "stark-implement",
-  "version": "0.16.4",
+  "version": "0.16.5",
   "description": "Implement from an accepted spec. $stark-build runs one fresh headless session per task gated by checks the agent cannot edit, with a held-out e2e gate, one cross-vendor advisory review, and one bounded fix round for medium+ findings. $stark-copilot covers plan-file work via a paired lead/wing agent with a 1-round cap and a hard test gate.",
   "author": {
     "name": "21 Stark AI",
