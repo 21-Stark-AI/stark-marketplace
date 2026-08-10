@@ -2,7 +2,7 @@
 name: stark-bury
 type: skill
 description: 'Use when retiring 21Stark code into the Náströnd graveyard — burying a subsystem of a living repo (partial burial) or putting down a whole repo (full retirement). Symptoms: "bury X", "retire the <feature>", "kill this service and keep the memory", "new corpse for nastrond", "dig a grave", "tombstone", "exhume". Runs the full ritual: footprint verification, interment PR, deletion PR, optional sealed data dump and table drop.'
-version: 0.6.0
+version: 0.6.1
 maturity: beta
 runtimes:
   - claude
@@ -66,8 +66,9 @@ For every candidate file:
 
 ## Phase 2 — interment (nastrond PR #1)
 
-1. Dig `graves/<repo>/{code,data,backups}/` if absent — lazily, first corpse
-   only.
+1. Dig `graves/<repo>/<corpse>/{code,data,backups}/` — the `<repo>/` plot on
+   its first corpse, a fresh `<corpse>/` grave (kebab-case slug) every burial.
+   A repo can die many deaths; graves are never shared or reused.
 2. Copy the dedicated source **verbatim** into `code/`, preserving original
    paths so the snapshot reads coherently. Include tests, the feature's own
    docs (runbooks/specs/plans), and the schema DDL that defined its tables —
@@ -93,7 +94,7 @@ For every candidate file:
 
 - Rows worth remembering: `pg_dump` the corpse's tables, **age-seal** anything
   sensitive (`age -R ~/Code/21Stark/nastrond/.age-recipients -o
-  graves/<repo>/data/<name>-YYYY-MM-DD.sql.age <dump>.sql`), commit only the
+  graves/<repo>/<corpse>/data/<name>-YYYY-MM-DD.sql.age <dump>.sql`), commit only the
   `.age` file, shred the plaintext. Conversation transcripts and personal data
   are ALWAYS sensitive.
 - Dropping the live tables is a separate, operator-gated decision: sealed dump
@@ -105,7 +106,7 @@ For every candidate file:
 ## Full retirement (whole repo dies)
 
 `git bundle create /tmp/<repo>.bundle --all` in the dead repo → age-seal it to
-`graves/<repo>/backups/<repo>.bundle.age` → delete the plaintext bundle →
+`graves/<repo>/<repo>/backups/<repo>.bundle.age` (a full retirement is the plot's last grave, slugged after the repo itself) → delete the plaintext bundle →
 tombstone + INDEX row → archive the GitHub repo. A full history resurrects
 every secret ever committed — the bundle is NEVER committed raw.
 
