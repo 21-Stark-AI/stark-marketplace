@@ -320,7 +320,7 @@
       ],
       "category": "productivity",
       "maturity": "beta",
-      "version": "0.2.7",
+      "version": "0.2.8",
       "runtimes": [
         "claude",
         "codex",
@@ -345,7 +345,7 @@
       ],
       "category": "productivity",
       "maturity": "beta",
-      "version": "0.2.7",
+      "version": "0.2.8",
       "runtimes": [
         "claude",
         "codex",
@@ -370,7 +370,7 @@
       ],
       "category": "productivity",
       "maturity": "beta",
-      "version": "0.2.7",
+      "version": "0.2.8",
       "runtimes": [
         "claude",
         "codex",
@@ -381,7 +381,7 @@
         "codex": "native",
         "gemini": "native"
       },
-      "digest": "sha256:662825273e3229269609a40bc82dac2ceb63f471171a8a874af5cccd4eca6d0e"
+      "digest": "sha256:e8f2c91accd177d605206afb682cb3a5f6ffae548c627e1db02568ddbc744148"
     },
     {
       "name": "stark-build",
@@ -795,8 +795,8 @@
     },
     {
       "bundle": "stark-gh",
-      "version": "0.2.7",
-      "digest": "sha256:1f94163acb345fc73f5ed0defc17ceae7721fe4888d7a181d3f232ff98934e76"
+      "version": "0.2.8",
+      "digest": "sha256:f31129b92c14c8e68f6254793f290adf952b33a1945e848016b722ec7034edf7"
     },
     {
       "bundle": "stark-implement",
