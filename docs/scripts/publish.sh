@@ -122,6 +122,15 @@ if [ -n "$orphans" ]; then
 fi
 echo "→ coverage gate clean: every stark-skills skill is claimed or excluded"
 
+# Root VERSION: the single bifrost deploy-level semver — bumped on every
+# publish, and bumped BEFORE the build because the codex-plugin manifests bake
+# the root VERSION into dist/. Bumping after the build (the original order)
+# left dist exactly one version stale — a guaranteed drift-gate failure on
+# every publish (hit live twice, 2026-08-10).
+# MINOR if this run changed any bundle membership, else PATCH.
+if [ "$MEMBERSHIP_CHANGED" -eq 1 ]; then bump VERSION minor; else bump VERSION patch; fi
+echo "→ bifrost VERSION → $(cat VERSION)"
+
 cd engine
 
 echo "→ stark sync (regenerate catalog + vendor from stark-skills)"
@@ -156,11 +165,6 @@ echo "→ stark check-bumps (final gate)"
 go run ./cmd/stark check-bumps ../catalog
 
 cd "$REPO_ROOT"
-
-# Root VERSION: the single bifrost deploy-level semver — bumped on every publish.
-# MINOR if this run changed any bundle membership, else PATCH.
-if [ "$MEMBERSHIP_CHANGED" -eq 1 ]; then bump VERSION minor; else bump VERSION patch; fi
-echo "→ bifrost VERSION → $(cat VERSION)"
 
 if [ "$RUN_CI" -eq 1 ]; then
   echo "→ ci-local.sh (full local gate)"
