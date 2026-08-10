@@ -446,14 +446,14 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.6.0",
+      "version": "0.6.1",
       "runtimes": [
         "claude"
       ],
       "support": {
         "claude": "native"
       },
-      "digest": "sha256:5e44da86014c343e434e851e51b2af929c3ab8d3794aa72b5faf40420e031b50"
+      "digest": "sha256:f6b280622842315dc08e2f3fa3a47bb0070846d8ad4efcf777f9ec3cd62eb15e"
     },
     {
       "name": "stark-cc-user",
@@ -470,7 +470,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.6.0",
+      "version": "0.6.1",
       "runtimes": [
         "claude",
         "codex"
@@ -496,7 +496,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.6.0",
+      "version": "0.6.1",
       "runtimes": [
         "claude",
         "codex"
@@ -522,7 +522,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.6.0",
+      "version": "0.6.1",
       "runtimes": [
         "claude",
         "codex"
@@ -548,7 +548,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.6.0",
+      "version": "0.6.1",
       "runtimes": [
         "claude"
       ],
@@ -572,7 +572,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.6.0",
+      "version": "0.6.1",
       "runtimes": [
         "claude",
         "codex"
@@ -598,7 +598,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.6.0",
+      "version": "0.6.1",
       "runtimes": [
         "claude",
         "codex"
@@ -624,7 +624,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.6.0",
+      "version": "0.6.1",
       "runtimes": [
         "claude",
         "codex"
@@ -650,7 +650,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.6.0",
+      "version": "0.6.1",
       "runtimes": [
         "claude",
         "codex"
@@ -829,7 +829,7 @@
     },
     {
       "bundle": "stark-ops",
-      "version": "0.6.0",
+      "version": "0.6.1",
       "digest": "sha256:4df4d69ed86394e7b440ce82ca9e5aaef4644103336fcf6e982e60d5a2c3113a"
     },
     {

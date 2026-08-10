@@ -101,7 +101,7 @@
       "name": "stark-ops",
       "source": "./dist/claude/stark-ops",
       "description": "Repository operations beyond the spec-driven pipeline — cut releases, housekeep stale issues/branches/worktrees, run session start/end, hand off work across sessions, and switch GitHub or Claude Code identities when a rate limit runs out.",
-      "version": "0.6.0",
+      "version": "0.6.1",
       "author": {
         "name": "21 Stark AI",
         "email": "engineering@21stark.com"
