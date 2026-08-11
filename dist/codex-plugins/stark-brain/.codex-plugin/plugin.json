@@ -1,6 +1,6 @@
 {
   "name": "stark-brain",
-  "version": "0.17.3",
+  "version": "0.17.4",
   "description": "Second-brain memory capture — persist durable facts and structured notes into the Markdown vault via the brain MCP (CLI fallback), secret-scanned and validated, then landed on main via a branch + PR.",
   "author": {
     "name": "21 Stark AI",
