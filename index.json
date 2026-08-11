@@ -396,7 +396,7 @@
       ],
       "category": "implementation",
       "maturity": "beta",
-      "version": "0.4.24",
+      "version": "0.4.25",
       "runtimes": [
         "claude",
         "codex"
@@ -420,7 +420,7 @@
       ],
       "category": "implementation",
       "maturity": "beta",
-      "version": "0.4.24",
+      "version": "0.4.25",
       "runtimes": [
         "claude",
         "codex"
@@ -429,7 +429,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:705c99b1845115133334839fa3f7a5bf619f56a59a311eb622e980842dd405a0"
+      "digest": "sha256:77a1f875b3c68a1fdcfb38833c87cfe71afe18925e86c269d92718a10e5d1ab9"
     },
     {
       "name": "stark-bury",
@@ -824,8 +824,8 @@
     },
     {
       "bundle": "stark-implement",
-      "version": "0.4.24",
-      "digest": "sha256:1b9b9e93c0f877faa9bbc761010033bd79797e9303d45effd97aff40ddc6b3d5"
+      "version": "0.4.25",
+      "digest": "sha256:07fe7d4fc2d370f6f4498315e73a52b9f945e536f55bd1ab67121a4be16d518d"
     },
     {
       "bundle": "stark-ops",
