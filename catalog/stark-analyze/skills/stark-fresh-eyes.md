@@ -2,7 +2,7 @@
 name: stark-fresh-eyes
 type: skill
 description: 'One-shot zero-context review of a prompt, research brief, spec, or doc before it ships: a single read-only subagent re-verifies every checkable claim by a DIFFERENT method and reports defects only. Findings return to the author once — no second round, no loops. Use for fresh eyes, review prompt, check brief.'
-version: 0.5.21
+version: 0.5.22
 maturity: beta
 runtimes:
   - claude

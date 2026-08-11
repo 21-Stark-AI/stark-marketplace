@@ -2,7 +2,7 @@
 name: remember
 type: skill
 description: Persist a durable fact or note into Aryeh's second-brain vault via the brain MCP (or the brain CLI as fallback). Use whenever the user EXPLICITLY asks to remember, save, persist, capture, or "write back" something to the second brain / memory / vault — phrasings like "remember that…", "save this to my brain", "add this to memory", "/remember …", "note this down for later". Routes one-line facts to append_to_memory and structured knowledge (a project, repo, tool, person, cloud resource) to upsert_note, validates + secret-scans, then commits and merges the capture to main. Companion to the brain MCP. (Triggers on explicit save intent only for now — not yet on passively-observed facts.)
-version: 0.1.24
+version: 0.1.25
 maturity: beta
 runtimes:
   - claude
