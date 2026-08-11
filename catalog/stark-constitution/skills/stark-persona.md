@@ -2,7 +2,7 @@
 name: stark-persona
 type: skill
 description: Assign a famous character persona for the session with weighted random selection. Use for persona, character, voice. /stark-persona.
-version: 0.2.27
+version: 0.2.28
 maturity: beta
 runtimes:
   - claude
