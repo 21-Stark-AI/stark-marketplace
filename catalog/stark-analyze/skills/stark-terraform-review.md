@@ -2,7 +2,7 @@
 name: stark-terraform-review
 type: skill
 description: Multi-agent code review of Terraform / OpenTofu (HCL) — modules, root configs, .tf/.tfvars/.tftest.hcl — for security, correctness, state safety, module-contract quality, and testing gaps. Runs the review across one or more configurable LLMs (claude/codex/gemini), each as its own subagent, then merges + cross-validates findings. Use whenever the user wants to review, audit, or sanity-check Terraform/OpenTofu code, asks "is this .tf safe/correct/idiomatic", or points at a module/directory and wants findings. Review-only. For Terragrunt orchestration use stark-terragrunt-review.
-version: 0.5.18
+version: 0.5.19
 maturity: beta
 runtimes:
   - claude
@@ -177,8 +177,7 @@ overrides:
       `global/prompts/iac-review/terraform.md`.
 
       > Rules adapted from the HashiCorp Terraform Style Guide (MPL-2.0), Anton
-      > Babenko's terraform-skill (Apache-2.0), and TerraShark. Research:
-      > `docs/specs/2026-06-24-terraform-terragrunt-review-research.md`.
+      > Babenko's terraform-skill (Apache-2.0), and TerraShark.
 ---
 Usage: stark-terraform-review [path] [--agents claude,codex,gemini] [--changed] [--no-tools] [--min-severity ...] [--pr N --repo O/R] [--dry-run] [--json]
 
@@ -250,5 +249,4 @@ suppresses advice the detected TF/OpenTofu version can't use. Full rubric:
 `global/prompts/iac-review/terraform.md`.
 
 > Rules adapted from the HashiCorp Terraform Style Guide (MPL-2.0), Anton
-> Babenko's terraform-skill (Apache-2.0), and TerraShark. Research:
-> `docs/specs/2026-06-24-terraform-terragrunt-review-research.md`.
+> Babenko's terraform-skill (Apache-2.0), and TerraShark.

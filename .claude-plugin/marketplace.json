@@ -9,7 +9,7 @@
       "name": "stark-analyze",
       "source": "./dist/claude/stark-analyze",
       "description": "Contract-bounded spec authoring, multi-domain review, and adversarial red-team of specs, designs, execution plans, and PRs, multi-agent Terraform/Terragrunt (IaC) review, application-logging authoring/review guidance, plus review-prompt improvement from assessment feedback. Maps to spec-kit's specify + analyze phases.",
-      "version": "0.5.18",
+      "version": "0.5.19",
       "author": {
         "name": "21 Stark AI",
         "email": "engineering@21stark.com"
