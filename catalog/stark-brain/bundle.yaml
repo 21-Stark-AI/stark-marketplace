@@ -1,5 +1,5 @@
 name: stark-brain
-version: 0.1.23
+version: 0.1.24
 description: Second-brain memory capture — persist durable facts and structured notes into the Markdown vault via the brain MCP (CLI fallback), secret-scanned and validated, then landed on main via a branch + PR.
 category: productivity
 tags:
