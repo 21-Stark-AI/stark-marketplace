@@ -2,7 +2,7 @@
 name: stark-terragrunt-review
 type: skill
 description: Multi-agent code review of Terragrunt orchestration — terragrunt.hcl, root.hcl, terragrunt.stack.hcl, units, includes, dependency/generate/remote_state blocks, the DRY values pattern, multi-account/multi-env live repos — for dependency correctness, state isolation, mock-output safety, and HCL pitfalls. Runs across one or more configurable LLMs (claude/codex/gemini), each as its own subagent, then merges + cross-validates findings. Use whenever the user wants to review, audit, or sanity-check a Terragrunt repo/catalog/live tree, or asks about dependency ordering / mock outputs / state keys / include hierarchy. Review-only; defers resource/module HCL to stark-terraform-review.
-version: 0.5.18
+version: 0.5.19
 maturity: beta
 runtimes:
   - claude
@@ -165,7 +165,6 @@ overrides:
       `global/prompts/iac-review/terragrunt.md`.
 
       > Rules adapted from jfr992/terragrunt-skill (Apache-2.0) and TerraShark.
-      > Research: `docs/specs/2026-06-24-terraform-terragrunt-review-research.md`.
 ---
 Usage: stark-terragrunt-review [path] [--agents claude,codex,gemini] [--changed] [--no-tools] [--min-severity ...] [--pr N --repo O/R] [--dry-run] [--json]
 
@@ -235,4 +234,3 @@ explicitly handed to `stark-terraform-review`. Full rubric:
 `global/prompts/iac-review/terragrunt.md`.
 
 > Rules adapted from jfr992/terragrunt-skill (Apache-2.0) and TerraShark.
-> Research: `docs/specs/2026-06-24-terraform-terragrunt-review-research.md`.

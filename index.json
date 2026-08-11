@@ -22,7 +22,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.5.18",
+      "version": "0.5.19",
       "runtimes": [
         "claude",
         "codex"
@@ -47,7 +47,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.5.18",
+      "version": "0.5.19",
       "runtimes": [
         "claude",
         "codex"
@@ -72,7 +72,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.5.18",
+      "version": "0.5.19",
       "runtimes": [
         "claude",
         "codex"
@@ -97,7 +97,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.5.18",
+      "version": "0.5.19",
       "runtimes": [
         "claude",
         "codex"
@@ -106,7 +106,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:e32734da2b9357eaaa098f01f08be34cc8f17335b5d25b1aff2ad02a0d35f5f8"
+      "digest": "sha256:2b73e4581ff5c8cd8c539cb2a3aa9ec764825366ccbb833d96bf032d9a395234"
     },
     {
       "name": "stark-review",
@@ -122,7 +122,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.5.18",
+      "version": "0.5.19",
       "runtimes": [
         "claude",
         "codex"
@@ -147,7 +147,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.5.18",
+      "version": "0.5.19",
       "runtimes": [
         "claude",
         "codex"
@@ -172,7 +172,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.5.18",
+      "version": "0.5.19",
       "runtimes": [
         "claude",
         "codex"
@@ -181,7 +181,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:011c20c5dc3d7a68ad31da7f2233d22fc1ee31e3e0674d37a3a7c0e55106c39d"
+      "digest": "sha256:7a600d2c9a44aa6675c88ffd7063295d72ecaf2e4c4e7d3b49f795d5433e0727"
     },
     {
       "name": "stark-terragrunt-review",
@@ -197,7 +197,7 @@
       ],
       "category": "review",
       "maturity": "beta",
-      "version": "0.5.18",
+      "version": "0.5.19",
       "runtimes": [
         "claude",
         "codex"
@@ -206,7 +206,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:866625ef73518554c3b3da030ef9cc812cd177be8175fb5a1cf192f826ae8387"
+      "digest": "sha256:4c58865be8957fdac7042aa7d16e17634970d6ce23708eb536d353a136fd46f4"
     },
     {
       "name": "remember",
@@ -814,7 +814,7 @@
   "pluginAssets": [
     {
       "bundle": "stark-analyze",
-      "version": "0.5.18",
+      "version": "0.5.19",
       "digest": "sha256:c8eac42722558c2e426c4235af9e47ff6455674756e84083780c9a9d97b198c5"
     },
     {
