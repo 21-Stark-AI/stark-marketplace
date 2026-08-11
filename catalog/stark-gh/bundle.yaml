@@ -1,5 +1,5 @@
 name: stark-gh
-version: 0.2.11
+version: 0.2.12
 description: GitHub pull-request and repository-cleanup workflow commands for stark.
 category: productivity
 tags: [github, pr, workflow]
