@@ -2,7 +2,7 @@
 name: stark-handoff
 type: skill
 description: 'Use when the next move belongs to someone else — a fresh session after /compact, a fix dispatched into another repo, a parallel fork, a brainstorm or deep-research brief. Triggers: "handoff", "write me a prompt", "prompt file", "continuation prompt", "fix prompt", "brief for another session", "fork this work", "research prompt". Writes ONE self-contained prompt file a fresh executor starts from; can also load or launch one.'
-version: 0.6.3
+version: 0.6.4
 maturity: beta
 runtimes:
   - claude
