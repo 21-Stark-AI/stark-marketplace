@@ -1,6 +1,6 @@
 {
   "name": "stark-gh",
-  "version": "0.17.1",
+  "version": "0.17.2",
   "description": "GitHub pull-request and repository-cleanup workflow commands for stark.",
   "author": {
     "name": "21 Stark AI",
