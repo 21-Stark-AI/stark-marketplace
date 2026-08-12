@@ -1,6 +1,6 @@
 {
   "name": "stark-constitution",
-  "version": "0.17.10",
+  "version": "0.17.11",
   "description": "Project setup, decision records, and session priming — scaffold a dev-docs/standards structure (template/backfill/upgrade modes), record architecture decisions (ADRs) under docs/adr/, and assign a session persona. Maps to spec-kit's constitution phase.",
   "author": {
     "name": "21 Stark AI",
