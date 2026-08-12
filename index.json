@@ -320,7 +320,7 @@
       ],
       "category": "productivity",
       "maturity": "beta",
-      "version": "0.2.17",
+      "version": "0.2.18",
       "runtimes": [
         "claude",
         "codex",
@@ -345,7 +345,7 @@
       ],
       "category": "productivity",
       "maturity": "beta",
-      "version": "0.2.17",
+      "version": "0.2.18",
       "runtimes": [
         "claude",
         "codex",
@@ -356,7 +356,7 @@
         "codex": "native",
         "gemini": "native"
       },
-      "digest": "sha256:0e13d1da37843fc841bf3acb02a3bd2a254c5ca980c9a616a2b934de1b946a60"
+      "digest": "sha256:0306bb33067cea11c62c9d56d15dfa41fc648f519bdf0f48f9a8351792f81fde"
     },
     {
       "name": "pr-open",
@@ -370,7 +370,7 @@
       ],
       "category": "productivity",
       "maturity": "beta",
-      "version": "0.2.17",
+      "version": "0.2.18",
       "runtimes": [
         "claude",
         "codex",
@@ -819,8 +819,8 @@
     },
     {
       "bundle": "stark-gh",
-      "version": "0.2.17",
-      "digest": "sha256:92363142e5de3c4e58dedb7a6bea4e10e7d146088deacf74072a52ea18c5c2ec"
+      "version": "0.2.18",
+      "digest": "sha256:7123e95dbb4030cbf57808e54c962d68fa8bd181906051e0f150c0c4855efd2b"
     },
     {
       "bundle": "stark-implement",
