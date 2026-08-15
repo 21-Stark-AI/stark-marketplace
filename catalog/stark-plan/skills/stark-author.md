@@ -2,7 +2,7 @@
 name: stark-author
 type: skill
 description: 'Stage 1 — human-gated spec+plan authoring in one session: tier check, time-boxed recon, structured interview, one self-contained doc, one zero-context advisory pass, human gate, commit-pinned handoff. No LLM review loops. Use for author, spec, plan a change.'
-version: 0.3.25
+version: 0.4.0
 maturity: beta
 runtimes:
   - claude
@@ -614,6 +614,14 @@ only edits or deletes existing text triggers no new pass.
 ## Phase 5 — Human gate
 
 Budget: **one sitting, <60 minutes, <400 lines read.** [RQ5]
+
+**Offer the plain-language walk first.** If the operator is not the coder — or
+asks to have the gate "walked simply" — offer the **`simple-gate`** skill: it
+runs these 8 items as dead-simple, non-technical multiple-choice questions (plus
+a free-text answer) grounded in this spec and its `.human.md` sidecar. Same gate,
+made approachable. The stated-value checklist below stays the source of truth and
+the fallback; because multiple-choice can invite rubber-stamping, `simple-gate`
+keeps a wrong-answer decoy in most items and **the Tripwires below still apply**.
 
 Tell the operator to open the doc in their editor, then walk them through
 the checklist — every item demands a **stated value**, never yes/no [RQ5]:
