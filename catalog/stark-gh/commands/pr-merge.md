@@ -2,7 +2,7 @@
 name: pr-merge
 type: command
 description: Rebase a PR, draft squash-commit prose + CHANGELOG bullet via Codex (changelog step skipped when the repo keeps no root CHANGELOG.md), force-push, mark a draft PR ready-for-review, and squash-merge once CI is green.
-version: 0.2.19
+version: 0.2.20
 maturity: beta
 runtimes:
   - claude
