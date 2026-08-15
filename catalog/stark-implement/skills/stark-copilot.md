@@ -2,7 +2,7 @@
 name: stark-copilot
 type: skill
 description: 'Autonomous lead/wing implementation: lead subagent implements, wing subagent reviews, fix-loop until wing approves. Use for copilot, paired build.'
-version: 0.4.27
+version: 0.4.28
 maturity: beta
 runtimes:
   - claude
