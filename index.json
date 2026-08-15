@@ -662,6 +662,28 @@
       "digest": "sha256:255d6dacc67536b857a59a997d6ae4204329fe38966fb77176a31aec1b5a4501"
     },
     {
+      "name": "simple-gate",
+      "type": "skill",
+      "bundle": "stark-plan",
+      "description": "Use when running the stark-author human gate (Phase 5), or any spec/plan sign-off checklist, and the operator wants the checks walked interactively in dead-simple, non-technical, ELI5 language with multiple-choice questions plus free text. Triggers include \"walk me through the gate simply\", \"explain the gate like I'm five\", \"gate in plain English\", \"I don't get the checklist\", \"make the review easy\".",
+      "tags": [
+        "planning",
+        "plan",
+        "tasks",
+        "issues"
+      ],
+      "category": "planning",
+      "maturity": "beta",
+      "version": "0.4.0",
+      "runtimes": [
+        "claude"
+      ],
+      "support": {
+        "claude": "native"
+      },
+      "digest": "sha256:2c92cdfa8a3ab7d6fa1cc8f8f0965ea8580bbd41aa7d9317e88303bfc497b716"
+    },
+    {
       "name": "stark-author",
       "type": "skill",
       "bundle": "stark-plan",
@@ -674,7 +696,7 @@
       ],
       "category": "planning",
       "maturity": "beta",
-      "version": "0.3.25",
+      "version": "0.4.0",
       "runtimes": [
         "claude",
         "codex"
@@ -683,7 +705,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:656efb4bbe721f8551ef8bfae7e2d55a79e1b337ecaad5e4496db4672b9946ce"
+      "digest": "sha256:27206f45fee7984af6cd12cb8d12d9a0615cba7599f3c533e3c8de5054303883"
     },
     {
       "name": "stark-blog-sharpen",
@@ -834,7 +856,7 @@
     },
     {
       "bundle": "stark-plan",
-      "version": "0.3.25",
+      "version": "0.4.0",
       "digest": "sha256:52b3a11122118e8a00a820b643cd08183d2a380239d5203fc536035b0ca7cd18"
     }
   ]
