@@ -2,7 +2,7 @@
 name: stark-refactor-plan
 type: skill
 description: 'Plan a codebase refactor without touching code. Inspect a repository and produce two artifacts — REFACTOR_PLAN.md and REFACTOR_BACKLOG.json — an evidence-based, phased, file-by-file restructuring plan another agent can execute. Use whenever the user wants to refactor, restructure, reorganize, modularize, clean up, de-duplicate, untangle, find dead code, or assess the architecture of a codebase, or asks for a refactor plan / backlog / roadmap — even if they don''t say "plan" explicitly. Planning only: never modifies, moves, renames, or deletes source.'
-version: 0.5.24
+version: 0.5.25
 maturity: beta
 runtimes:
   - claude
@@ -121,7 +121,7 @@ overrides:
          [ -f "${TOOLS:+$TOOLS/refactor_planner.ts}" ] || { echo "refactor_planner.ts not found" >&2; exit 1; }
          [ -d "$PROMPTS" ] || { echo "refactor-planner prompts not found" >&2; exit 1; }
 
-         node --experimental-strip-types --no-warnings "$TOOLS/refactor_planner.ts" \
+         node --no-warnings "$TOOLS/refactor_planner.ts" \
            --mode dry-run --root "$ROOT" --provider "$PROVIDER" \
            --prompts-dir "$PROMPTS" --json
          ```
@@ -152,7 +152,7 @@ overrides:
          [ -f "${TOOLS:+$TOOLS/refactor_planner.ts}" ] || { echo "refactor_planner.ts not found" >&2; exit 1; }
          [ -d "$PROMPTS" ] || { echo "refactor-planner prompts not found" >&2; exit 1; }
 
-         node --experimental-strip-types --no-warnings "$TOOLS/refactor_planner.ts" \
+         node --no-warnings "$TOOLS/refactor_planner.ts" \
            --mode run --root "$ROOT" --provider "$PROVIDER" \
            --prompts-dir "$PROMPTS" --no-overwrite --json
          ```
@@ -331,7 +331,7 @@ overrides:
       [ -f "${TOOLS:+$TOOLS/refactor_planner.ts}" ] || { echo "refactor_planner.ts not found" >&2; exit 1; }
       [ -d "$PROMPTS" ] || { echo "refactor-planner prompts not found" >&2; exit 1; }
 
-      node --experimental-strip-types "$TOOLS/refactor_planner.ts" \
+      node "$TOOLS/refactor_planner.ts" \
         --mode validate --root "$ROOT" --provider "$PROVIDER" \
         --prompts-dir "$PROMPTS" --json
       ```
@@ -473,9 +473,9 @@ work or hand-authored.
    ```bash
    TOOLS="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/code-review}/tools"
    # see what would run — deterministic, no LLM
-   node --experimental-strip-types "$TOOLS/refactor_planner.ts" --mode dry-run --root "$ROOT"
+   node "$TOOLS/refactor_planner.ts" --mode dry-run --root "$ROOT"
    # full multi-agent run -> REFACTOR_PLAN.md + REFACTOR_BACKLOG.json
-   node --experimental-strip-types "$TOOLS/refactor_planner.ts" --mode run --root "$ROOT" --provider claude
+   node "$TOOLS/refactor_planner.ts" --mode run --root "$ROOT" --provider claude
    ```
 
    The dispatcher host-owns conflict resolution and assembles a DAG-valid
@@ -603,7 +603,7 @@ validator on the file you just wrote:
 
 ```bash
 TOOLS="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/code-review}/tools"
-node --experimental-strip-types "$TOOLS/refactor_planner.ts" --mode validate --root "$ROOT"
+node "$TOOLS/refactor_planner.ts" --mode validate --root "$ROOT"
 ```
 
 ### Phase 6 — Verify and report

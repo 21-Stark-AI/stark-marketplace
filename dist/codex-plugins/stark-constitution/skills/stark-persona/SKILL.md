@@ -51,7 +51,7 @@ Delegate all stateful operations to the TypeScript CLI:
 
 ```bash
 TOOLS="${STARK_REVIEW_TOOLS:-${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}/tools}"
-env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types "$TOOLS/stark_persona.ts" <subcommand> [args]
+node "$TOOLS/stark_persona.ts" <subcommand> [args]
 ```
 
 Parse the invocation input from the current user request and map it to the

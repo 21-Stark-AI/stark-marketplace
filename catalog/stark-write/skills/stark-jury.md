@@ -2,7 +2,7 @@
 name: stark-jury
 type: skill
 description: Run one of the four post skills (stark-voice, stark-story-edit, stark-blog-sharpen, stark-story-judge) across a three-model panel and reconcile the results. Use when the ask is "run this through the panel / best of three / compare the models on this post / which model edits this best / jury this draft / second and third opinion on this edit". Dispatches the skill plus the document to claude, codex and gemini in parallel, verifies every candidate against the skill's own iron rules, then THIS session merges anchored (rewrite skills) or writes the calibration report (story-judge). Never edits the four skills, never publishes.
-version: 0.5.12
+version: 0.5.13
 maturity: beta
 runtimes:
   - claude
@@ -88,7 +88,7 @@ overrides:
         echo "missing jury payload: $SKILLS_ROOT/stark-$SKILL_ID/SKILL.md" >&2
         exit 2
       }
-      STARK_JURY_SKILLS_ROOT="$SKILLS_ROOT" node --experimental-strip-types \
+      STARK_JURY_SKILLS_ROOT="$SKILLS_ROOT" node \
         "$TOOLS/jury.ts" run --skill "$SKILL_ID" --input /path/to/post.md
       ```
 
@@ -298,7 +298,7 @@ Three phases, all in the tool. You read the handoff block it prints.
    override by judgement** - fix the rule or re-run.
 
 ```bash
-node --experimental-strip-types \
+node \
   "${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/code-review}/tools/jury.ts" \
   run --skill blog-sharpen --input /path/to/post.md
 ```

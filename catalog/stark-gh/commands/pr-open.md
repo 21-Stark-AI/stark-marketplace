@@ -2,7 +2,7 @@
 name: pr-open
 type: command
 description: Open or update a PR with Codex-drafted prose, stage-all commit (default), push, and CI watcher. New PRs open as DRAFT by default (override --ready).
-version: 0.2.20
+version: 0.2.21
 maturity: beta
 runtimes:
   - claude
@@ -59,15 +59,15 @@ overrides:
       set -euo pipefail
       TOOLS="${CLAUDE_PLUGIN_ROOT}/tools"
       RAW_ARGS='<argument tail from the current user request, safely shell-quoted>'
-      PLAN_FILE="$(node --experimental-strip-types "$TOOLS/gh_pr_open_preflight.ts" \
+      PLAN_FILE="$(node "$TOOLS/gh_pr_open_preflight.ts" \
         --raw-args "$RAW_ARGS" \
         --emit-plan-path)"
       [ -n "$PLAN_FILE" ] && [ -f "$PLAN_FILE" ] || {
         echo "preflight did not return a readable plan file" >&2
         exit 1
       }
-      node --experimental-strip-types "$TOOLS/gh_pr_open_draft.ts" --plan-file "$PLAN_FILE"
-      EXECUTE_OUT="$(node --experimental-strip-types "$TOOLS/gh_pr_open_execute.ts" --plan-file "$PLAN_FILE")"
+      node "$TOOLS/gh_pr_open_draft.ts" --plan-file "$PLAN_FILE"
+      EXECUTE_OUT="$(node "$TOOLS/gh_pr_open_execute.ts" --plan-file "$PLAN_FILE")"
       printf '%s\n' "$EXECUTE_OUT"
       ```
 
@@ -135,7 +135,7 @@ TOOLS="${CLAUDE_PLUGIN_ROOT}/tools"
 The raw arg may be a bare PR number OR a flag list — the parser accepts both.
 
 ```bash
-PLAN_FILE=$(node --experimental-strip-types "$TOOLS/gh_pr_open_preflight.ts" \
+PLAN_FILE=$(node "$TOOLS/gh_pr_open_preflight.ts" \
   --raw-args "$ARGUMENTS" \
   --emit-plan-path)
 ```
@@ -178,7 +178,7 @@ subject — the title is where the ticket trail starts.
 ## Stage 2 - Draft
 
 ```bash
-node --experimental-strip-types "$TOOLS/gh_pr_open_draft.ts" --plan-file "$PLAN_FILE"
+node "$TOOLS/gh_pr_open_draft.ts" --plan-file "$PLAN_FILE"
 ```
 
 The draft tool reads `$PLAN_FILE`, internally subprocess-calls `codex exec`
@@ -232,7 +232,7 @@ behaviour change at all: `--exclude-standard` means the guard never sees them.
 ## Stage 3 - Execute
 
 ```bash
-node --experimental-strip-types "$TOOLS/gh_pr_open_execute.ts" --plan-file "$PLAN_FILE"
+node "$TOOLS/gh_pr_open_execute.ts" --plan-file "$PLAN_FILE"
 ```
 
 Parse the result JSON and print `result.prUrl`.

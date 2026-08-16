@@ -2,7 +2,7 @@
 name: stark-build
 type: skill
 description: 'Stage 2 — autonomous implementation from an accepted stark-author spec: one fresh headless session per task, gated by checks the agent cannot edit (PreToolUse path-deny + Stop-hook gate), evidence per task, commit per green task, held-out e2e gate, one cross-vendor advisory review, ONE bounded fix round for medium+ findings, draft PR. No LLM review loops. Use for build, implement a spec.'
-version: 0.4.28
+version: 0.4.29
 maturity: beta
 runtimes:
   - claude
@@ -137,7 +137,7 @@ overrides:
          SLUG="<resolved-slug>"
          ACCEPTED_BASE="<accepted-base-sha>"
          [ -f "$TOOLS/copilot_land.ts" ] || { echo "copilot_land.ts not found" >&2; exit 1; }
-         node --experimental-strip-types --no-warnings "$TOOLS/copilot_land.ts" \
+         node --no-warnings "$TOOLS/copilot_land.ts" \
            prepare-branch --branch "build/$SLUG" --repo-dir "$WT" \
            --require-base "$ACCEPTED_BASE" \
            || { echo "HARD STOP: prepare-branch refused — read its message." >&2; exit 1; }
@@ -679,7 +679,7 @@ State lives OUTSIDE the repo:
    branch `build/<slug>` via the create-or-adopt plumbing (never force):
    ```bash
    TOOLS="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/code-review}/tools"
-   node --experimental-strip-types --no-warnings "$TOOLS/copilot_land.ts" \
+   node --no-warnings "$TOOLS/copilot_land.ts" \
      prepare-branch --branch "build/<slug>" --repo-dir "<wt>" \
      --require-base <accepted-base>
    ```

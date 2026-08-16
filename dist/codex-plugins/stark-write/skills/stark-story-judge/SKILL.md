@@ -202,7 +202,7 @@ STDERR_FILE="$JUDGE_DIR/$SECOND_VENDOR-stderr.txt"
 # Write the completed template + payload once to $PROMPT_FILE. Every judge
 # receives these exact bytes.
 
-MODEL="$(env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types "$TOOLS/stark_config_lib.ts" \
+MODEL="$(node "$TOOLS/stark_config_lib.ts" \
   --model "$SECOND_VENDOR" 2>/dev/null || true)"
 
 case "$SECOND_VENDOR" in

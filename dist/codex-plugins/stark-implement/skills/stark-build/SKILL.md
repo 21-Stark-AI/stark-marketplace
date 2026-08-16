@@ -136,7 +136,7 @@ delete runner state.
    SLUG="<resolved-slug>"
    ACCEPTED_BASE="<accepted-base-sha>"
    [ -f "$TOOLS/copilot_land.ts" ] || { echo "copilot_land.ts not found" >&2; exit 1; }
-   env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types --no-warnings "$TOOLS/copilot_land.ts" \
+   node --no-warnings "$TOOLS/copilot_land.ts" \
      prepare-branch --branch "build/$SLUG" --repo-dir "$WT" \
      --require-base "$ACCEPTED_BASE" \
      || { echo "HARD STOP: prepare-branch refused — read its message." >&2; exit 1; }

@@ -2,7 +2,7 @@
 name: stark-persona
 type: skill
 description: Assign a famous character persona for the session with weighted random selection. Use for persona, character, voice. /stark-persona.
-version: 0.2.33
+version: 0.2.34
 maturity: beta
 runtimes:
   - claude
@@ -55,7 +55,7 @@ overrides:
 
       ```bash
       TOOLS="${STARK_REVIEW_TOOLS:-${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/code-review}/tools}"
-      node --experimental-strip-types "$TOOLS/stark_persona.ts" <subcommand> [args]
+      node "$TOOLS/stark_persona.ts" <subcommand> [args]
       ```
 
       Parse the invocation input from the current user request and map it to the
@@ -131,7 +131,7 @@ Session persona system — assigns a character voice to Claude for the session.
 Delegate all stateful operations to the TypeScript CLI:
 
 ```bash
-node --experimental-strip-types ${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/code-review}/tools/stark_persona.ts <subcommand> [args]
+node ${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/code-review}/tools/stark_persona.ts <subcommand> [args]
 ```
 
 Parse the ARGUMENTS and map to the appropriate subcommand:

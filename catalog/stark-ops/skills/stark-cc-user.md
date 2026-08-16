@@ -2,7 +2,7 @@
 name: stark-cc-user
 type: skill
 description: Switch the active Claude Code account between stored profiles when a 5-hour or 7-day rate-limit window runs out. Credentials live in macOS Keychain (service `stark-cc-token`); headroom comes from statusline snapshots.
-version: 0.6.9
+version: 0.6.10
 maturity: beta
 runtimes:
   - claude
@@ -78,7 +78,7 @@ overrides:
         echo "bundled tools/cc_account.ts not found; reinstall the skill bundle" >&2
         exit 1
       }
-      node --experimental-strip-types --no-warnings "$script" "${command_args[@]}"
+      node --no-warnings "$script" "${command_args[@]}"
       ```
 
       Pass stdout through verbatim. The tool is the single source of truth for
@@ -353,7 +353,7 @@ Resolve `tools/cc_account.ts` (worktree-relative, falling back to
 it with the parsed subcommand:
 
 ```
-node --experimental-strip-types --no-warnings <script> <subcommand> [args]
+node --no-warnings <script> <subcommand> [args]
 ```
 
 Pass stdout through verbatim. The tool is the single source of truth for

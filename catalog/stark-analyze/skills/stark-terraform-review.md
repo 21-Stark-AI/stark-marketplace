@@ -2,7 +2,7 @@
 name: stark-terraform-review
 type: skill
 description: Multi-agent code review of Terraform / OpenTofu (HCL) — modules, root configs, .tf/.tfvars/.tftest.hcl — for security, correctness, state safety, module-contract quality, and testing gaps. Runs the review across one or more configurable LLMs (claude/codex/gemini), each as its own subagent, then merges + cross-validates findings. Use whenever the user wants to review, audit, or sanity-check Terraform/OpenTofu code, asks "is this .tf safe/correct/idiomatic", or points at a module/directory and wants findings. Review-only. For Terragrunt orchestration use stark-terragrunt-review.
-version: 0.5.24
+version: 0.5.25
 maturity: beta
 runtimes:
   - claude
@@ -116,7 +116,7 @@ overrides:
       IAC_REVIEW="${TOOLS:+$TOOLS/iac_review.ts}"
       [ -f "$IAC_REVIEW" ] || { echo "iac_review.ts not found; set STARK_ASSET_ROOT or STARK_REVIEW_TOOLS" >&2; exit 1; }
       PREVIEW_ARGS=(--kind terraform "$TARGET_PATH" "${REVIEW_ARGS[@]}" --dry-run --no-tools --json)
-      node --experimental-strip-types --no-warnings "$IAC_REVIEW" "${PREVIEW_ARGS[@]}"
+      node --no-warnings "$IAC_REVIEW" "${PREVIEW_ARGS[@]}"
       ```
 
       Run this second block only after recording the user's decisions. Set the three
@@ -145,7 +145,7 @@ overrides:
       RUN_ARGS=(--kind terraform "$TARGET_PATH" "${REVIEW_ARGS[@]}" --allow-agent-dispatch)
       if [ "$SCANNER_CONSENT" = true ]; then RUN_ARGS+=(--trust-source); else RUN_ARGS+=(--no-tools); fi
       if [ "$TFVARS_CONSENT" = true ]; then RUN_ARGS+=(--include-tfvars); fi
-      node --experimental-strip-types --no-warnings "$IAC_REVIEW" "${RUN_ARGS[@]}"
+      node --no-warnings "$IAC_REVIEW" "${RUN_ARGS[@]}"
       ```
 
       The dispatcher:
@@ -229,7 +229,7 @@ Raw input: `$ARGUMENTS`
 
 ```bash
 TOOLS="${STARK_REVIEW_TOOLS:-${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/code-review}/tools}"
-node --experimental-strip-types --no-warnings "$TOOLS/iac_review.ts" \
+node --no-warnings "$TOOLS/iac_review.ts" \
   --kind terraform "${PATH_ARG:-.}" ${EXTRA_FLAGS}
 ```
 

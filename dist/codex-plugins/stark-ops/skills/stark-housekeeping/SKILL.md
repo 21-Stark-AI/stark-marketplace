@@ -210,7 +210,7 @@ TOOLS="${ASSET_ROOT:+$ASSET_ROOT/tools}"
 }
 dry_run_args=()
 [ "<dry-run:true-or-false>" = "true" ] && dry_run_args=(--dry-run)
-INFRA_JSON="$(env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types "$TOOLS/housekeeping_infra.ts" \
+INFRA_JSON="$(node "$TOOLS/housekeeping_infra.ts" \
   "${dry_run_args[@]}" --json)"
 printf '%s\n' "$INFRA_JSON"
 ```

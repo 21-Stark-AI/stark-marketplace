@@ -153,7 +153,7 @@ Store as `$CURRENT_VERSION`.
 
 ```bash
 TOOLS="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}/tools"
-CHANGES_JSON=$(env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types "$TOOLS/release_changelog.ts" --json)
+CHANGES_JSON=$(node "$TOOLS/release_changelog.ts" --json)
 ```
 
 The tool reads `CHANGELOG.md`, then falls back to `git log <last-tag>..HEAD`
@@ -198,7 +198,7 @@ Calculate `$NEXT_VERSION` accordingly. Do NOT ask for confirmation — proceed a
 ## Step 5: Bump Version in Source
 
 ```bash
-BUMP_JSON=$(env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types "$TOOLS/release_version_bump.ts" \
+BUMP_JSON=$(node "$TOOLS/release_version_bump.ts" \
   --version "$NEXT_VERSION" --json)
 ```
 

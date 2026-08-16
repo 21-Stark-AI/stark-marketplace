@@ -121,7 +121,7 @@ credentials, and reaches that path only after explicit `--post` consent.
 ```bash
 gh auth status
 
-SETUP_JSON=$(env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types "$TOOLS/review_setup_worktree.ts" \
+SETUP_JSON=$(node "$TOOLS/review_setup_worktree.ts" \
     --pr "$PR_NUM" --repo "$REPO" --mode single --json)
 json_value() {
     printf '%s' "$SETUP_JSON" | node -e '
@@ -180,7 +180,7 @@ if [ "${FIX_APPROVED:-0}" = 1 ] && [ "${POST_APPROVED:-0}" != 1 ]; then
 fi
 
 set +e
-RECEIPT_JSON=$(env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types "$TOOLS/stark_review.ts" "${review_args[@]}")
+RECEIPT_JSON=$(node "$TOOLS/stark_review.ts" "${review_args[@]}")
 TS_EXIT=$?
 set -e
 ```
@@ -318,7 +318,7 @@ a host-specific history root nor manages those files.
 ```bash
 cd - >/dev/null
 
-env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types "$TOOLS/review_cleanup_worktree.ts" \
+node "$TOOLS/review_cleanup_worktree.ts" \
     --worktree "$WORKTREE_PATH" --head-sha "$HEAD_SHA" --json
 ```
 

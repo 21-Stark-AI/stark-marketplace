@@ -77,7 +77,7 @@ fi
   echo "bundled tools/cc_account.ts not found; reinstall the skill bundle" >&2
   exit 1
 }
-env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types --no-warnings "$script" "${command_args[@]}"
+node --no-warnings "$script" "${command_args[@]}"
 ```
 
 Pass stdout through verbatim. The tool is the single source of truth for

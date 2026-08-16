@@ -2,7 +2,7 @@
 name: cleanup
 type: command
 description: Sweep the local + remote repo for merged-PR branches, stale tracking refs, worktree leftovers (including detached-HEAD review worktrees), merged-PR watcher state, stale stashes, and loose objects. Rebases the current branch onto upstream and applies linear-tree git config so the history stays sharp.
-version: 0.2.20
+version: 0.2.21
 maturity: beta
 runtimes:
   - claude
@@ -39,7 +39,7 @@ overrides:
       ```bash
       TOOLS="${CLAUDE_PLUGIN_ROOT}/tools"
       RAW_ARGS='<argument tail from the current user request, safely shell-quoted>'
-      node --experimental-strip-types "$TOOLS/gh_cleanup.ts" --raw-args "$RAW_ARGS"
+      node "$TOOLS/gh_cleanup.ts" --raw-args "$RAW_ARGS"
       ```
 
       The tool handles its own preflight (in-repo, gh authed, clean tree), discovery,
@@ -136,7 +136,7 @@ TOOLS="${CLAUDE_PLUGIN_ROOT}/tools"
 ## Run
 
 ```bash
-node --experimental-strip-types "$TOOLS/gh_cleanup.ts" --raw-args "$ARGUMENTS"
+node "$TOOLS/gh_cleanup.ts" --raw-args "$ARGUMENTS"
 ```
 
 The tool handles its own preflight (in-repo, gh authed, clean tree), discovery,
