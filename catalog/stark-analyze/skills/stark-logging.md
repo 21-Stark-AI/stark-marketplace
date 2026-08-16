@@ -2,7 +2,7 @@
 name: stark-logging
 type: skill
 description: 'Use when adding, changing, or reviewing application logging — instrumenting a service/CLI/connector, choosing log levels (DEBUG→FATAL), writing structured logs, or judging whether log lines in a diff are actually useful. Symptoms: fmt.Sprintf/printf into a message, everything at INFO, log-and-return, no correlation id, secrets in logs, per-item spam in loops, logs nobody can grep.'
-version: 0.5.25
+version: 0.5.26
 maturity: beta
 runtimes:
   - claude
