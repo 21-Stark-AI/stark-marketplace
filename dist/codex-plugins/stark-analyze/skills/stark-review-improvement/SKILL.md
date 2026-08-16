@@ -169,7 +169,7 @@ After all edits:
 
 1. **Syntax check prompts** — ensure no broken markdown, no missing sections
 2. **TS syntax + focused tests** — if the orchestrator was edited, run
-   `env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types --check "$ORCHESTRATOR"` and the
+   `node --check "$ORCHESTRATOR"` and the
    `tools/stark_review*.test.ts` tests covering the touched seam
 3. **JSON validity** — if config was edited: `node -e "JSON.parse(require('fs').readFileSync('$CONFIG','utf8'))"`
 4. **Diff review** — show `git diff` in `$STARK_REPO` to the user for confirmation

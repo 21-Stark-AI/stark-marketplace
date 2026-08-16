@@ -52,15 +52,15 @@ The raw arg may be a bare PR number OR a flag list — the parser accepts both.
 set -euo pipefail
 TOOLS="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}/tools"
 RAW_ARGS='<argument tail from the current user request, safely shell-quoted>'
-PLAN_FILE="$(env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types "$TOOLS/gh_pr_open_preflight.ts" \
+PLAN_FILE="$(node "$TOOLS/gh_pr_open_preflight.ts" \
   --raw-args "$RAW_ARGS" \
   --emit-plan-path)"
 [ -n "$PLAN_FILE" ] && [ -f "$PLAN_FILE" ] || {
   echo "preflight did not return a readable plan file" >&2
   exit 1
 }
-env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types "$TOOLS/gh_pr_open_draft.ts" --plan-file "$PLAN_FILE"
-EXECUTE_OUT="$(env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types "$TOOLS/gh_pr_open_execute.ts" --plan-file "$PLAN_FILE")"
+node "$TOOLS/gh_pr_open_draft.ts" --plan-file "$PLAN_FILE"
+EXECUTE_OUT="$(node "$TOOLS/gh_pr_open_execute.ts" --plan-file "$PLAN_FILE")"
 printf '%s\n' "$EXECUTE_OUT"
 ```
 

@@ -2,7 +2,7 @@
 name: stark-story-judge
 type: skill
 description: Zero-context reader verdict on a long-form post. Use before publishing, after an edit pass, or whenever the ask is "how good is this / would a stranger read this / fresh eyes on this post / grade it / second opinion / would my audience or LinkedIn crowd read this". Dispatches cold judges - one per vendor, never a re-roll - that grade the reading experience on an anchored rubric with quoted evidence, plus optional audience-persona lenses (read/share verdicts, no grades), then relays the scorecards verbatim. Judges only - it never edits (stark-story-edit rewrites, stark-blog-sharpen cuts) and never checks publish machinery.
-version: 0.5.12
+version: 0.5.13
 maturity: beta
 runtimes:
   - claude
@@ -205,7 +205,7 @@ overrides:
       # Write the completed template + payload once to $PROMPT_FILE. Every judge
       # receives these exact bytes.
 
-      MODEL="$(node --experimental-strip-types "$TOOLS/stark_config_lib.ts" \
+      MODEL="$(node "$TOOLS/stark_config_lib.ts" \
         --model "$SECOND_VENDOR" 2>/dev/null || true)"
 
       case "$SECOND_VENDOR" in
@@ -499,7 +499,7 @@ Dispatch shape - every detail is a scar, keep all of them:
 
 ````bash
 # model from fleet config; empty var falls back to the CLI's own default
-CODEX_MODEL="$(node --experimental-strip-types \
+CODEX_MODEL="$(node \
   "${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/code-review}/tools/stark_config_lib.ts" \
   --model codex 2>/dev/null || true)"
 cd "$(mktemp -d)" && codex exec --skip-git-repo-check -s read-only \

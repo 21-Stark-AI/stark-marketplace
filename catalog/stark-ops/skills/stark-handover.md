@@ -2,7 +2,7 @@
 name: stark-handover
 type: skill
 description: 'Use when pausing or splitting work across sessions — before /clear, when context runs low, end of day, switching tasks — or when resuming after one. Triggers: "handover", "save context", "save progress", "resume", "continue where we left off", "what was I doing". Persists a numbered handover chain + PROGRESS.md tracker per task; resume needs no recap.'
-version: 0.6.9
+version: 0.6.10
 maturity: beta
 runtimes:
   - claude
@@ -71,7 +71,7 @@ overrides:
 
       ```bash
       TOOLS="${STARK_REVIEW_TOOLS:-${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/code-review}/tools}"
-      node --experimental-strip-types --no-warnings \
+      node --no-warnings \
         "$TOOLS/stark_handover.ts" resolve            # add: --task "<slug>"
       ```
 
@@ -118,7 +118,7 @@ overrides:
       TOOLS="${STARK_REVIEW_TOOLS:-${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/code-review}/tools}"
       HB=$(mktemp -t stark-handover-body) && PB=$(mktemp -t stark-handover-progress)
       # Write handover body to $HB and progress to $PB, then:
-      node --experimental-strip-types --no-warnings \
+      node --no-warnings \
         "$TOOLS/stark_handover.ts" save --task "<slug>" \
         --handover-file "$HB" --progress-file "$PB"
       ```
@@ -142,7 +142,7 @@ overrides:
 
       ```bash
       TOOLS="${STARK_REVIEW_TOOLS:-${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/code-review}/tools}"
-      node --experimental-strip-types --no-warnings \
+      node --no-warnings \
         "$TOOLS/stark_handover.ts" resume             # add: --task "<slug>"
       ```
 
@@ -174,7 +174,7 @@ overrides:
 
       ```bash
       TOOLS="${STARK_REVIEW_TOOLS:-${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/code-review}/tools}"
-      node --experimental-strip-types --no-warnings \
+      node --no-warnings \
         "$TOOLS/stark_handover.ts" list               # add --all for every project/worktree
       ```
 
@@ -222,7 +222,7 @@ TOOLS="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/code-review}/tools"
 # A function, not a string var: zsh does NOT word-split `$VAR`, so a
 # multi-word command stuffed in a variable is run as one bogus command name.
 # Define this in the SAME Bash call that uses it (shells don't persist across calls).
-handover() { node --experimental-strip-types --no-warnings "$TOOLS/stark_handover.ts" "$@"; }
+handover() { node --no-warnings "$TOOLS/stark_handover.ts" "$@"; }
 ```
 
 ## Arguments

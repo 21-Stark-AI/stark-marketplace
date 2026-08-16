@@ -2,7 +2,7 @@
 name: stark-gh-user
 type: skill
 description: Switch the active GitHub user identity (primary ↔ secondary) for `gh` invocations to dodge per-user GraphQL/REST rate limits. Tokens live in macOS Keychain (service `stark-gh-token`).
-version: 0.6.9
+version: 0.6.10
 maturity: beta
 runtimes:
   - claude
@@ -77,13 +77,13 @@ overrides:
       ### `show`
 
       1. Read `$STARK_GH_USER` (default `primary`).
-      2. Run `node --experimental-strip-types --no-warnings <script> --user <active>` to confirm a token is reachable. If it raises, surface the keychain account name that's missing.
+      2. Run `node --no-warnings <script> --user <active>` to confirm a token is reachable. If it raises, surface the keychain account name that's missing.
       3. Spawn `gh api rate_limit --jq '.resources | {core, graphql}'` with `GH_TOKEN` set to that token.
       4. Print: active user, login (`gh api user --jq .login`), core remaining/limit, graphql remaining/limit.
 
       ### `primary` / `secondary`
 
-      1. Resolve token via `node --experimental-strip-types --no-warnings <script> --user <name> --kind <kind>`.
+      1. Resolve token via `node --no-warnings <script> --user <name> --kind <kind>`.
       2. Validate that the requested Keychain entry exists, discarding the resolved
          value rather than printing it.
       3. Print one guarded deferred export block (no markdown or commentary), so the
@@ -238,13 +238,13 @@ Parse `$ARGUMENTS` into a subcommand and optional `--kind` flag. Default subcomm
 ### `show`
 
 1. Read `$STARK_GH_USER` (default `primary`).
-2. Run `node --experimental-strip-types --no-warnings <script> --user <active>` to confirm a token is reachable. If it raises, surface the keychain account name that's missing.
+2. Run `node --no-warnings <script> --user <active>` to confirm a token is reachable. If it raises, surface the keychain account name that's missing.
 3. Spawn `gh api rate_limit --jq '.resources | {core, graphql}'` with `GH_TOKEN` set to that token.
 4. Print: active user, login (`gh api user --jq .login`), core remaining/limit, graphql remaining/limit.
 
 ### `primary` / `secondary`
 
-1. Resolve token via `node --experimental-strip-types --no-warnings <script> --user <name> --kind <kind>`.
+1. Resolve token via `node --no-warnings <script> --user <name> --kind <kind>`.
 2. Print three lines exactly (no markdown, no commentary), so the user can `eval` them:
    ```
    export STARK_GH_USER=<name>
@@ -255,7 +255,7 @@ Parse `$ARGUMENTS` into a subcommand and optional `--kind` flag. Default subcomm
 
 ### `swap`
 
-Run `node --experimental-strip-types --no-warnings <script> --swap` (forwarding `--kind` if provided). Pass through stdout verbatim. The script already emits the three export lines plus a `#` comment indicating the direction of the swap.
+Run `node --no-warnings <script> --swap` (forwarding `--kind` if provided). Pass through stdout verbatim. The script already emits the three export lines plus a `#` comment indicating the direction of the swap.
 
 ### `limits`
 
@@ -322,7 +322,7 @@ else
   exit 1
 fi
 
-run_token() { node --experimental-strip-types --no-warnings "$SCRIPT" "$@"; }
+run_token() { node --no-warnings "$SCRIPT" "$@"; }
 
 # Parse arguments: extract subcommand and --kind flag
 SUBCOMMAND="show"

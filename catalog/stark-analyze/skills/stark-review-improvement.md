@@ -2,7 +2,7 @@
 name: stark-review-improvement
 type: skill
 description: Improve review prompts based on Prompt Improvement Assessment from completed reviews. Use for fix review prompts.
-version: 0.5.24
+version: 0.5.25
 maturity: beta
 runtimes:
   - claude
@@ -172,7 +172,7 @@ overrides:
 
       1. **Syntax check prompts** — ensure no broken markdown, no missing sections
       2. **TS syntax + focused tests** — if the orchestrator was edited, run
-         `node --experimental-strip-types --check "$ORCHESTRATOR"` and the
+         `node --check "$ORCHESTRATOR"` and the
          `tools/stark_review*.test.ts` tests covering the touched seam
       3. **JSON validity** — if config was edited: `node -e "JSON.parse(require('fs').readFileSync('$CONFIG','utf8'))"`
       4. **Diff review** — show `git diff` in `$STARK_REPO` to the user for confirmation
@@ -384,7 +384,7 @@ Add new fields with safe defaults:
 After all edits:
 
 1. **Syntax check prompts** — ensure no broken markdown, no missing sections
-2. **TS type-check** — if orchestrator was edited: `node --experimental-strip-types --check "$ORCHESTRATOR"`
+2. **TS type-check** — if orchestrator was edited: `node --check "$ORCHESTRATOR"`
 3. **JSON validity** — if config was edited: `node -e "JSON.parse(require('fs').readFileSync('$CONFIG','utf8'))"`
 4. **Diff review** — show `git diff` in `$STARK_REPO` to the user for confirmation
 

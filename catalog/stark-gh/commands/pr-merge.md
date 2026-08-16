@@ -2,7 +2,7 @@
 name: pr-merge
 type: command
 description: Rebase a PR, draft squash-commit prose + CHANGELOG bullet via Codex (changelog step skipped when the repo keeps no root CHANGELOG.md), force-push, mark a draft PR ready-for-review, and squash-merge once CI is green.
-version: 0.2.20
+version: 0.2.21
 maturity: beta
 runtimes:
   - claude
@@ -88,7 +88,7 @@ overrides:
       The raw arg may be a bare PR number OR a flag list — the parser accepts both.
 
       ```bash
-      if PREFLIGHT_OUT="$(node --experimental-strip-types "$TOOLS/gh_pr_merge_preflight.ts" \
+      if PREFLIGHT_OUT="$(node "$TOOLS/gh_pr_merge_preflight.ts" \
         --raw-args "$RAW_ARGS" \
         --emit-plan-path)"; then
         :
@@ -135,7 +135,7 @@ overrides:
         restore_rc=$?
         trap - EXIT
         if [ "$restore_rc" -ne 0 ]; then
-          node --experimental-strip-types "$TOOLS/lib/restore_branch.ts" "$PLAN_FILE" >&2 || true
+          node "$TOOLS/lib/restore_branch.ts" "$PLAN_FILE" >&2 || true
         fi
         exit "$restore_rc"
       }
@@ -148,7 +148,7 @@ overrides:
 
       ```bash
       if [ "$RESUME_MODE" != "spawn-only" ]; then
-        node --experimental-strip-types "$TOOLS/gh_pr_merge_draft.ts" --plan-file "$PLAN_FILE"
+        node "$TOOLS/gh_pr_merge_draft.ts" --plan-file "$PLAN_FILE"
       fi
       ```
 
@@ -171,14 +171,14 @@ overrides:
 
       ```bash
       if [ "$RESUME_MODE" = "spawn-only" ]; then
-        if EXECUTE_OUT="$(node --experimental-strip-types "$TOOLS/gh_pr_merge_execute.ts" \
+        if EXECUTE_OUT="$(node "$TOOLS/gh_pr_merge_execute.ts" \
           --plan-file "$PLAN_FILE" --resume-from-spawn)"; then
           EXECUTE_RC=0
         else
           EXECUTE_RC=$?
         fi
       else
-        if EXECUTE_OUT="$(node --experimental-strip-types "$TOOLS/gh_pr_merge_execute.ts" \
+        if EXECUTE_OUT="$(node "$TOOLS/gh_pr_merge_execute.ts" \
           --plan-file "$PLAN_FILE")"; then
           EXECUTE_RC=0
         else
@@ -279,7 +279,7 @@ TOOLS="${CLAUDE_PLUGIN_ROOT}/tools"
 The raw arg may be a bare PR number OR a flag list — the parser accepts both.
 
 ```bash
-PREFLIGHT_OUT=$(node --experimental-strip-types "$TOOLS/gh_pr_merge_preflight.ts" \
+PREFLIGHT_OUT=$(node "$TOOLS/gh_pr_merge_preflight.ts" \
   --raw-args "$ARGUMENTS" \
   --emit-plan-path)
 PREFLIGHT_RC=$?
@@ -318,7 +318,7 @@ trap that calls `lib/restore_branch.ts` on any non-zero exit. Disarm the trap
 once Stage 3 reports a successful push.
 
 ```bash
-trap 'node --experimental-strip-types "$TOOLS/lib/restore_branch.ts" "$PLAN_FILE" >&2 || true' EXIT
+trap 'node "$TOOLS/lib/restore_branch.ts" "$PLAN_FILE" >&2 || true' EXIT
 ```
 
 ## Stage 2 — Draft
@@ -327,7 +327,7 @@ If `RESUME_MODE=spawn-only`, skip drafting (already done in the prior run).
 
 ```bash
 if [ "$RESUME_MODE" != "spawn-only" ]; then
-  node --experimental-strip-types "$TOOLS/gh_pr_merge_draft.ts" --plan-file "$PLAN_FILE"
+  node "$TOOLS/gh_pr_merge_draft.ts" --plan-file "$PLAN_FILE"
 fi
 ```
 
@@ -350,10 +350,10 @@ prefix — including non-ticket scopes like `docs(adr-0007):` — impose nothing
 
 ```bash
 if [ "$RESUME_MODE" = "spawn-only" ]; then
-  EXECUTE_OUT=$(node --experimental-strip-types "$TOOLS/gh_pr_merge_execute.ts" \
+  EXECUTE_OUT=$(node "$TOOLS/gh_pr_merge_execute.ts" \
     --plan-file "$PLAN_FILE" --resume-from-spawn)
 else
-  EXECUTE_OUT=$(node --experimental-strip-types "$TOOLS/gh_pr_merge_execute.ts" \
+  EXECUTE_OUT=$(node "$TOOLS/gh_pr_merge_execute.ts" \
     --plan-file "$PLAN_FILE")
 fi
 EXECUTE_RC=$?

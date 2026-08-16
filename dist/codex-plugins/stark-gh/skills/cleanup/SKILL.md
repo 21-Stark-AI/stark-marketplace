@@ -33,7 +33,7 @@ execute the marker literally.
 ```bash
 TOOLS="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}/tools"
 RAW_ARGS='<argument tail from the current user request, safely shell-quoted>'
-env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types "$TOOLS/gh_cleanup.ts" --raw-args "$RAW_ARGS"
+node "$TOOLS/gh_cleanup.ts" --raw-args "$RAW_ARGS"
 ```
 
 The tool handles its own preflight (in-repo, gh authed, clean tree), discovery,

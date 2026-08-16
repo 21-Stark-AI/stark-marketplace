@@ -70,7 +70,7 @@ depend on a host-populated argument placeholder.
 
 ```bash
 TOOLS="${STARK_REVIEW_TOOLS:-${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}/tools}"
-env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types --no-warnings \
+node --no-warnings \
   "$TOOLS/stark_handover.ts" resolve            # add: --task "<slug>"
 ```
 
@@ -117,7 +117,7 @@ Write both to temp files, following the templates **exactly**
 TOOLS="${STARK_REVIEW_TOOLS:-${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}/tools}"
 HB=$(mktemp -t stark-handover-body) && PB=$(mktemp -t stark-handover-progress)
 # Write handover body to $HB and progress to $PB, then:
-env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types --no-warnings \
+node --no-warnings \
   "$TOOLS/stark_handover.ts" save --task "<slug>" \
   --handover-file "$HB" --progress-file "$PB"
 ```
@@ -141,7 +141,7 @@ reporting if thin. Then tell the user:
 
 ```bash
 TOOLS="${STARK_REVIEW_TOOLS:-${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}/tools}"
-env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types --no-warnings \
+node --no-warnings \
   "$TOOLS/stark_handover.ts" resume             # add: --task "<slug>"
 ```
 
@@ -173,7 +173,7 @@ first step; ask exactly those.
 
 ```bash
 TOOLS="${STARK_REVIEW_TOOLS:-${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}/tools}"
-env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from this loaded SKILL.md as instructed above}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types --no-warnings \
+node --no-warnings \
   "$TOOLS/stark_handover.ts" list               # add --all for every project/worktree
 ```
 

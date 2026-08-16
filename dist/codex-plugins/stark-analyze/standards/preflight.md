@@ -7,7 +7,7 @@ Skills point at this doc instead of inlining the pattern.
 
 ```bash
 TOOLS="${STARK_REVIEW_TOOLS:-${STARK_PLUGIN_ROOT:?resolve from the loaded SKILL.md as instructed}/tools}"
-env STARK_ASSET_ROOT="${STARK_PLUGIN_ROOT:?resolve from the loaded SKILL.md as instructed}" STARK_STATE_ROOT="${STARK_STATE_ROOT:-$HOME/.stark/code-review}" node --experimental-strip-types "$TOOLS/preflight.ts" --workflow <skill-slug> --json
+node "$TOOLS/preflight.ts" --workflow <skill-slug> --json
 ```
 
 The skill provides its own `<skill-slug>` (e.g. `stark-review`, `stark-terraform-review`).

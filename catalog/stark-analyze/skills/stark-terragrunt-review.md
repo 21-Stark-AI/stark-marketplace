@@ -2,7 +2,7 @@
 name: stark-terragrunt-review
 type: skill
 description: Multi-agent code review of Terragrunt orchestration — terragrunt.hcl, root.hcl, terragrunt.stack.hcl, units, includes, dependency/generate/remote_state blocks, the DRY values pattern, multi-account/multi-env live repos — for dependency correctness, state isolation, mock-output safety, and HCL pitfalls. Runs across one or more configurable LLMs (claude/codex/gemini), each as its own subagent, then merges + cross-validates findings. Use whenever the user wants to review, audit, or sanity-check a Terragrunt repo/catalog/live tree, or asks about dependency ordering / mock outputs / state keys / include hierarchy. Review-only; defers resource/module HCL to stark-terraform-review.
-version: 0.5.24
+version: 0.5.25
 maturity: beta
 runtimes:
   - claude
@@ -107,7 +107,7 @@ overrides:
       IAC_REVIEW="${TOOLS:+$TOOLS/iac_review.ts}"
       [ -f "$IAC_REVIEW" ] || { echo "iac_review.ts not found; set STARK_ASSET_ROOT or STARK_REVIEW_TOOLS" >&2; exit 1; }
       PREVIEW_ARGS=(--kind terragrunt "$TARGET_PATH" "${REVIEW_ARGS[@]}" --dry-run --no-tools --json)
-      node --experimental-strip-types --no-warnings "$IAC_REVIEW" "${PREVIEW_ARGS[@]}"
+      node --no-warnings "$IAC_REVIEW" "${PREVIEW_ARGS[@]}"
       ```
 
       Run this second block only after recording the user's decisions. Set the two
@@ -134,7 +134,7 @@ overrides:
       [ -f "$IAC_REVIEW" ] || { echo "iac_review.ts not found; set STARK_ASSET_ROOT or STARK_REVIEW_TOOLS" >&2; exit 1; }
       RUN_ARGS=(--kind terragrunt "$TARGET_PATH" "${REVIEW_ARGS[@]}" --allow-agent-dispatch)
       if [ "$SCANNER_CONSENT" = true ]; then RUN_ARGS+=(--trust-source); else RUN_ARGS+=(--no-tools); fi
-      node --experimental-strip-types --no-warnings "$IAC_REVIEW" "${RUN_ARGS[@]}"
+      node --no-warnings "$IAC_REVIEW" "${RUN_ARGS[@]}"
       ```
 
       The dispatcher:
@@ -213,7 +213,7 @@ Raw input: `$ARGUMENTS`
 
 ```bash
 TOOLS="${STARK_REVIEW_TOOLS:-${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/code-review}/tools}"
-node --experimental-strip-types --no-warnings "$TOOLS/iac_review.ts" \
+node --no-warnings "$TOOLS/iac_review.ts" \
   --kind terragrunt "${PATH_ARG:-.}" ${EXTRA_FLAGS}
 ```
 
