@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "bundle": {
     "name": "stark-plan",
-    "version": "0.4.2",
+    "version": "0.4.3",
     "description": "Turn a design doc into a phased implementation plan, then decompose it into phased GitHub issues with story points and risk labels. Maps to spec-kit's plan + tasks phases.",
     "category": "planning",
     "tags": [
@@ -19,7 +19,7 @@
       "name": "simple-gate",
       "type": "skill",
       "description": "Use when running the stark-author human gate (Phase 5), or any spec/plan sign-off checklist, and the operator wants the checks walked interactively in dead-simple, non-technical, ELI5 language with multiple-choice questions plus free text. Triggers include \"walk me through the gate simply\", \"explain the gate like I'm five\", \"gate in plain English\", \"I don't get the checklist\", \"make the review easy\".",
-      "version": "0.4.2",
+      "version": "0.4.3",
       "runtimes": [
         "claude"
       ],
@@ -43,7 +43,7 @@
       "name": "stark-author",
       "type": "skill",
       "description": "Stage 1 — human-gated spec+plan authoring in one session: tier check, time-boxed recon, structured interview, one self-contained doc, one zero-context advisory pass, human gate, commit-pinned handoff. No LLM review loops. Use for author, spec, plan a change.",
-      "version": "0.4.2",
+      "version": "0.4.3",
       "runtimes": [
         "claude",
         "codex"
