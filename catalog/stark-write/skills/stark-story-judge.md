@@ -2,7 +2,7 @@
 name: stark-story-judge
 type: skill
 description: Zero-context reader verdict on a long-form post. Use before publishing, after an edit pass, or whenever the ask is "how good is this / would a stranger read this / fresh eyes on this post / grade it / second opinion / would my audience or LinkedIn crowd read this". Dispatches cold judges - one per vendor, never a re-roll - that grade the reading experience on an anchored rubric with quoted evidence, plus optional audience-persona lenses (read/share verdicts, no grades), then relays the scorecards verbatim. Judges only - it never edits (stark-story-edit rewrites, stark-blog-sharpen cuts) and never checks publish machinery.
-version: 0.5.14
+version: 0.5.15
 maturity: beta
 runtimes:
   - claude
