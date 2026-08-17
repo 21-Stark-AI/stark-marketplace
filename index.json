@@ -674,14 +674,14 @@
       ],
       "category": "planning",
       "maturity": "beta",
-      "version": "0.4.3",
+      "version": "0.4.4",
       "runtimes": [
         "claude"
       ],
       "support": {
         "claude": "native"
       },
-      "digest": "sha256:2c92cdfa8a3ab7d6fa1cc8f8f0965ea8580bbd41aa7d9317e88303bfc497b716"
+      "digest": "sha256:a0d1ed9a37cb6855dc4e5b09124e8b4af79ecefc9822aad4d7418f95c259dfb2"
     },
     {
       "name": "stark-author",
@@ -696,7 +696,7 @@
       ],
       "category": "planning",
       "maturity": "beta",
-      "version": "0.4.3",
+      "version": "0.4.4",
       "runtimes": [
         "claude",
         "codex"
@@ -705,7 +705,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:27206f45fee7984af6cd12cb8d12d9a0615cba7599f3c533e3c8de5054303883"
+      "digest": "sha256:d5aa1ec326de5b5f06bbd34efe540a484d04cc1a38d367ecd8bfbfd4707042f2"
     },
     {
       "name": "stark-blog-sharpen",
@@ -856,8 +856,8 @@
     },
     {
       "bundle": "stark-plan",
-      "version": "0.4.3",
-      "digest": "sha256:52b3a11122118e8a00a820b643cd08183d2a380239d5203fc536035b0ca7cd18"
+      "version": "0.4.4",
+      "digest": "sha256:00968d1cde917236a59e96ec8d661edda1e3bd23b60a0892c43c889ea7439719"
     }
   ]
 }
