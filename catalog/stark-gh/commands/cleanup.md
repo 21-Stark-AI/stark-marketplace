@@ -2,7 +2,7 @@
 name: cleanup
 type: command
 description: Sweep the local + remote repo for merged-PR branches, stale tracking refs, worktree leftovers (including detached-HEAD review worktrees), merged-PR watcher state, stale stashes, and loose objects. Rebases the current branch onto upstream and applies linear-tree git config so the history stays sharp.
-version: 0.2.24
+version: 0.2.25
 maturity: beta
 runtimes:
   - claude
@@ -191,7 +191,10 @@ worktree for that PR), removes its watcher state.
 ## Safety
 
 - Protected from deletion: current branch, default branch, `main`, `master`,
-  anything passed via `--keep-branch`.
+  anything passed via `--keep-branch`, and **any `release-please--*` branch**.
+  release-please reuses one branch name for every release, so a branch→merged-PR
+  sweep matches it to an old *merged* release PR and would delete it out from
+  under the live release PR — these are never swept, in any mode.
 - Local branches with unmerged commits are skipped unless `--force` is passed
   (then `git branch -D` is used).
 - Worktrees with uncommitted changes will refuse to remove unless `--force` is

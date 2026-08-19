@@ -320,7 +320,7 @@
       ],
       "category": "productivity",
       "maturity": "beta",
-      "version": "0.2.24",
+      "version": "0.2.25",
       "runtimes": [
         "claude",
         "codex",
@@ -331,7 +331,7 @@
         "codex": "native",
         "gemini": "native"
       },
-      "digest": "sha256:bb6fd64fa3e175f5513f3882fb1722ac20e348f75184af544f297f0a06fe7ace"
+      "digest": "sha256:0147fc1b67efb6da5f7d38cdcf382bf6cc8587df71ab9695ac800decbfaee7af"
     },
     {
       "name": "pr-merge",
@@ -345,7 +345,7 @@
       ],
       "category": "productivity",
       "maturity": "beta",
-      "version": "0.2.24",
+      "version": "0.2.25",
       "runtimes": [
         "claude",
         "codex",
@@ -370,7 +370,7 @@
       ],
       "category": "productivity",
       "maturity": "beta",
-      "version": "0.2.24",
+      "version": "0.2.25",
       "runtimes": [
         "claude",
         "codex",
@@ -841,8 +841,8 @@
     },
     {
       "bundle": "stark-gh",
-      "version": "0.2.24",
-      "digest": "sha256:341312d5a26e5ee97bceaa3e84d354c8a4a7d1fa6a0d6927e4d754da60297ef7"
+      "version": "0.2.25",
+      "digest": "sha256:2923e65bce83eabcab929655285e252ecb4258e3e6e9743056e697dd93d49b34"
     },
     {
       "bundle": "stark-implement",
