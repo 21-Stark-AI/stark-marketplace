@@ -320,7 +320,7 @@
       ],
       "category": "productivity",
       "maturity": "beta",
-      "version": "0.2.23",
+      "version": "0.2.24",
       "runtimes": [
         "claude",
         "codex",
@@ -345,7 +345,7 @@
       ],
       "category": "productivity",
       "maturity": "beta",
-      "version": "0.2.23",
+      "version": "0.2.24",
       "runtimes": [
         "claude",
         "codex",
@@ -370,7 +370,7 @@
       ],
       "category": "productivity",
       "maturity": "beta",
-      "version": "0.2.23",
+      "version": "0.2.24",
       "runtimes": [
         "claude",
         "codex",
@@ -841,8 +841,8 @@
     },
     {
       "bundle": "stark-gh",
-      "version": "0.2.23",
-      "digest": "sha256:051c8c8674573dbfe23f443bb1a30609511f966d29e5dc4fb7d330dc90afda90"
+      "version": "0.2.24",
+      "digest": "sha256:341312d5a26e5ee97bceaa3e84d354c8a4a7d1fa6a0d6927e4d754da60297ef7"
     },
     {
       "bundle": "stark-implement",
