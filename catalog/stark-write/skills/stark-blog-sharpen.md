@@ -2,7 +2,7 @@
 name: stark-blog-sharpen
 type: skill
 description: 'Adversarial editor for long-form posts (blog, personal-site essays, longer internal notes) in Aryeh''s voice. Use after drafting OR expanding a post, or when asked to "make this post matter / cut the padding / make it sound like a real person wrote it / does this read AI / tighten this essay". Two jobs: kill filler so the post earns every word, and scrub the AI tells so it reads like a human manager. Editing/diagnosis only - pairs with stark-voice (which drafts).'
-version: 0.5.15
+version: 0.5.16
 maturity: beta
 runtimes:
   - claude
