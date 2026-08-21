@@ -1,5 +1,5 @@
 name: stark-analyze
-version: 0.5.27
+version: 0.5.28
 description: Contract-bounded spec authoring, multi-domain review, and adversarial red-team of specs, designs, execution plans, and PRs, multi-agent Terraform/Terragrunt (IaC) review, application-logging authoring/review guidance, plus review-prompt improvement from assessment feedback. Maps to spec-kit's specify + analyze phases.
 category: review
 tags:
