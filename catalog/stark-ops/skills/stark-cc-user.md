@@ -2,7 +2,7 @@
 name: stark-cc-user
 type: skill
 description: Switch the active Claude Code account between stored profiles when a 5-hour or 7-day rate-limit window runs out. Credentials live in macOS Keychain (service `stark-cc-token`); headroom comes from statusline snapshots.
-version: 0.6.13
+version: 0.6.14
 maturity: beta
 runtimes:
   - claude
@@ -699,6 +699,11 @@ subcommand.
 
 ## Notes
 
+- Setup commands print a `hint:` line pointing at the natural next step —
+  `add` says a genuinely new profile is active-but-unplaced (use `order`), but
+  stays quiet on a re-add/refresh or rename that keeps its rotation slot; `order`
+  points at `next`, and `next --dry-run` says how to actually switch. Hints are
+  guidance, never warnings; pass them through with the rest of stdout.
 - The snapshot files hold percentages and reset epochs only — no credentials.
 - `add`/`use` pass secrets on `security`'s argv, visible via `ps` to the **same
   user** only. Same tradeoff as the `stark-gh-token` entries.
