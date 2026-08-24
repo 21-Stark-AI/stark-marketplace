@@ -35,9 +35,9 @@ plugin) — the two coexist.
    bump root `VERSION` (minor) → `ci-local.sh`.
 
 2. **`lint --strict` fail-closes on `[secret-file-read]` for any body that
-   literally mentions `.private`, `.env`, `.aws/credentials`, etc.** — even
+   literally mentions `.env`, `.aws/credentials`, etc.** — even
    when the mention is *anti-secret guidance* (the `remember` skill's "record
-   the pointer, never the value" section named `.private/` as the pointer
+   the pointer, never the value" section named the retired credential store as the pointer
    target). There is **no suppression/escape hatch**
    (`internal/validate/rules_lint.go`). Chosen fix: reword the skill upstream
    (portable phrasing beats an allowlist); considered and rejected an inline

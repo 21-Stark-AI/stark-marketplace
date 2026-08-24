@@ -348,7 +348,7 @@ func TestLintFlagsCurlPipeBash(t *testing.T) {
 
 func TestLintFlagsSecretReads(t *testing.T) {
 	for _, body := range []string{
-		"cat ~/.private/INDEX.md\n",
+		"cat ~/.ssh/id_ed25519\n",
 		"read the .env file\n",
 		"open ~/.aws/credentials\n",
 	} {
@@ -411,7 +411,7 @@ var lintPatterns = []struct {
 	re   *regexp.Regexp
 }{
 	{"curl-pipe-shell", regexp.MustCompile(`(?i)\b(curl|wget)\b[^\n|]*\|\s*(sh|bash|zsh)\b`)},
-	{"secret-file-read", regexp.MustCompile(`(?i)(\.env\b|\.private\b|\.aws/credentials|\.ssh/id_|/credentials\b|secrets?\.(json|ya?ml|toml))`)},
+	{"secret-file-read", regexp.MustCompile(`(?i)(\.env\b|\.aws/credentials|\.ssh/id_|/credentials\b|secrets?\.(json|ya?ml|toml))`)},
 	{"prompt-injection", regexp.MustCompile(`(?i)(ignore|disregard|forget)\s+(all\s+)?(the\s+)?(previous|prior|above|earlier)\s+instructions`)},
 }
 

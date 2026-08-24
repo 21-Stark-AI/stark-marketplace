@@ -399,7 +399,7 @@ minimum may be recorded as metadata, never gated.
   containment within the intended root.
 - **Body / content trust:** changes to skill/agent/command **bodies** and any `body:`
   override are flagged as **high-trust diffs** requiring a second CODEOWNERS reviewer;
-  lint surfaces suspicious patterns (`curl … | sh`, reads of `.env`/`.private`, base64
+  lint surfaces suspicious patterns (`curl … | sh`, reads of `.env` / credential files, base64
   blobs, "ignore previous instructions"). `agent.tools` validated against an allowlist and
   surfaced in the index.
 - **Integrity / drift:** committed `dist/claude/` + `index.json` + `bundles/*.json` must
