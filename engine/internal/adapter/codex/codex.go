@@ -17,6 +17,7 @@ import (
 
 	"github.com/21StarkCom/bifrost/engine/internal/adapter"
 	"github.com/21StarkCom/bifrost/engine/internal/adapter/emulate"
+	"github.com/21StarkCom/bifrost/engine/internal/canonjson"
 	"github.com/21StarkCom/bifrost/engine/internal/fieldmap"
 	"github.com/21StarkCom/bifrost/engine/internal/merge"
 	"github.com/21StarkCom/bifrost/engine/internal/model"
@@ -27,8 +28,8 @@ import (
 // version is the independently-versioned target identity (spec §7.7).
 // codex@2 retargeted asset references onto the Codex tree. codex@3 emits native
 // agents/openai.yaml invocation policy and stops writing the unsupported model
-// field into SKILL.md.
-const version = "codex@3"
+// field into SKILL.md. codex@4 adds native-plugin .mcp.json aggregation.
+const version = "codex@4"
 
 // AssetsRoot is the Codex-tree directory holding ONE bundle's vendored
 // stark-skills assets (tools/, standards/, prompts/, scripts/, config.json).
@@ -221,6 +222,9 @@ func (t *Target) Render(b *model.Bundle) ([]adapter.OutputFile, []adapter.Findin
 		if !targetsRuntime(a, model.RuntimeCodex) {
 			continue
 		}
+		if t.layout == layoutPlugin && a.Type == model.TypeMCP {
+			continue // aggregated once at the plugin root below
+		}
 		res, mf, err := merge.Resolve(a, model.RuntimeCodex)
 		if err != nil {
 			return nil, nil, fmt.Errorf("codex: resolve %s/%s: %w", b.Name, a.Name, err)
@@ -232,6 +236,15 @@ func (t *Target) Render(b *model.Bundle) ([]adapter.OutputFile, []adapter.Findin
 		}
 		files = append(files, out...)
 		findings = append(findings, fdrops...)
+	}
+	if t.layout == layoutPlugin {
+		mcpFile, err := t.renderPluginMCP(b)
+		if err != nil {
+			return nil, nil, err
+		}
+		if mcpFile != nil {
+			files = append(files, *mcpFile)
+		}
 	}
 	return files, findings, nil
 }
@@ -543,30 +556,37 @@ type codexMCPServer struct {
 	EnvVars []string `toml:"env_vars,omitempty"`
 }
 
-func (t *Target) emitMCP(a *model.Artifact) ([]adapter.OutputFile, error) {
+func validateMCP(a *model.Artifact) error {
 	if a.MCP == nil {
-		return nil, fmt.Errorf("codex: mcp artifact %q has no mcp config", a.Name)
+		return fmt.Errorf("codex: mcp artifact %q has no mcp config", a.Name)
 	}
 	switch a.MCP.Transport {
 	case "stdio":
 		if a.MCP.Command == "" {
-			return nil, fmt.Errorf("codex: stdio mcp artifact %q requires command", a.Name)
+			return fmt.Errorf("codex: stdio mcp artifact %q requires command", a.Name)
 		}
 		if a.MCP.URL != "" {
-			return nil, fmt.Errorf("codex: stdio mcp artifact %q cannot set url", a.Name)
+			return fmt.Errorf("codex: stdio mcp artifact %q cannot set url", a.Name)
 		}
 	case "http":
 		if a.MCP.URL == "" {
-			return nil, fmt.Errorf("codex: http mcp artifact %q requires url", a.Name)
+			return fmt.Errorf("codex: http mcp artifact %q requires url", a.Name)
 		}
 		if a.MCP.Command != "" || len(a.MCP.Args) > 0 {
-			return nil, fmt.Errorf("codex: http mcp artifact %q cannot set command or args", a.Name)
+			return fmt.Errorf("codex: http mcp artifact %q cannot set command or args", a.Name)
 		}
 		if len(a.MCP.Env) > 0 {
-			return nil, fmt.Errorf("codex: http mcp artifact %q cannot map canonical env to HTTP authentication; model bearer_token_env_var or env_http_headers explicitly", a.Name)
+			return fmt.Errorf("codex: http mcp artifact %q cannot map canonical env to HTTP authentication; model bearer_token_env_var or env_http_headers explicitly", a.Name)
 		}
 	default:
-		return nil, fmt.Errorf("codex: mcp artifact %q has unsupported transport %q", a.Name, a.MCP.Transport)
+		return fmt.Errorf("codex: mcp artifact %q has unsupported transport %q", a.Name, a.MCP.Transport)
+	}
+	return nil
+}
+
+func (t *Target) emitMCP(a *model.Artifact) ([]adapter.OutputFile, error) {
+	if err := validateMCP(a); err != nil {
+		return nil, err
 	}
 	srv := codexMCPServer{
 		Command: a.MCP.Command,
@@ -589,4 +609,42 @@ func (t *Target) emitMCP(a *model.Artifact) ([]adapter.OutputFile, error) {
 		return nil, fmt.Errorf("codex: marshal mcp toml: %w", err)
 	}
 	return []adapter.OutputFile{{Path: ".codex/config.toml", Content: out}}, nil
+}
+
+// renderPluginMCP aggregates Codex-targeted MCP artifacts into the native
+// plugin-root .mcp.json contract. Canonical secretRef mappings are rejected for
+// native plugins until the format has a non-literal forwarding primitive; this
+// prevents a generated package from embedding credentials or inert placeholders.
+func (t *Target) renderPluginMCP(b *model.Bundle) (*adapter.OutputFile, error) {
+	servers := map[string]any{}
+	for _, a := range b.Artifacts {
+		if a.Type != model.TypeMCP || !targetsRuntime(a, model.RuntimeCodex) {
+			continue
+		}
+		if err := validateMCP(a); err != nil {
+			return nil, err
+		}
+		if len(a.MCP.Env) > 0 {
+			return nil, fmt.Errorf("codex plugin: mcp artifact %q cannot safely encode secretRef env in .mcp.json", a.Name)
+		}
+		entry := map[string]any{}
+		if a.MCP.Command != "" {
+			entry["command"] = a.MCP.Command
+		}
+		if len(a.MCP.Args) > 0 {
+			entry["args"] = append([]string(nil), a.MCP.Args...)
+		}
+		if a.MCP.URL != "" {
+			entry["url"] = a.MCP.URL
+		}
+		servers[a.Name] = entry
+	}
+	if len(servers) == 0 {
+		return nil, nil
+	}
+	content, err := canonjson.Marshal(servers)
+	if err != nil {
+		return nil, fmt.Errorf("codex plugin: marshal .mcp.json: %w", err)
+	}
+	return &adapter.OutputFile{Path: ".mcp.json", Content: content}, nil
 }

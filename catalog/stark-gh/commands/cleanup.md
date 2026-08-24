@@ -2,7 +2,7 @@
 name: cleanup
 type: command
 description: Sweep the local + remote repo for merged-PR branches, stale tracking refs, worktree leftovers (including detached-HEAD review worktrees), merged-PR watcher state, stale stashes, and loose objects. Rebases the current branch onto upstream and applies linear-tree git config so the history stays sharp.
-version: 0.2.27
+version: 0.2.28
 maturity: beta
 runtimes:
   - claude

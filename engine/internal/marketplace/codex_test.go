@@ -15,6 +15,9 @@ func TestGenerateCodexPluginManifest(t *testing.T) {
 		Tags:        []string{"github", "workflow"},
 		Owner:       model.Owner{Name: "21 Stark AI", Email: "engineering@21stark.com"},
 		Homepage:    "https://example.com/stark-gh",
+		Artifacts: []*model.Artifact{
+			{Name: "cleanup", Type: model.TypeCommand, Runtimes: []model.Runtime{model.RuntimeCodex}},
+		},
 	}
 
 	got, err := GenerateCodexPlugin(b, "1.2.3")
@@ -43,6 +46,30 @@ func TestGenerateCodexPluginManifest(t *testing.T) {
 	}
 	if string(b1) != string(b2) || !strings.HasSuffix(string(b1), "\n") {
 		t.Fatal("Codex manifest encoding is not deterministic with one trailing newline")
+	}
+}
+
+func TestGenerateCodexPluginManifestPointsAtMCPConfig(t *testing.T) {
+	b := &model.Bundle{
+		Name: "stark-brain",
+		Artifacts: []*model.Artifact{
+			{Name: "brain", Type: model.TypeMCP, Runtimes: []model.Runtime{model.RuntimeCodex}},
+		},
+	}
+
+	got, err := GenerateCodexPlugin(b, "1.2.3")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got.MCPServers != "./.mcp.json" || got.Skills != "" {
+		t.Fatalf("MCP-only manifest paths are wrong: %#v", got)
+	}
+	body, err := MarshalCodex(got)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(body), `"mcpServers": "./.mcp.json"`) || strings.Contains(string(body), `"skills"`) {
+		t.Fatalf("MCP-only manifest JSON is wrong:\n%s", body)
 	}
 }
 

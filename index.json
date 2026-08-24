@@ -3,7 +3,7 @@
   "generatedBy": {
     "adapterVersions": {
       "claude": "claude@1",
-      "codex": "codex@3",
+      "codex": "codex@4",
       "gemini": "gemini@1"
     }
   },
@@ -209,10 +209,10 @@
       "digest": "sha256:312b67bf035ef7f5783b381a39292032241b9c776803c9211823ab90b73a6842"
     },
     {
-      "name": "remember",
-      "type": "skill",
+      "name": "brain",
+      "type": "mcp",
       "bundle": "stark-brain",
-      "description": "Persist a durable fact or note into Aryeh's second-brain vault via the brain MCP (or the brain CLI as fallback). Use whenever the user EXPLICITLY asks to remember, save, persist, capture, or \"write back\" something to the second brain / memory / vault — phrasings like \"remember that…\", \"save this to my brain\", \"add this to memory\", \"/remember …\", \"note this down for later\". Routes one-line facts to append_to_memory and structured knowledge (a project, repo, tool, person, cloud resource) to upsert_note, validates + secret-scans, then commits and merges the capture to main. Companion to the brain MCP. (Triggers on explicit save intent only for now — not yet on passively-observed facts.)",
+      "description": "Expose the locally built Atlas brain engine as an MCP server.",
       "tags": [
         "memory",
         "brain",
@@ -222,7 +222,7 @@
       ],
       "category": "productivity",
       "maturity": "beta",
-      "version": "0.1.32",
+      "version": "0.2.0",
       "runtimes": [
         "claude",
         "codex"
@@ -231,7 +231,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:21b073438de6add35ebe32e18d0da29b45b50d7db18df21ada541a40fbccb603"
+      "digest": "sha256:c8e1fdbe10e08fe6ecd5e9075cc86ec47f17b4c2234e6be97307e6918e8960b1"
     },
     {
       "name": "stark-adr",
@@ -247,7 +247,7 @@
       ],
       "category": "setup",
       "maturity": "beta",
-      "version": "0.2.38",
+      "version": "0.2.39",
       "runtimes": [
         "claude",
         "codex"
@@ -256,7 +256,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:bdb1ac114a24fbe4e3ef84a5660926c44175e97fbad232164c627c2d0ccf7041"
+      "digest": "sha256:70364c9b7efb78d5ae7b7f3a231248ae881efa19e79d239974bbc9752e45c1e4"
     },
     {
       "name": "stark-init-docs",
@@ -272,7 +272,7 @@
       ],
       "category": "setup",
       "maturity": "beta",
-      "version": "0.2.38",
+      "version": "0.2.39",
       "runtimes": [
         "claude",
         "codex"
@@ -297,7 +297,7 @@
       ],
       "category": "setup",
       "maturity": "beta",
-      "version": "0.2.38",
+      "version": "0.2.39",
       "runtimes": [
         "claude",
         "codex"
@@ -320,7 +320,7 @@
       ],
       "category": "productivity",
       "maturity": "beta",
-      "version": "0.2.27",
+      "version": "0.2.28",
       "runtimes": [
         "claude",
         "codex",
@@ -345,7 +345,7 @@
       ],
       "category": "productivity",
       "maturity": "beta",
-      "version": "0.2.27",
+      "version": "0.2.28",
       "runtimes": [
         "claude",
         "codex",
@@ -356,7 +356,7 @@
         "codex": "native",
         "gemini": "native"
       },
-      "digest": "sha256:88cbb784816cf9c2d56d400cad1cc0893bf68a781b506943b6a4b0c61f4219a4"
+      "digest": "sha256:b47480bd99f7194494e495d0977273edfb43cc8bab16441c018ed1e2f9edc64c"
     },
     {
       "name": "pr-open",
@@ -370,7 +370,7 @@
       ],
       "category": "productivity",
       "maturity": "beta",
-      "version": "0.2.27",
+      "version": "0.2.28",
       "runtimes": [
         "claude",
         "codex",
@@ -847,8 +847,8 @@
     },
     {
       "bundle": "stark-gh",
-      "version": "0.2.27",
-      "digest": "sha256:2923e65bce83eabcab929655285e252ecb4258e3e6e9743056e697dd93d49b34"
+      "version": "0.2.28",
+      "digest": "sha256:24b261743213db3126fcce69ebfe2796314632a76006f3c294a4849553cd929e"
     },
     {
       "bundle": "stark-implement",

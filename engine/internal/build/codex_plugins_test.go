@@ -119,7 +119,7 @@ func TestCodexAssetLayersDoNotAffectClaude(t *testing.T) {
 	}
 }
 
-func TestBuildCodexPluginFailsClosedOnMCP(t *testing.T) {
+func TestBuildCodexPluginAggregatesMCP(t *testing.T) {
 	cat := &model.Catalog{Bundles: []*model.Bundle{{
 		Name: "mcp-demo", Version: "0.1.0", Description: "MCP demo",
 		Owner: model.Owner{Name: "Example"},
@@ -130,9 +130,20 @@ func TestBuildCodexPluginFailsClosedOnMCP(t *testing.T) {
 			Raw: map[string]any{"name": "server", "type": "mcp"},
 		}},
 	}}}
-	_, err := Build(cat, Options{})
-	if err == nil || !strings.Contains(err.Error(), "plugin-root .mcp.json aggregation") {
-		t.Fatalf("want fail-closed MCP error, got %v", err)
+	out, err := Build(cat, Options{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	mcp := string(out.Files["dist/codex-plugins/mcp-demo/.mcp.json"])
+	if !strings.Contains(mcp, `"server"`) || strings.Contains(mcp, `"mcpServers"`) || strings.Contains(mcp, `"transport"`) {
+		t.Fatalf("native plugin MCP aggregation missing: %s", mcp)
+	}
+	var plugin marketplace.CodexPluginManifest
+	if err := json.Unmarshal(out.Files["dist/codex-plugins/mcp-demo/.codex-plugin/plugin.json"], &plugin); err != nil {
+		t.Fatal(err)
+	}
+	if plugin.MCPServers != "./.mcp.json" || plugin.Skills != "" {
+		t.Fatalf("native plugin component pointers are wrong: %#v", plugin)
 	}
 }
 

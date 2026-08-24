@@ -85,15 +85,43 @@ func TestPluginRetargetHandlesNestedPortableRoots(t *testing.T) {
 	}
 }
 
-func TestPluginLayoutRejectsStandaloneMCPConfig(t *testing.T) {
+func TestPluginLayoutAggregatesMCPConfig(t *testing.T) {
 	a := &model.Artifact{
 		Name: "demo", Type: model.TypeMCP, Bundle: "demo",
 		Runtimes: []model.Runtime{model.RuntimeCodex},
-		MCP:      &model.MCPConfig{Transport: "stdio", Command: "demo"},
+		MCP:      &model.MCPConfig{Transport: "stdio", Command: "demo", Args: []string{"mcp"}},
+	}
+	files, _, err := NewPlugin().Render(bundleWith(a))
+	if err != nil {
+		t.Fatal(err)
+	}
+	body, ok := findFile(files, ".mcp.json")
+	if !ok {
+		t.Fatalf("native plugin MCP config missing: %v", files)
+	}
+	for _, want := range []string{`"demo"`, `"command": "demo"`, `"mcp"`} {
+		if !strings.Contains(body, want) {
+			t.Errorf("plugin MCP config missing %q:\n%s", want, body)
+		}
+	}
+	for _, unwanted := range []string{`"mcpServers"`, `"mcp_servers"`, `"transport"`} {
+		if strings.Contains(body, unwanted) {
+			t.Errorf("plugin MCP config contains unsupported wrapper/field %q:\n%s", unwanted, body)
+		}
+	}
+}
+
+func TestPluginLayoutRejectsSecretRefMCPEnv(t *testing.T) {
+	a := &model.Artifact{
+		Name: "demo", Type: model.TypeMCP, Bundle: "demo",
+		Runtimes: []model.Runtime{model.RuntimeCodex},
+		MCP: &model.MCPConfig{Transport: "stdio", Command: "demo", Env: map[string]model.SecretRef{
+			"TOKEN": {SecretRef: "TOKEN"},
+		}},
 	}
 	_, _, err := NewPlugin().Render(bundleWith(a))
-	if err == nil || !strings.Contains(err.Error(), ".mcp.json") {
-		t.Fatalf("plugin MCP must fail closed, got %v", err)
+	if err == nil || !strings.Contains(err.Error(), "cannot safely encode secretRef") {
+		t.Fatalf("plugin MCP secret env must fail closed, got %v", err)
 	}
 }
 

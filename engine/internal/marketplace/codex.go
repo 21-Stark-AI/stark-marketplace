@@ -57,7 +57,8 @@ type CodexPluginManifest struct {
 	Homepage    string               `json:"homepage,omitempty"`
 	Repository  string               `json:"repository,omitempty"`
 	Keywords    []string             `json:"keywords,omitempty"`
-	Skills      string               `json:"skills"`
+	Skills      string               `json:"skills,omitempty"`
+	MCPServers  string               `json:"mcpServers,omitempty"`
 	Interface   CodexPluginInterface `json:"interface"`
 }
 
@@ -125,7 +126,7 @@ func GenerateCodexPlugin(b *model.Bundle, version string) (CodexPluginManifest, 
 	category := codexCategory(b.Category)
 	displayName := displayCodexName(b.Name)
 
-	return CodexPluginManifest{
+	manifest := CodexPluginManifest{
 		Name:        b.Name,
 		Version:     version,
 		Description: description,
@@ -137,7 +138,6 @@ func GenerateCodexPlugin(b *model.Bundle, version string) (CodexPluginManifest, 
 		Homepage:   homepage,
 		Repository: codexRepositoryURL,
 		Keywords:   append([]string(nil), b.Tags...),
-		Skills:     "./skills/",
 		Interface: CodexPluginInterface{
 			DisplayName:      displayName,
 			ShortDescription: shortCodexDescription(description),
@@ -148,7 +148,18 @@ func GenerateCodexPlugin(b *model.Bundle, version string) (CodexPluginManifest, 
 			WebsiteURL:       homepage,
 			DefaultPrompt:    []string{"Use " + displayName + " for this task."},
 		},
-	}, nil
+	}
+	for _, artifact := range b.Artifacts {
+		if !artifactTargetsRuntime(artifact, model.RuntimeCodex) {
+			continue
+		}
+		if artifact.Type == model.TypeMCP {
+			manifest.MCPServers = "./.mcp.json"
+		} else {
+			manifest.Skills = "./skills/"
+		}
+	}
+	return manifest, nil
 }
 
 // GenerateCodexMarketplace emits one entry for every bundle that has at least
@@ -198,10 +209,17 @@ func GenerateCodexMarketplace(cat *model.Catalog, opts CodexMarketplaceOptions) 
 
 func bundleTargetsRuntime(b *model.Bundle, rt model.Runtime) bool {
 	for _, a := range b.Artifacts {
-		for _, target := range a.Runtimes {
-			if target == rt {
-				return true
-			}
+		if artifactTargetsRuntime(a, rt) {
+			return true
+		}
+	}
+	return false
+}
+
+func artifactTargetsRuntime(a *model.Artifact, rt model.Runtime) bool {
+	for _, target := range a.Runtimes {
+		if target == rt {
+			return true
 		}
 	}
 	return false

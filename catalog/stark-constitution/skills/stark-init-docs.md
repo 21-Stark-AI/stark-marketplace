@@ -2,7 +2,7 @@
 name: stark-init-docs
 type: skill
 description: Scaffold dev docs structure (template/backfill/upgrade/clean modes). Use for init docs, setup docs, scaffold docs.
-version: 0.2.38
+version: 0.2.39
 maturity: beta
 runtimes:
   - claude
