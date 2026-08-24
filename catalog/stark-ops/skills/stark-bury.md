@@ -13,7 +13,7 @@ overrides:
   codex:
     argument-hint: '[corpse — the subsystem or repo to bury]'
     description: 'Use when retiring 21Stark code into the Náströnd graveyard — burying a subsystem of a living repo (partial burial) or putting down a whole repo (full retirement). Symptoms: "bury X", "retire the named feature", "kill this service and keep the memory", "new corpse for nastrond", "dig a grave", "tombstone", "exhume". Runs the full ritual: footprint verification, interment PR, deletion PR, optional sealed data dump and table drop.'
-    disable-model-invocation: true
+    disable-model-invocation: false
     name: stark-bury
     body: |
       # diverged: source-owned Codex runtime override
