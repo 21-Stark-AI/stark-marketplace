@@ -1,0 +1,5 @@
+interface:
+  display_name: "Stark Bury"
+  short_description: "Use when retiring 21Stark code into the Náströnd graveyard —"
+policy:
+  allow_implicit_invocation: false

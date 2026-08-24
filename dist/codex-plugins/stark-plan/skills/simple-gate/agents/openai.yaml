@@ -1,0 +1,5 @@
+interface:
+  display_name: "Simple Gate"
+  short_description: "Use when running the stark-author human gate (Phase 5), or any"
+policy:
+  allow_implicit_invocation: true

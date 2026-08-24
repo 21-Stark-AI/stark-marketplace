@@ -101,7 +101,7 @@
       "name": "stark-ops",
       "source": "./dist/claude/stark-ops",
       "description": "Repository operations beyond the spec-driven pipeline — cut releases, housekeep stale issues/branches/worktrees, run session start/end, hand off work across sessions, and switch GitHub or Claude Code identities when a rate limit runs out.",
-      "version": "0.6.14",
+      "version": "0.6.15",
       "author": {
         "name": "21 Stark AI",
         "email": "engineering@21stark.com"
@@ -121,7 +121,7 @@
       "name": "stark-plan",
       "source": "./dist/claude/stark-plan",
       "description": "Turn a design doc into a phased implementation plan, then decompose it into phased GitHub issues with story points and risk labels. Maps to spec-kit's plan + tasks phases.",
-      "version": "0.4.6",
+      "version": "0.4.7",
       "author": {
         "name": "21 Stark AI",
         "email": "engineering@21stark.com"
