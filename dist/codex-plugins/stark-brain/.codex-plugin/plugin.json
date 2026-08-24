@@ -1,6 +1,6 @@
 {
   "name": "stark-brain",
-  "version": "0.19.0",
+  "version": "0.19.1",
   "description": "Atlas second-brain MCP integration for durable knowledge search, notes, evidence, and ADR workflows.",
   "author": {
     "name": "21 Stark AI",
