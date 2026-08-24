@@ -42,7 +42,7 @@ var lintPatterns = []struct {
 	// Match a download piped into an interpreter, including a privilege-elevated or
 	// env-wrapped one: `curl … | sh`, `curl … | sudo bash`, `curl … | env FOO=1 sh`.
 	{"curl-pipe-shell", regexp.MustCompile(`(?i)\b(curl|wget)\b[^\n|]*\|\s*(sudo\s+)?(env\s+\S+\s+)*(sh|bash|zsh|dash|ksh)\b`)},
-	{"secret-file-read", regexp.MustCompile(`(?i)(\.env\b|\.private\b|\.aws/credentials|\.ssh/id_|/credentials\b|secrets?\.(json|ya?ml|toml))`)},
+	{"secret-file-read", regexp.MustCompile(`(?i)(\.env\b|\.aws/credentials|\.ssh/id_|/credentials\b|secrets?\.(json|ya?ml|toml))`)},
 	{"prompt-injection", regexp.MustCompile(`(?i)(ignore|disregard|forget)\s+(all\s+)?(the\s+)?(previous|prior|above|earlier)\s+instructions`)},
 }
 

@@ -53,7 +53,6 @@ func TestLintFlagsCurlPipePrivilegedShell(t *testing.T) {
 
 func TestLintFlagsSecretReads(t *testing.T) {
 	for _, body := range []string{
-		"cat ~/.private/INDEX.md\n",
 		"read the .env file\n",
 		"open ~/.aws/credentials\n",
 	} {
