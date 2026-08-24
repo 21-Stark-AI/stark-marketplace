@@ -44,6 +44,37 @@ type openAIMetadata struct {
 	} `yaml:"policy"`
 }
 
+func isExplicitOnlyForRuntime(a *model.Artifact, rt model.Runtime) bool {
+	if a.Type == model.TypeCommand {
+		return true
+	}
+	explicitOnly := a.DisableModelInvocation
+	if override, ok := a.Overrides[rt]; ok {
+		if value, ok := override.Fields["disable-model-invocation"].(bool); ok {
+			explicitOnly = value
+		}
+	}
+	return explicitOnly
+}
+
+func TestExplicitOnlyPolicyHonorsRuntimeOverride(t *testing.T) {
+	a := &model.Artifact{
+		Type:                   model.TypeSkill,
+		DisableModelInvocation: true,
+		Overrides: map[model.Runtime]model.Override{
+			model.RuntimeCodex: {
+				Fields: map[string]any{"disable-model-invocation": false},
+			},
+		},
+	}
+	if isExplicitOnlyForRuntime(a, model.RuntimeCodex) {
+		t.Fatal("Codex override should make the skill model-discoverable")
+	}
+	if !isExplicitOnlyForRuntime(a, model.RuntimeClaude) {
+		t.Fatal("base Claude policy should remain explicit-only")
+	}
+}
+
 // TestEveryCommittedCodexSkillMeetsNativeContract installs every committed
 // bundle through the production adapter, then validates the actual files Codex
 // discovers. This is intentionally inventory-derived: adding a skill without
@@ -75,7 +106,7 @@ func TestEveryCommittedCodexSkillMeetsNativeContract(t *testing.T) {
 			if !expected[artifact.Name] {
 				continue
 			}
-			explicitOnly[artifact.Name] = artifact.Type == model.TypeCommand || artifact.DisableModelInvocation
+			explicitOnly[artifact.Name] = isExplicitOnlyForRuntime(artifact, model.RuntimeCodex)
 		}
 	}
 	bundles := make([]string, 0, len(bundleSet))
