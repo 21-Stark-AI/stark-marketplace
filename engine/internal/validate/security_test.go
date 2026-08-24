@@ -22,6 +22,11 @@ func TestCommandAllowlist(t *testing.T) {
 	if r2.HasErrors() {
 		t.Fatalf("node should be allowed: %+v", r2.Errors)
 	}
+	r3 := &Result{}
+	checkSecurity(r3, "stark-brain/mcp/brain", mcp("brain", "mcp"))
+	if r3.HasErrors() {
+		t.Fatalf("the Atlas brain MCP entrypoint should be allowed: %+v", r3.Errors)
+	}
 }
 
 func TestInlineEvalRejected(t *testing.T) {

@@ -22,6 +22,76 @@ func writeSyncFixtureFile(t *testing.T, path, content string) {
 	}
 }
 
+func writeMinimalSyncVendorInputs(t *testing.T, from string) {
+	t.Helper()
+	writeSyncFixtureFile(t, filepath.Join(from, "tools", "runtime.ts"), "export {}\n")
+	writeSyncFixtureFile(t, filepath.Join(from, "global", "prompts", "prompt.md"), "prompt\n")
+	writeSyncFixtureFile(t, filepath.Join(from, "standards", "help.md"), "help\n")
+	writeSyncFixtureFile(t, filepath.Join(from, "scripts", "run.sh"), "#!/bin/sh\n")
+	writeSyncFixtureFile(t, filepath.Join(from, "data", "persona", "roster.md"), "roster\n")
+	writeSyncFixtureFile(t, filepath.Join(from, "global", "config.json"), "{}\n")
+	writeSyncFixtureFile(t, filepath.Join(from, "global", "forge_heuristics.json"), "{}\n")
+}
+
+func TestRunSyncAllowsCuratedMCPOnlyBundle(t *testing.T) {
+	repoRoot := t.TempDir()
+	catalogDir := filepath.Join(repoRoot, "catalog")
+	from := t.TempDir()
+
+	writeSyncFixtureFile(t, filepath.Join(catalogDir, "brain", "bundle.yaml"), `name: brain
+version: 1.0.0
+description: Brain bundle.
+owner: {name: Example}
+runtimes: [claude, codex]
+`)
+	writeSyncFixtureFile(t, filepath.Join(catalogDir, "brain", "mcp", "brain.yaml"), `name: brain
+type: mcp
+description: Brain MCP.
+version: 1.0.0
+mcp:
+  transport: stdio
+  command: brain
+  args: [mcp]
+`)
+	writeSyncFixtureFile(t, filepath.Join(catalogDir, "brain", "skills", "stale.md"), `---
+name: stale
+type: skill
+description: Stale generated skill.
+version: 1.0.0
+---
+Stale.
+`)
+	writeMinimalSyncVendorInputs(t, from)
+
+	if code := runSync(from, catalogDir, repoRoot, false); code != 0 {
+		t.Fatalf("runSync exit = %d", code)
+	}
+	if _, err := os.Stat(filepath.Join(catalogDir, "brain", "skills", "stale.md")); !os.IsNotExist(err) {
+		t.Fatalf("stale generated skill survived MCP-only sync: %v", err)
+	}
+	if _, err := os.Stat(filepath.Join(catalogDir, "brain", "mcp", "brain.yaml")); err != nil {
+		t.Fatalf("curated MCP was removed: %v", err)
+	}
+}
+
+func TestRunSyncRejectsBundleWithoutGeneratedOrCuratedArtifacts(t *testing.T) {
+	repoRoot := t.TempDir()
+	catalogDir := filepath.Join(repoRoot, "catalog")
+	from := t.TempDir()
+
+	writeSyncFixtureFile(t, filepath.Join(catalogDir, "empty", "bundle.yaml"), `name: empty
+version: 1.0.0
+description: Empty bundle.
+owner: {name: Example}
+runtimes: [claude, codex]
+`)
+	writeMinimalSyncVendorInputs(t, from)
+
+	if code := runSync(from, catalogDir, repoRoot, false); code == 0 {
+		t.Fatal("runSync accepted a bundle with no generated source or curated artifacts")
+	}
+}
+
 func TestRunSyncSeparatesCodexArtifactAndSupportOverrides(t *testing.T) {
 	repoRoot := t.TempDir()
 	catalogDir := filepath.Join(repoRoot, "catalog")

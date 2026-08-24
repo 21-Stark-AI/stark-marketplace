@@ -1,7 +1,7 @@
 {
   "name": "stark-brain",
-  "version": "0.18.9",
-  "description": "Second-brain memory capture — persist durable facts and structured notes into the Markdown vault via the brain MCP (CLI fallback), secret-scanned and validated, then landed on main via a branch + PR.",
+  "version": "0.19.0",
+  "description": "Atlas second-brain MCP integration for durable knowledge search, notes, evidence, and ADR workflows.",
   "author": {
     "name": "21 Stark AI",
     "email": "engineering@21stark.com",
@@ -16,11 +16,11 @@
     "knowledge",
     "capture"
   ],
-  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
   "interface": {
     "displayName": "Stark Brain",
-    "shortDescription": "Second-brain memory capture — persist durable facts and structured notes into the Markdown vault",
-    "longDescription": "Second-brain memory capture — persist durable facts and structured notes into the Markdown vault via the brain MCP (CLI fallback), secret-scanned and validated, then landed on main via a branch + PR.",
+    "shortDescription": "Atlas second-brain MCP integration for durable knowledge search, notes, evidence, and ADR",
+    "longDescription": "Atlas second-brain MCP integration for durable knowledge search, notes, evidence, and ADR workflows.",
     "developerName": "21 Stark AI",
     "category": "Productivity",
     "capabilities": [

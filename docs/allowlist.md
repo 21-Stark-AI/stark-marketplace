@@ -10,6 +10,7 @@ MCP `command` values must be a basename present here. Every entry widens the set
 
 | Command |
 | --- |
+| `brain` |
 | `node` |
 | `npx` |
 | `stark-bq-mcp` |

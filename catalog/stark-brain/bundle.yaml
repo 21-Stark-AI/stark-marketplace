@@ -1,6 +1,6 @@
 name: stark-brain
-version: 0.1.32
-description: Second-brain memory capture — persist durable facts and structured notes into the Markdown vault via the brain MCP (CLI fallback), secret-scanned and validated, then landed on main via a branch + PR.
+version: 0.2.0
+description: Atlas second-brain MCP integration for durable knowledge search, notes, evidence, and ADR workflows.
 category: productivity
 tags:
   - memory
@@ -15,6 +15,3 @@ maturity: beta
 runtimes:
   - claude
   - codex
-# Membership manifest consumed by the generator (`stark sync`).
-skills:
-  - remember

@@ -1,0 +1,8 @@
+{
+  "brain": {
+    "args": [
+      "mcp"
+    ],
+    "command": "brain"
+  }
+}

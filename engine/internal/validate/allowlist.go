@@ -3,7 +3,7 @@ package validate
 // commandAllowlist is the positive set of MCP command basenames (spec §7.4).
 // Governance for additions is tracked in spec §15.4. Keep minimal.
 var commandAllowlist = map[string]bool{
-	"node": true, "npx": true, "uvx": true,
+	"brain": true, "node": true, "npx": true, "uvx": true,
 	"stark-bq-mcp": true, "stark-gh-mcp": true,
 }
 

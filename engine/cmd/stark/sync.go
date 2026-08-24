@@ -35,9 +35,29 @@ func runSync(from, catalogDir, repoRoot string, check bool) int {
 	} // trees this command fully owns
 
 	for _, b := range cat.Bundles {
-		res, err := importer.ImportForGenerator(from, b.Name, b.Skills)
-		if err != nil {
-			fmt.Printf("generate %s: %v\n", b.Name, err)
+		// A bundle may intentionally contain only curated MCP artifacts. Those
+		// live in catalog/<bundle>/mcp and are preserved by sync, so there is no
+		// stark-skills artifact to import. Keep all other empty bundles fail-closed:
+		// a missing declared skill or plugin must still stop publication.
+		pluginPath := filepath.Join(from, "plugins", b.Name)
+		_, pluginErr := os.Stat(pluginPath)
+		hasGeneratedSource := len(b.Skills) > 0 || len(b.Commands) > 0 || pluginErr == nil
+		if pluginErr != nil && !os.IsNotExist(pluginErr) {
+			fmt.Printf("generate %s: inspect source plugin: %v\n", b.Name, pluginErr)
+			return 1
+		}
+
+		var res *importer.ImportResult
+		if hasGeneratedSource {
+			res, err = importer.ImportForGenerator(from, b.Name, b.Skills)
+			if err != nil {
+				fmt.Printf("generate %s: %v\n", b.Name, err)
+				return 1
+			}
+		} else if bundleHasArtifactType(b, model.TypeMCP) {
+			res = &importer.ImportResult{Bundle: &model.Bundle{Name: b.Name}}
+		} else {
+			fmt.Printf("generate %s: no declared skills, source plugin, or curated MCP artifacts\n", b.Name)
 			return 1
 		}
 		// Artifacts inherit bundle-level version + runtimes: bump a bundle's
@@ -160,6 +180,15 @@ func runSync(from, catalogDir, repoRoot string, check bool) int {
 	fmt.Printf("synced %d files (catalog + vendor) from %s\n", len(expected), from)
 	fmt.Println("next: `stark build` to regenerate dist/, then commit")
 	return 0
+}
+
+func bundleHasArtifactType(b *model.Bundle, artifactType model.ArtifactType) bool {
+	for _, artifact := range b.Artifacts {
+		if artifact.Type == artifactType {
+			return true
+		}
+	}
+	return false
 }
 
 // syncDrift returns sorted repo-relative drift paths: expected files missing or
