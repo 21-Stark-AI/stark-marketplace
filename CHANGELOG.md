@@ -5,6 +5,8 @@ All notable changes to `stark-marketplace`. The format follows [Keep a Changelog
 ## [Unreleased]
 
 ### Fixed
+<!-- stark-gh:pr-merge pr=202 runId=49d6b13d-c855-4c7b-ad66-1579d33260b7 -->
+- Scope entropy exemptions to lockfile content while retaining credential detection and full-strength scanning for commit and PR prose.
 <!-- stark-gh:pr-merge pr=197 runId=c5d7811a-fcfa-4dfe-b61b-dd6ff2336977 -->
 - Unblocked native marketplace publication and packaged `stark-brain` as an Atlas MCP integration without restoring the retired `remember` skill.
 
