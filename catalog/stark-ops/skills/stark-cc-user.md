@@ -2,7 +2,7 @@
 name: stark-cc-user
 type: skill
 description: Switch the active Claude Code account between stored profiles when a 5-hour or 7-day rate-limit window runs out. Credentials live in macOS Keychain (service `stark-cc-token`); headroom comes from statusline snapshots.
-version: 0.6.15
+version: 0.6.16
 maturity: beta
 runtimes:
   - claude
@@ -53,11 +53,11 @@ overrides:
       `security` command is unavailable, stop without changing state and explain the
       platform requirement.
 
-      Resolve the bundled `tools/cc_account.ts` through the current runtime's asset
-      root. In a stark-skills source checkout, use the repo-local tool. Otherwise
-      prefer `STARK_ASSET_ROOT`, then `STARK_PLUGIN_ROOT`, then the host-provided plugin
-      root. If none resolves to a real file, stop and ask the user to reinstall the
-      bundle. Run the parsed subcommand with one self-contained shell call:
+      `idun cc` is the native port of this tool — the former stark-skills `cc_account`
+      tool and its libs were removed once every verb went native (see idun's ADR
+      0010). There is no bundled script to resolve any more;
+      run `idun cc` directly. Run the parsed subcommand with one self-contained shell
+      call:
 
       ```bash
       set -euo pipefail
@@ -68,17 +68,11 @@ overrides:
         echo "stark-cc-user requires macOS Keychain (security command)" >&2
         exit 1
       }
-      if [ -f "skill/stark-cc-user/SKILL.md" ] && [ -f "tools/cc_account.ts" ]; then
-        script="$(pwd)/tools/cc_account.ts"
-      else
-        asset_root="${STARK_ASSET_ROOT:-${STARK_PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}}"
-        script="${asset_root:+$asset_root/tools/cc_account.ts}"
-      fi
-      [ -n "${script:-}" ] && [ -f "$script" ] || {
-        echo "bundled tools/cc_account.ts not found; reinstall the skill bundle" >&2
+      command -v idun >/dev/null || {
+        echo "stark-cc-user requires 'idun' on PATH (native cc port); install idun" >&2
         exit 1
       }
-      node --no-warnings "$script" "${command_args[@]}"
+      idun cc "${command_args[@]}"
       ```
 
       Pass stdout through verbatim. The tool is the single source of truth for
@@ -246,7 +240,7 @@ overrides:
 
       So `config/statusline-command.sh` snapshots the four fields to
       `~/.claude/.cc-usage-<accountUuid>_<organizationUuid>` on each render (free — already parsed, and a
-      fork-free bash redirect). `cc_account_lib.ts` then reasons over the snapshots
+      fork-free bash redirect). `idun cc` then reasons over the snapshots
       using two properties that make stale data far more useful than it sounds:
 
       - **A rolled window is provably empty.** If `now >= resets_at`, that window
@@ -348,16 +342,18 @@ identity when a GraphQL/REST bucket runs dry), but the mechanics differ — read
 
 ## Behavior
 
-Resolve `tools/cc_account.ts` (worktree-relative, falling back to
-`${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/code-review}/tools/cc_account.ts`) and run
-it with the parsed subcommand:
+Run `idun cc` with the parsed subcommand:
 
 ```
-node --no-warnings <script> <subcommand> [args]
+idun cc <subcommand> [args]
 ```
 
-Pass stdout through verbatim. The tool is the single source of truth for
-formatting; do not re-render its tables.
+`idun cc` is the native port of this tool (the former stark-skills `cc_account`
+tool and its libs were removed once every verb went native — see idun's ADR
+0010). It requires `idun` on `PATH`; if it is missing,
+stop and say so rather than falling back to a bundled script (there is none any
+more). Pass stdout through verbatim — `idun cc` renders natively; do not
+re-render its tables.
 
 ## Setup — one `add` per account, while logged in as it
 
@@ -606,7 +602,7 @@ an account live would spend quota from the window being measured.
 
 So `config/statusline-command.sh` snapshots the four fields to
 `~/.claude/.cc-usage-<accountUuid>_<organizationUuid>` on each render (free — already parsed, and a
-fork-free bash redirect). `cc_account_lib.ts` then reasons over the snapshots
+fork-free bash redirect). `idun cc` then reasons over the snapshots
 using two properties that make stale data far more useful than it sounds:
 
 - **A rolled window is provably empty.** If `now >= resets_at`, that window

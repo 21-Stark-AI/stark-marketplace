@@ -2,7 +2,7 @@
 name: simple-gate
 type: skill
 description: Use when running the stark-author human gate (Phase 5), or any spec/plan sign-off checklist, and the operator wants the checks walked interactively in dead-simple, non-technical, ELI5 language with multiple-choice questions plus free text. Triggers include "walk me through the gate simply", "explain the gate like I'm five", "gate in plain English", "I don't get the checklist", "make the review easy".
-version: 0.4.7
+version: 0.4.8
 maturity: beta
 runtimes:
   - claude

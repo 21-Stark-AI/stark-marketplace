@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "bundle": {
     "name": "stark-brain",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "description": "Atlas second-brain MCP integration for durable knowledge search, notes, evidence, and ADR workflows.",
     "category": "productivity",
     "tags": [
