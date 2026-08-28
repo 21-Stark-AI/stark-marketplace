@@ -2,7 +2,7 @@
 name: stark-voice
 type: skill
 description: Use when drafting a Slack message, DM, reply, or short internal note as Aryeh (Kiovetsky) or "in my voice / my style / how I'd write it" - especially to Evinced / Israeli colleagues, reports, or peers. Covers Hebrew⇄English code-switching, message bursting, tone, and his feedback/praise/decision formulas.
-version: 0.5.18
+version: 0.5.19
 maturity: beta
 runtimes:
   - claude
