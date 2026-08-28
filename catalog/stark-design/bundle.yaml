@@ -11,7 +11,7 @@ tags:
 owner:
   name: 21 Stark AI
   email: engineering@21stark.com
-maturity: experimental
+maturity: beta
 runtimes:
   - claude
 # Membership manifest consumed by the generator (`stark sync`).
