@@ -11,6 +11,8 @@ All notable changes to `stark-marketplace`. The format follows [Keep a Changelog
 - Unblocked native marketplace publication and packaged `stark-brain` as an Atlas MCP integration without restoring the retired `remember` skill.
 
 ### Added
+<!-- stark-gh:pr-merge pr=207 runId=044dacbb-5bef-42dd-8e7d-16e9e1c14290 -->
+- Add the beta `stark-design` bundle with reusable design-token architecture, theming, accessibility, distribution, and versioning guidance.
 <!-- stark-gh:pr-merge pr=205 runId=abe5b9b1-1c62-43bc-85af-205fd049fd75 -->
 - Retired `stark-cc-user` from `stark-ops`; Claude Code account switching now belongs to Idun CC.
 <!-- stark-gh:pr-merge pr=198 runId=12ade727-0eb7-46d7-b653-09bafa778a6a -->
