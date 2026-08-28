@@ -55,11 +55,7 @@ echo "→ stark-skills: $STARK_SKILLS"
 # A skill must be either a member of some bundle.yaml OR listed here — otherwise
 # the coverage gate below fails. This is what stops a NEW stark-skills skill from
 # being silently dropped by `stark sync` (which only pulls declared members).
-# stark-cc-user is retired to Idun CC (STARK-1704). stark-skills is deleting the
-# skill (STARK-1697); until that deletion syncs here it still appears as a source
-# skill belonging to no bundle, so exclude it to keep this gate green in the
-# meantime. Remove this entry once stark-skills no longer ships skill/stark-cc-user/.
-EXCLUDED_SKILLS=(stark-voice stark-cc-user)
+EXCLUDED_SKILLS=(stark-voice)
 
 # bump <file> <minor|patch> — handles both a bundle.yaml `version: X.Y.Z` line and
 # the bare-`X.Y.Z` root VERSION file. minor: X.(Y+1).0 · patch: X.Y.(Z+1).

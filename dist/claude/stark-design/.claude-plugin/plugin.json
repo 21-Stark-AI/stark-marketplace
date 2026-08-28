@@ -1,0 +1,16 @@
+{
+  "author": {
+    "email": "engineering@21stark.com",
+    "name": "21 Stark AI"
+  },
+  "description": "Design-token architecture — build, name, theme, and govern a design-token system the way the field's canonical sources converge on it. Covers the three-tier model (primitive/semantic/component), naming grammar, OKLCH color scales, DTCG authoring, Style Dictionary pipelines, dark-mode/multi-brand/density theming, CSS-variable distribution, WCAG contrast gates, and token semver/deprecation.",
+  "keywords": [
+    "design-tokens",
+    "design-system",
+    "theming",
+    "dark-mode",
+    "accessibility"
+  ],
+  "name": "stark-design",
+  "version": "0.1.0"
+}
