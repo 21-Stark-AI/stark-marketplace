@@ -1,7 +1,7 @@
 {
   "name": "stark-ops",
-  "version": "0.19.4",
-  "description": "Repository operations beyond the spec-driven pipeline — cut releases, housekeep stale issues/branches/worktrees, run session start/end, hand off work across sessions, and switch GitHub or Claude Code identities when a rate limit runs out.",
+  "version": "0.20.0",
+  "description": "Repository operations beyond the spec-driven pipeline — cut releases, housekeep stale issues/branches/worktrees, run session start/end, hand off work across sessions, and switch GitHub identities when a rate limit runs out.",
   "author": {
     "name": "21 Stark AI",
     "email": "engineering@21stark.com",
@@ -21,7 +21,7 @@
   "interface": {
     "displayName": "Stark Ops",
     "shortDescription": "Repository operations beyond the spec-driven pipeline — cut releases, housekeep stale",
-    "longDescription": "Repository operations beyond the spec-driven pipeline — cut releases, housekeep stale issues/branches/worktrees, run session start/end, hand off work across sessions, and switch GitHub or Claude Code identities when a rate limit runs out.",
+    "longDescription": "Repository operations beyond the spec-driven pipeline — cut releases, housekeep stale issues/branches/worktrees, run session start/end, hand off work across sessions, and switch GitHub identities when a rate limit runs out.",
     "developerName": "21 Stark AI",
     "category": "Ops",
     "capabilities": [
