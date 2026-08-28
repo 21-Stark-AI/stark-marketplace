@@ -446,7 +446,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.6.17",
+      "version": "0.7.0",
       "runtimes": [
         "claude",
         "codex"
@@ -456,32 +456,6 @@
         "codex": "native"
       },
       "digest": "sha256:cc88c37c25ad5250754a1b65c0367aa5e21edf030db3c1be97c817e24581e6e0"
-    },
-    {
-      "name": "stark-cc-user",
-      "type": "skill",
-      "bundle": "stark-ops",
-      "description": "Switch the active Claude Code account between stored profiles when a 5-hour or 7-day rate-limit window runs out. Credentials live in macOS Keychain (service `stark-cc-token`); headroom comes from statusline snapshots.",
-      "tags": [
-        "release",
-        "housekeeping",
-        "session",
-        "handover",
-        "git",
-        "rate-limits"
-      ],
-      "category": "ops",
-      "maturity": "beta",
-      "version": "0.6.17",
-      "runtimes": [
-        "claude",
-        "codex"
-      ],
-      "support": {
-        "claude": "native",
-        "codex": "native"
-      },
-      "digest": "sha256:fdbb6bef9d9bcede5b30e0e4abba8b479e6f96aaa97a918f183ebfb8939aeec6"
     },
     {
       "name": "stark-gh-user",
@@ -498,7 +472,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.6.17",
+      "version": "0.7.0",
       "runtimes": [
         "claude",
         "codex"
@@ -524,7 +498,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.6.17",
+      "version": "0.7.0",
       "runtimes": [
         "claude",
         "codex"
@@ -550,7 +524,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.6.17",
+      "version": "0.7.0",
       "runtimes": [
         "claude",
         "codex"
@@ -576,7 +550,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.6.17",
+      "version": "0.7.0",
       "runtimes": [
         "claude",
         "codex"
@@ -602,7 +576,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.6.17",
+      "version": "0.7.0",
       "runtimes": [
         "claude",
         "codex"
@@ -628,7 +602,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.6.17",
+      "version": "0.7.0",
       "runtimes": [
         "claude",
         "codex"
@@ -654,7 +628,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.6.17",
+      "version": "0.7.0",
       "runtimes": [
         "claude",
         "codex"
@@ -857,7 +831,7 @@
     },
     {
       "bundle": "stark-ops",
-      "version": "0.6.17",
+      "version": "0.7.0",
       "digest": "sha256:4df4d69ed86394e7b440ce82ca9e5aaef4644103336fcf6e982e60d5a2c3113a"
     },
     {
