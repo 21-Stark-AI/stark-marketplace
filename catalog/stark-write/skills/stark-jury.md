@@ -2,7 +2,7 @@
 name: stark-jury
 type: skill
 description: Run one of the four post skills (stark-voice, stark-story-edit, stark-blog-sharpen, stark-story-judge) across a three-model panel and reconcile the results. Use when the ask is "run this through the panel / best of three / compare the models on this post / which model edits this best / jury this draft / second and third opinion on this edit". Dispatches the skill plus the document to claude, codex and gemini in parallel, verifies every candidate against the skill's own iron rules, then THIS session merges anchored (rewrite skills) or writes the calibration report (story-judge). Never edits the four skills, never publishes.
-version: 0.5.19
+version: 0.5.20
 maturity: beta
 runtimes:
   - claude
