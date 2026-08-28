@@ -9,7 +9,7 @@
       "name": "stark-analyze",
       "source": "./dist/claude/stark-analyze",
       "description": "Contract-bounded spec authoring, multi-domain review, and adversarial red-team of specs, designs, execution plans, and PRs, multi-agent Terraform/Terragrunt (IaC) review, application-logging authoring/review guidance, plus review-prompt improvement from assessment feedback. Maps to spec-kit's specify + analyze phases.",
-      "version": "0.5.31",
+      "version": "0.5.32",
       "author": {
         "name": "21 Stark AI",
         "email": "engineering@21stark.com"
@@ -28,7 +28,7 @@
       "name": "stark-brain",
       "source": "./dist/claude/stark-brain",
       "description": "Atlas second-brain MCP integration for durable knowledge search, notes, evidence, and ADR workflows.",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "author": {
         "name": "21 Stark AI",
         "email": "engineering@21stark.com"
@@ -47,7 +47,7 @@
       "name": "stark-constitution",
       "source": "./dist/claude/stark-constitution",
       "description": "Project setup, decision records, and session priming — scaffold a dev-docs/standards structure (template/backfill/upgrade modes), record architecture decisions (ADRs) under docs/adr/, and assign a session persona. Maps to spec-kit's constitution phase.",
-      "version": "0.2.41",
+      "version": "0.2.42",
       "author": {
         "name": "21 Stark AI",
         "email": "engineering@21stark.com"
@@ -66,7 +66,7 @@
       "name": "stark-gh",
       "source": "./dist/claude/stark-gh",
       "description": "GitHub pull-request and repository-cleanup workflow commands for stark.",
-      "version": "0.2.31",
+      "version": "0.2.32",
       "author": {
         "name": "21 Stark AI",
         "email": "engineering@21stark.com"
@@ -83,7 +83,7 @@
       "name": "stark-implement",
       "source": "./dist/claude/stark-implement",
       "description": "Implement from an accepted spec. /stark-build runs one fresh headless session per task gated by checks the agent cannot edit, with a held-out e2e gate, one cross-vendor advisory review, and one bounded fix round for medium+ findings. /stark-copilot covers plan-file work via a paired lead/wing agent with a 1-round cap and a hard test gate.",
-      "version": "0.4.35",
+      "version": "0.4.36",
       "author": {
         "name": "21 Stark AI",
         "email": "engineering@21stark.com"
@@ -101,7 +101,7 @@
       "name": "stark-ops",
       "source": "./dist/claude/stark-ops",
       "description": "Repository operations beyond the spec-driven pipeline — cut releases, housekeep stale issues/branches/worktrees, run session start/end, hand off work across sessions, and switch GitHub identities when a rate limit runs out.",
-      "version": "0.7.0",
+      "version": "0.7.1",
       "author": {
         "name": "21 Stark AI",
         "email": "engineering@21stark.com"
@@ -121,7 +121,7 @@
       "name": "stark-plan",
       "source": "./dist/claude/stark-plan",
       "description": "Turn a design doc into a phased implementation plan, then decompose it into phased GitHub issues with story points and risk labels. Maps to spec-kit's plan + tasks phases.",
-      "version": "0.4.9",
+      "version": "0.4.10",
       "author": {
         "name": "21 Stark AI",
         "email": "engineering@21stark.com"
@@ -139,7 +139,7 @@
       "name": "stark-write",
       "source": "./dist/claude/stark-write",
       "description": "Long-form writing craft, from the author's reusable voice profile through story editing, adversarial sharpening, independent judging, and multi-model jury calibration.",
-      "version": "0.5.19",
+      "version": "0.5.20",
       "author": {
         "name": "21 Stark AI",
         "email": "engineering@21stark.com"

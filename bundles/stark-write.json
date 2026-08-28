@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "bundle": {
     "name": "stark-write",
-    "version": "0.5.19",
+    "version": "0.5.20",
     "description": "Long-form writing craft, from the author's reusable voice profile through story editing, adversarial sharpening, independent judging, and multi-model jury calibration.",
     "category": "writing",
     "tags": [
@@ -20,7 +20,7 @@
       "name": "stark-blog-sharpen",
       "type": "skill",
       "description": "Adversarial editor for long-form posts (blog, personal-site essays, longer internal notes) in Aryeh's voice. Use after drafting OR expanding a post, or when asked to \"make this post matter / cut the padding / make it sound like a real person wrote it / does this read AI / tighten this essay\". Two jobs: kill filler so the post earns every word, and scrub the AI tells so it reads like a human manager. Editing/diagnosis only - pairs with stark-voice (which drafts).",
-      "version": "0.5.19",
+      "version": "0.5.20",
       "runtimes": [
         "claude",
         "codex"
@@ -58,7 +58,7 @@
       "name": "stark-jury",
       "type": "skill",
       "description": "Run one of the four post skills (stark-voice, stark-story-edit, stark-blog-sharpen, stark-story-judge) across a three-model panel and reconcile the results. Use when the ask is \"run this through the panel / best of three / compare the models on this post / which model edits this best / jury this draft / second and third opinion on this edit\". Dispatches the skill plus the document to claude, codex and gemini in parallel, verifies every candidate against the skill's own iron rules, then THIS session merges anchored (rewrite skills) or writes the calibration report (story-judge). Never edits the four skills, never publishes.",
-      "version": "0.5.19",
+      "version": "0.5.20",
       "runtimes": [
         "claude",
         "codex"
@@ -96,7 +96,7 @@
       "name": "stark-story-edit",
       "type": "skill",
       "description": "Full-pass storytelling editor for long-form posts (blog, essays, site copy) in Aryeh's voice. Use when a draft has the facts but not the story - reads flat, buries its hook, over-explains, lands on a maxim, or needs humor and narrative pull - or when asked to \"make this land / tell it as a story / punch this up / make it worth reading\". Returns the whole post rewritten for the author to diff; every fact frozen. Pairs with stark-blog-sharpen (cut-only padding/AI-tell pass) and stark-voice (register source of truth).",
-      "version": "0.5.19",
+      "version": "0.5.20",
       "runtimes": [
         "claude",
         "codex"
@@ -134,7 +134,7 @@
       "name": "stark-story-judge",
       "type": "skill",
       "description": "Zero-context reader verdict on a long-form post. Use before publishing, after an edit pass, or whenever the ask is \"how good is this / would a stranger read this / fresh eyes on this post / grade it / second opinion / would my audience or LinkedIn crowd read this\". Dispatches cold judges - one per vendor, never a re-roll - that grade the reading experience on an anchored rubric with quoted evidence, plus optional audience-persona lenses (read/share verdicts, no grades), then relays the scorecards verbatim. Judges only - it never edits (stark-story-edit rewrites, stark-blog-sharpen cuts) and never checks publish machinery.",
-      "version": "0.5.19",
+      "version": "0.5.20",
       "runtimes": [
         "claude",
         "codex"
@@ -172,7 +172,7 @@
       "name": "stark-voice",
       "type": "skill",
       "description": "Use when drafting a Slack message, DM, reply, or short internal note as Aryeh (Kiovetsky) or \"in my voice / my style / how I'd write it\" - especially to Evinced / Israeli colleagues, reports, or peers. Covers Hebrew⇄English code-switching, message bursting, tone, and his feedback/praise/decision formulas.",
-      "version": "0.5.19",
+      "version": "0.5.20",
       "runtimes": [
         "claude",
         "codex"
