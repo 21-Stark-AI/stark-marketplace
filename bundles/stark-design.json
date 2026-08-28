@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "bundle": {
+    "name": "stark-design",
+    "version": "0.1.0",
+    "description": "Design-token architecture — build, name, theme, and govern a design-token system the way the field's canonical sources converge on it. Covers the three-tier model (primitive/semantic/component), naming grammar, OKLCH color scales, DTCG authoring, Style Dictionary pipelines, dark-mode/multi-brand/density theming, CSS-variable distribution, WCAG contrast gates, and token semver/deprecation.",
+    "category": "design",
+    "tags": [
+      "design-tokens",
+      "design-system",
+      "theming",
+      "dark-mode",
+      "accessibility"
+    ],
+    "owner": "21 Stark AI",
+    "maturity": "beta"
+  },
+  "artifacts": [
+    {
+      "name": "stark-design-tokens",
+      "type": "skill",
+      "description": "Build, name, theme, and govern design tokens the way the field's canonical sources converge on. Use when creating or restructuring a design-token system, a tokens package, or a theming layer — the three-tier model (primitive/semantic/component), the naming grammar, OKLCH color scales, DTCG authoring, Style Dictionary pipelines, dark-mode / multi-brand / density theming, CSS-variable distribution, WCAG contrast gates, and token semver/deprecation. Triggers: \"design tokens\", \"token architecture\", \"semantic tokens\", \"theme tokens\", \"dark mode tokens\", \"DTCG\", \"Style Dictionary\", \"token naming\", \"multi-brand theming\", \"unified tokens\".",
+      "version": "0.1.0",
+      "runtimes": [
+        "claude"
+      ],
+      "support": {
+        "claude": "native"
+      },
+      "requires": [],
+      "diverged": false,
+      "outputs": {
+        "claude": [
+          {
+            "path": "skills/stark-design-tokens/SKILL.md",
+            "kind": "file",
+            "emulated": false
+          }
+        ]
+      },
+      "fidelityNotes": {}
+    }
+  ]
+}

@@ -309,6 +309,29 @@
       "digest": "sha256:68e42f5a57c246e1bde43b4f4ed9d8d0105c2aac000920f5124a81578276741f"
     },
     {
+      "name": "stark-design-tokens",
+      "type": "skill",
+      "bundle": "stark-design",
+      "description": "Build, name, theme, and govern design tokens the way the field's canonical sources converge on. Use when creating or restructuring a design-token system, a tokens package, or a theming layer — the three-tier model (primitive/semantic/component), the naming grammar, OKLCH color scales, DTCG authoring, Style Dictionary pipelines, dark-mode / multi-brand / density theming, CSS-variable distribution, WCAG contrast gates, and token semver/deprecation. Triggers: \"design tokens\", \"token architecture\", \"semantic tokens\", \"theme tokens\", \"dark mode tokens\", \"DTCG\", \"Style Dictionary\", \"token naming\", \"multi-brand theming\", \"unified tokens\".",
+      "tags": [
+        "design-tokens",
+        "design-system",
+        "theming",
+        "dark-mode",
+        "accessibility"
+      ],
+      "category": "design",
+      "maturity": "beta",
+      "version": "0.1.0",
+      "runtimes": [
+        "claude"
+      ],
+      "support": {
+        "claude": "native"
+      },
+      "digest": "sha256:2df67ed1da8170284e99289ee9a954eb795394a1b5a5db74cb26aea7e4032363"
+    },
+    {
       "name": "cleanup",
       "type": "command",
       "bundle": "stark-gh",
@@ -818,6 +841,11 @@
       "bundle": "stark-analyze",
       "version": "0.5.32",
       "digest": "sha256:42ee5266e52dc6166629b7e32f781f70d3fd1a3e140314404a4e6fd77f73c540"
+    },
+    {
+      "bundle": "stark-design",
+      "version": "0.1.0",
+      "digest": "sha256:7b200484db2256c8e3edc1ee46dd680b894043f5b07ce03b6d8fe486feb2418a"
     },
     {
       "bundle": "stark-gh",
