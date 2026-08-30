@@ -1,5 +1,0 @@
-interface:
-  display_name: "Stark Handoff"
-  short_description: "Use when the next move belongs to someone else — a fresh session"
-policy:
-  allow_implicit_invocation: true
