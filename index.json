@@ -343,7 +343,7 @@
       ],
       "category": "productivity",
       "maturity": "beta",
-      "version": "0.2.33",
+      "version": "0.2.34",
       "runtimes": [
         "claude",
         "codex",
@@ -368,7 +368,7 @@
       ],
       "category": "productivity",
       "maturity": "beta",
-      "version": "0.2.33",
+      "version": "0.2.34",
       "runtimes": [
         "claude",
         "codex",
@@ -393,7 +393,7 @@
       ],
       "category": "productivity",
       "maturity": "beta",
-      "version": "0.2.33",
+      "version": "0.2.34",
       "runtimes": [
         "claude",
         "codex",
@@ -469,7 +469,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.7.2",
+      "version": "0.8.0",
       "runtimes": [
         "claude",
         "codex"
@@ -495,7 +495,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.7.2",
+      "version": "0.8.0",
       "runtimes": [
         "claude",
         "codex"
@@ -521,7 +521,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.7.2",
+      "version": "0.8.0",
       "runtimes": [
         "claude",
         "codex"
@@ -531,32 +531,6 @@
         "codex": "native"
       },
       "digest": "sha256:a22d142a737e6dcec816703181ade67f0ea37dcc8bb916eb4ae204145ce3a279"
-    },
-    {
-      "name": "stark-handoff",
-      "type": "skill",
-      "bundle": "stark-ops",
-      "description": "Use when the next move belongs to someone else — a fresh session after /compact, a fix dispatched into another repo, a parallel fork, a brainstorm or deep-research brief. Triggers: \"handoff\", \"write me a prompt\", \"prompt file\", \"continuation prompt\", \"fix prompt\", \"brief for another session\", \"fork this work\", \"research prompt\". Writes ONE self-contained prompt file a fresh executor starts from; can also load or launch one.",
-      "tags": [
-        "release",
-        "housekeeping",
-        "session",
-        "handover",
-        "git",
-        "rate-limits"
-      ],
-      "category": "ops",
-      "maturity": "beta",
-      "version": "0.7.2",
-      "runtimes": [
-        "claude",
-        "codex"
-      ],
-      "support": {
-        "claude": "native",
-        "codex": "native"
-      },
-      "digest": "sha256:e81b983b0a22f6f65dc876cd997abd60634e59ecccfec8a1220fb179ce03983e"
     },
     {
       "name": "stark-handover",
@@ -573,7 +547,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.7.2",
+      "version": "0.8.0",
       "runtimes": [
         "claude",
         "codex"
@@ -582,7 +556,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:919de63a589a9534c88972b8af93b489fefaf5030bbc416cee2d207e7ab6e809"
+      "digest": "sha256:5b6fd4ab75fcae8f2ee529118e32a9c9a20d2166a6df658e2e5dddb8e4ffe4b2"
     },
     {
       "name": "stark-housekeeping",
@@ -599,7 +573,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.7.2",
+      "version": "0.8.0",
       "runtimes": [
         "claude",
         "codex"
@@ -625,7 +599,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.7.2",
+      "version": "0.8.0",
       "runtimes": [
         "claude",
         "codex"
@@ -651,7 +625,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.7.2",
+      "version": "0.8.0",
       "runtimes": [
         "claude",
         "codex"
@@ -661,6 +635,30 @@
         "codex": "native"
       },
       "digest": "sha256:009d075f24ad5a0c13b658c6edb350506da4adf3b1decad5c63f57208166c223"
+    },
+    {
+      "name": "team-leader-agent",
+      "type": "skill",
+      "bundle": "stark-ops",
+      "description": "Use when coordinating two or more Claude Code minion sessions in cmux — dispatching a task DAG across sessions, briefing a minion, resetting one with /clear between tasks, deciding whether to trust a minion's \"done / PR merged\" report, finding out whether a silent minion is stuck or working, or answering a minion's offer to \"clean up\" mid-engagement. Also use when fanning a fleet into an unfamiliar repo — learning its test gate before dispatch, whether a \"green\" PR means a real check ran, which shared files force merges to serialize, and how to run a merge queue over a shared seam so concurrent PRs regenerate and reconcile after each land — or when tempted to dispatch beyond the ready set because idle minions look wasteful, to drive a minion's terminal directly, to claim a live-verified result a task had no vendor grant to check, or to fan out on an ambiguous or outward-facing instruction before confirming it with the operator.",
+      "tags": [
+        "release",
+        "housekeeping",
+        "session",
+        "handover",
+        "git",
+        "rate-limits"
+      ],
+      "category": "ops",
+      "maturity": "beta",
+      "version": "0.8.0",
+      "runtimes": [
+        "claude"
+      ],
+      "support": {
+        "claude": "native"
+      },
+      "digest": "sha256:9956fcbdd4b68d4e60f8bbad6f2137304a24b09d6423c38da34483b247c000e3"
     },
     {
       "name": "simple-gate",
@@ -849,8 +847,8 @@
     },
     {
       "bundle": "stark-gh",
-      "version": "0.2.33",
-      "digest": "sha256:620a9ada102402edd7ff530ed0b903db6dce6a85c4fcfa66c4e260e56095a445"
+      "version": "0.2.34",
+      "digest": "sha256:c6fbf7a9e725c7b993fdec85b71d14297081de4661d866fb50f18daf33b90c88"
     },
     {
       "bundle": "stark-implement",
@@ -859,8 +857,8 @@
     },
     {
       "bundle": "stark-ops",
-      "version": "0.7.2",
-      "digest": "sha256:4df4d69ed86394e7b440ce82ca9e5aaef4644103336fcf6e982e60d5a2c3113a"
+      "version": "0.8.0",
+      "digest": "sha256:8903642d997f754220bb39976c8a111bc29b5cae5ebfc264810e9d3a2cf8da01"
     },
     {
       "bundle": "stark-plan",

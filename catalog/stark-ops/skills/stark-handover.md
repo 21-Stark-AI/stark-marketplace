@@ -2,7 +2,7 @@
 name: stark-handover
 type: skill
 description: 'Use when pausing or splitting work across sessions — before /clear, when context runs low, end of day, switching tasks — or when resuming after one. Triggers: "handover", "save context", "save progress", "resume", "continue where we left off", "what was I doing". Persists a numbered handover chain + PROGRESS.md tracker per task; resume needs no recap.'
-version: 0.7.2
+version: 0.8.0
 maturity: beta
 runtimes:
   - claude
@@ -36,9 +36,8 @@ overrides:
       **Not this skill:** authoring a standalone prompt file for another agent or a
       later session. This skill persists *this* session's state into a numbered
       chain; a self-contained mission prompt is a different artifact with a
-      different reader. The skill that writes one (`stark-handoff`) is Claude-only
-      and ships no Codex variant — do not try to invoke it here. Compose the prompt
-      by hand, or run that skill from a Claude session.
+      different reader. Compose such a prompt by hand — there is no dedicated skill
+      for it.
 
       ## Execution rule
 
@@ -212,8 +211,9 @@ The CLI owns paths/numbering/writes; **you** author the content — the value
 of a handover is what you mine from the conversation, which only you have.
 
 **Not this skill:** authoring a standalone prompt file for another agent or a
-later session — route that to `/stark-handoff`. This skill persists *this*
-session's state; `/stark-handoff` writes a self-contained mission prompt.
+later session. This skill persists *this* session's state for resuming the same
+task in place; a self-contained mission prompt is a different artifact you
+compose by hand.
 
 ## Constants
 
