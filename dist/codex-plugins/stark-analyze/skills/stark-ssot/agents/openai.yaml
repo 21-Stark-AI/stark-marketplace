@@ -1,5 +1,0 @@
-interface:
-  display_name: "Stark SSOT"
-  short_description: "Use when consolidating or reviewing a single source of truth —"
-policy:
-  allow_implicit_invocation: false

@@ -2,7 +2,7 @@
 name: stark-gha-cost
 type: skill
 description: Diagnose and cut GitHub Actions + GHAS (Advanced Security) billing costs for an org or enterprise. Use whenever the user is surprised by or wants to reduce a GitHub bill, mentions Actions minutes / runner cost / CI spend, asks "why is my GitHub bill so high", "are we paying for GHAS/secret scanning/code scanning", "should I self-host runners", "which repo is burning Actions minutes", or wants to right-size GitHub security seats (Secret Protection vs Code Security). Also triggers on a mystery Actions charge, a runaway workflow, or a billing number that looks wrong. Also use for making CI cheaper/faster the right way — slow or expensive pipelines, build/dependency caching that isn't hitting, wide test matrices, merge queues, flaky-test cost, artifact/registry storage, or measuring CI spend (cost-per-PR, budgets, usage APIs). Diagnoses where the money goes (product → repo → workflow → run), applies the highest-value levers via PR, and escalates genuine mis-billing to Support. Reach for it even when the user only says "GitHub is expensive this month" or "our CI is too slow" without naming Actions.
-version: 0.9.1
+version: 0.9.2
 maturity: beta
 runtimes:
   - claude
@@ -274,7 +274,7 @@ count — not test logic. Read `references/matrix-runners.md` before optimizing 
   durations understates spend; a `billed-minutes ÷ actual-runtime` ratio per
   workflow is the rounding-waste detector.
 - **The dominant CI cost is often developer WAIT time, not runner minutes**
-  (measured wait-to-compute ratios of 25–100×). For a team, the true unit is
+  (wait-to-compute ratios of 25–100×). For a team, the true unit is
   **cost-per-merged-PR including loaded wait** — so queue-time and pipeline
   duration are usually the real levers, not $/minute. Free org-wide **Actions
   Insights** (queue time + failure rate, UI-only) and `self-actuated/actions-usage`

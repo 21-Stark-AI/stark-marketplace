@@ -2,7 +2,7 @@
 name: stark-review
 type: skill
 description: Single-agent PR review. Uses triage-selected PR review domains by default, or one forced agent via `--agent`.
-version: 0.5.33
+version: 0.5.34
 maturity: beta
 runtimes:
   - claude
@@ -634,8 +634,7 @@ The gate allows the fix loop when ALL of:
   Makefile `test:` targets, `package.json` `scripts.test`, `go.mod`,
   `Cargo.toml`, `*.test.ts`/`*.test.js` (node:test), and pytest (only when test
   files actually exist). When nothing resolves, the loop soft-skips via
-  `allow_no_test_command` rather than failing — repos no longer need to pin a
-  brittle `test_command`.
+  `allow_no_test_command` rather than failing.
 - The PR is same-repo, OR fork-with-`maintainerCanModify`, OR the operator
   passed `--allow-untrusted-fix-loop` AND `config.untrusted_fix_loop=true`
   (both opt-ins required for untrusted fork pushes). Detection-sourced commands

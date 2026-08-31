@@ -2,7 +2,7 @@
 name: stark-review-improvement
 type: skill
 description: Improve review prompts based on Prompt Improvement Assessment from completed reviews. Use for fix review prompts.
-version: 0.5.33
+version: 0.5.34
 maturity: beta
 runtimes:
   - claude
@@ -254,7 +254,7 @@ Closes the feedback loop on stark-skills: reads the prompt improvement assessmen
 
 ## Arguments
 
-- None — targets the PR code review prompts (`global/prompts/{claude,codex,gemini}/`; gemini disabled by default). The former `--prompts-dir spec-review|plan-review` modes died with the doc-review loops (demolition 2026-07-26).
+- None — targets the PR code review prompts (`global/prompts/{claude,codex,gemini}/`; gemini disabled by default).
 
 **Raw input:** `$ARGUMENTS`
 
@@ -442,4 +442,4 @@ Do NOT push unless the user explicitly asks.
 - **Backward compatible.** New config fields must have defaults. Prompt changes must not break existing output format.
 - **One concern per edit.** Don't bundle unrelated improvements in a single file change.
 - **Show diffs before committing.** The user reviews the changes.
-- **agent.md is the scoping file.** For PR reviews: diff scope instructions go there. For spec/plan reviews: document-level scoping (e.g., "calibrate to stated scope") goes there. Domain prompts handle domain-specific review criteria in both cases.
+- **agent.md is the scoping file.** For PR reviews: diff scope instructions go there. Domain prompts handle domain-specific review criteria.

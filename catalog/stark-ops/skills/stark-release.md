@@ -2,7 +2,7 @@
 name: stark-release
 type: skill
 description: 'Cut a release: changelog review (auto-generating from git log if [Unreleased] is empty), version bump, git tag, GitHub Release. Use for release, tag, bump version.'
-version: 0.9.1
+version: 0.9.2
 maturity: beta
 runtimes:
   - claude
@@ -603,8 +603,7 @@ If the repo has a release-publishing workflow that triggers on `v*.*.*`
 tag push (`.github/workflows/release.yml` with `on: push: tags: - "v*.*.*"`),
 **skip this step** — the workflow creates the Release from the CHANGELOG
 itself. Manually creating the release in parallel produces a `view → create`
-race that fails the workflow run with HTTP 422 `already_exists` (see
-stark-night-watch run 26380137617).
+race that fails the workflow run with HTTP 422 `already_exists`.
 
 ```bash
 # Detect: does a tag-triggered release workflow exist?

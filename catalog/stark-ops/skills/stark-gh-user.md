@@ -2,7 +2,7 @@
 name: stark-gh-user
 type: skill
 description: Switch the active GitHub user identity (primary ↔ secondary) for `gh` invocations to dodge per-user GraphQL/REST rate limits. Tokens live in macOS Keychain (service `stark-gh-token`).
-version: 0.9.1
+version: 0.9.2
 maturity: beta
 runtimes:
   - claude
@@ -199,7 +199,7 @@ Toggle the GitHub user identity used by `gh` so rate-limited GraphQL/REST traffi
 
 Bot calls (App installation tokens minted by `tools/github_app.ts`) are unaffected — they get their own pool per app, and their only sanctioned use is posting multi-LLM review findings.
 
-**No tokens are provisioned yet** (checked 2026-08-04): all four `stark-gh-token` Keychain entries are absent, so every subcommand that resolves a token fails until they're seeded. `limits`/`show` will report that rather than a number. Seed `primary-*` from `aryeh-stark` first:
+**No tokens are provisioned yet:** all four `stark-gh-token` Keychain entries are absent, so every subcommand that resolves a token fails until they're seeded. `limits`/`show` will report that rather than a number. Seed `primary-*` from `aryeh-stark` first:
 
 ```bash
 security add-generic-password -U -s stark-gh-token -a primary-fine -w   # paste the aryeh-stark PAT

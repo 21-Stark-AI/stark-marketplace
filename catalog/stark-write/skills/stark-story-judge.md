@@ -2,7 +2,7 @@
 name: stark-story-judge
 type: skill
 description: Zero-context reader verdict on a long-form post. Use before publishing, after an edit pass, or whenever the ask is "how good is this / would a stranger read this / fresh eyes on this post / grade it / second opinion / would my audience or LinkedIn crowd read this". Dispatches cold judges - one per vendor, never a re-roll - that grade the reading experience on an anchored rubric with quoted evidence, plus optional audience-persona lenses (read/share verdicts, no grades), then relays the scorecards verbatim. Judges only - it never edits (stark-story-edit rewrites, stark-blog-sharpen cuts) and never checks publish machinery.
-version: 0.5.21
+version: 0.5.22
 maturity: beta
 runtimes:
   - claude
@@ -495,7 +495,7 @@ second judge is the `codex` CLI at **xhigh** reasoning effort (grading is a
 hard-reasoning task and the CLI's ambient default is often low; the model id
 comes from config, never from this file).
 
-Dispatch shape - every detail is a scar, keep all of them:
+Dispatch shape - keep every detail:
 
 ````bash
 # model from fleet config; empty var falls back to the CLI's own default

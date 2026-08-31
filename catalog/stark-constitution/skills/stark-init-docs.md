@@ -2,7 +2,7 @@
 name: stark-init-docs
 type: skill
 description: Scaffold dev docs structure (template/backfill/upgrade/clean modes). Use for init docs, setup docs, scaffold docs.
-version: 0.2.43
+version: 0.2.44
 maturity: beta
 runtimes:
   - claude
@@ -579,7 +579,7 @@ Be CONSERVATIVE. Only generate ADRs for major technology choices:
 
 Each ADR follows the template in `docs/adr/0000-template.md`. Number them starting from `0001`. Set status to "Accepted" and date to the earliest commit that introduced the technology (from git log).
 
-For ADRs going forward, prefer `brain adr new "<title>"` (the `/stark-adr` skill), which auto-numbers and renders this same template; this backfill step is only for bootstrapping historical decisions. The layout follows the doc convention `docs/{adr,specs,retros}/` (folder per type — `adr` stays the established acronym, the rest are plural; see `stark-2nd-brain-cli/docs/CONVENTIONS.md`). There is **no `docs/plans/`** — the spec carries the plan.
+For ADRs going forward, prefer `brain adr new "<title>"` (the `/stark-adr` skill), which auto-numbers and renders this same template. The layout follows the doc convention `docs/{adr,specs,retros}/` (folder per type — `adr` stays the established acronym, the rest are plural; see `stark-2nd-brain-cli/docs/CONVENTIONS.md`). There is **no `docs/plans/`** — the spec carries the plan.
 
 Do NOT generate ADRs for:
 - Dev dependencies (linters, formatters, test frameworks)

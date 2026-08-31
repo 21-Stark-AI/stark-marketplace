@@ -2,7 +2,7 @@
 name: stark-adr
 type: skill
 description: 'Record and manage Architecture Decision Records (ADRs) under a repo''s docs/adr/. Use for: new ADR, log/record a decision, "create an ADR", supersede an ADR, list ADRs, "why did we decide X". Wraps `brain adr` — MADR-lite, auto-numbered, repo-relative.'
-version: 0.2.43
+version: 0.2.44
 maturity: beta
 runtimes:
   - claude
@@ -118,7 +118,7 @@ the skill share one tested engine.
 ## Prerequisite
 
 `brain` must be on PATH. It is the **TypeScript Atlas engine** (`21StarkCom/atlas`,
-`atlas/apps/cli`) — the `adr` group is a byte-identical port of the retired Go `brain adr`.
+`atlas/apps/cli`).
 
 ```bash
 brain adr list   # verify brain is on PATH and the adr group is available
