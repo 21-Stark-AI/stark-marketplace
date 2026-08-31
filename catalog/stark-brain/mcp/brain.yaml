@@ -1,9 +1,0 @@
-name: brain
-type: mcp
-description: Expose the locally built Atlas brain engine as an MCP server.
-version: 0.2.0
-mcp:
-  transport: stdio
-  command: brain
-  args:
-    - mcp

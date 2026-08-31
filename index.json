@@ -209,31 +209,6 @@
       "digest": "sha256:312b67bf035ef7f5783b381a39292032241b9c776803c9211823ab90b73a6842"
     },
     {
-      "name": "brain",
-      "type": "mcp",
-      "bundle": "stark-brain",
-      "description": "Expose the locally built Atlas brain engine as an MCP server.",
-      "tags": [
-        "memory",
-        "brain",
-        "vault",
-        "knowledge",
-        "capture"
-      ],
-      "category": "productivity",
-      "maturity": "beta",
-      "version": "0.2.0",
-      "runtimes": [
-        "claude",
-        "codex"
-      ],
-      "support": {
-        "claude": "native",
-        "codex": "native"
-      },
-      "digest": "sha256:c8e1fdbe10e08fe6ecd5e9075cc86ec47f17b4c2234e6be97307e6918e8960b1"
-    },
-    {
       "name": "stark-adr",
       "type": "skill",
       "bundle": "stark-constitution",
