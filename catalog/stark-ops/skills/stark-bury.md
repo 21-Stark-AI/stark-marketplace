@@ -2,7 +2,7 @@
 name: stark-bury
 type: skill
 description: 'Use when retiring 21Stark code into the Náströnd graveyard — burying a subsystem of a living repo (partial burial) or putting down a whole repo (full retirement). Symptoms: "bury X", "retire the <feature>", "kill this service and keep the memory", "new corpse for nastrond", "dig a grave", "tombstone", "exhume". Runs the full ritual: footprint verification, interment PR, deletion PR, optional sealed data dump and table drop.'
-version: 0.9.1
+version: 0.9.2
 maturity: beta
 runtimes:
   - claude
@@ -160,11 +160,11 @@ first shovel of dirt.
 - One alfred ticket per phase, in the repo that phase's PR lands in
   (`alfred task new …`); every PR title is `type(STARK-<n>): subject`.
 
-## Phase 1 — verify the footprint (the step that has bitten before)
+## Phase 1 — verify the footprint
 
 Never trust a name-based file list — not the operator's, not a brief's, not
-grep's. A file called `*_nudge*` belonged to a DIFFERENT living subsystem the
-one time this ritual ran unverified.
+grep's. A matching filename can belong to a DIFFERENT living subsystem — verify
+each file's ownership before burial.
 
 For every candidate file:
 

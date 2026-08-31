@@ -2,7 +2,7 @@
 name: stark-fresh-eyes
 type: skill
 description: 'One-shot zero-context review of a prompt, research brief, spec, or doc before it ships: a single read-only subagent re-verifies every checkable claim by a DIFFERENT method and reports defects only. Findings return to the author once — no second round, no loops. Use for fresh eyes, review prompt, check brief.'
-version: 0.5.33
+version: 0.5.34
 maturity: beta
 runtimes:
   - claude
@@ -139,15 +139,12 @@ the file path and the contract below, never your reasoning or history) to
 verify every checkable claim by a **different method** than the doc's own,
 then returns defects to you exactly once.
 
-**Why one pass, why different method** (2026-07-25 evidence):
-- Two independent checks both "confirmed" a file count of 34/35 by re-reading;
-  a zero-context reviewer counting **recursively** — a different method — found
-  39. Fresh eyes work through method difference, not extra effort.
-- Applied at draft time, the authoring rubric + one pass found 2 defects; the
-  pre-rubric flow needed 2 rounds for 8-then-3. Rounds past one are rubric
-  extraction, not review.
-- The fleet autopsy: LLM-review loops are structurally non-convergent —
-  findings must decline or the loop is churn. One pass per revision, hard.
+**Why one pass, why different method:**
+- Fresh eyes work through method difference, not extra effort: re-verify a
+  claim by a *different* method than the doc's own.
+- Rounds past one are rubric extraction, not review.
+- LLM-review loops are structurally non-convergent — findings must decline or
+  the loop is churn. One pass per revision, hard.
 
 **Non-negotiables:**
 - **ONE dispatch per document revision.** Apply findings once, ship. If the

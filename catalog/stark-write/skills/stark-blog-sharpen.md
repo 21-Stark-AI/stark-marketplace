@@ -2,7 +2,7 @@
 name: stark-blog-sharpen
 type: skill
 description: 'Adversarial editor for long-form posts (blog, personal-site essays, longer internal notes) in Aryeh''s voice. Use after drafting OR expanding a post, or when asked to "make this post matter / cut the padding / make it sound like a real person wrote it / does this read AI / tighten this essay". Two jobs: kill filler so the post earns every word, and scrub the AI tells so it reads like a human manager. Editing/diagnosis only - pairs with stark-voice (which drafts).'
-version: 0.5.21
+version: 0.5.22
 maturity: beta
 runtimes:
   - claude
@@ -255,7 +255,7 @@ A post can be padding-free and still read like a machine. Scrub these. (Full reg
 
 ## Cross-post repetition (mandatory when reviewing 2+ posts)
 
-At length, the same writer reaches for the same well. Across a single blog this reads as one war story told nine ways. Check for:
+At length, the same writer reaches for the same well. Check for:
 
 - **Reused metaphors / images.** The "scoreboard" frame, "[bad thing] wearing a [respectable] costume/coat", "the friction is the sound of X". One home per image. List each with the files that share it.
 - **Reused biographical wells.** The France-acquisition / offshore-team / "Paris decided" backstory is a finite resource. If four posts lean on it, vary the framing or redistribute. Two posts invoking the *same* scar should not sit adjacent.

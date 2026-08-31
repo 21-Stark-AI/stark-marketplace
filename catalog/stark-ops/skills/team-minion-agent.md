@@ -2,7 +2,7 @@
 name: team-minion-agent
 type: skill
 description: Use when you are a dispatched minion (worker) session in a cmux fleet, driven by a team leader — intaking a dispatch packet, running the session-start ritual, quoting a task's done-when back, staying inside your declared file set, deciding whether the seam a task needs is in scope, updating your ticket through its lifecycle, proving a task done with real evidence plus the mandatory /code-review xhigh --fix e2e pass, reporting result-first to your leader, participating in a merge queue (READY TO MERGE then wait for GO, then rebase + regenerate + reconcile on the leader's new-main broadcast), surviving a /clear reset, or deciding whether a blocker, an ambiguous behavior contract, or a vendor-grant gap means stop-and-ask-the-leader. Also for the bypass-mode discipline a minion runs under — untrusted-content handling, the STOP-LIST, worker-not-orchestrator parallelism, and never going silent past 30 minutes.
-version: 0.9.1
+version: 0.9.2
 maturity: beta
 runtimes:
   - claude
@@ -231,7 +231,7 @@ the persona never overrides safety, verification, or those rules.
 | channel | carries |
 |---|---|
 | **SendMessage** | your packet, the leader's answers, the new-main broadcast — all work content. Your reports go back this way. |
-| **control client** (hermod; cmux-client retired) | session-control slash commands (`/clear`, `/effort`) the leader sends to your terminal. You don't drive it; you receive it. |
+| **control client** (hermod) | session-control slash commands (`/clear`, `/effort`) the leader sends to your terminal. You don't drive it; you receive it. |
 
 A long paste that lands as `[Pasted text]` with an un-submitted Enter is the
 leader mis-sending a brief through the keyboard — if you see a half-arrived brief,
