@@ -4,6 +4,9 @@ All notable changes to `stark-marketplace`. The format follows [Keep a Changelog
 
 ## [Unreleased]
 
+### Removed
+- Unpublish the `stark-brain` bundle (the Atlas `brain` MCP server), reversing its still-unreleased addition. Its only consumer was this plugin; the Atlas engine keeps vault reach over its CLI. Root `VERSION` minor-bumped for the membership change.
+
 ### Fixed
 <!-- stark-gh:pr-merge pr=202 runId=49d6b13d-c855-4c7b-ad66-1579d33260b7 -->
 - Scope entropy exemptions to lockfile content while retaining credential detection and full-strength scanning for commit and PR prose.

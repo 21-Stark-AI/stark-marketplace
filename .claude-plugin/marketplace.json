@@ -25,25 +25,6 @@
       "strict": true
     },
     {
-      "name": "stark-brain",
-      "source": "./dist/claude/stark-brain",
-      "description": "Atlas second-brain MCP integration for durable knowledge search, notes, evidence, and ADR workflows.",
-      "version": "0.2.4",
-      "author": {
-        "name": "21 Stark AI",
-        "email": "engineering@21stark.com"
-      },
-      "category": "productivity",
-      "tags": [
-        "memory",
-        "brain",
-        "vault",
-        "knowledge",
-        "capture"
-      ],
-      "strict": true
-    },
-    {
       "name": "stark-constitution",
       "source": "./dist/claude/stark-constitution",
       "description": "Project setup, decision records, and session priming — scaffold a dev-docs/standards structure (template/backfill/upgrade modes), record architecture decisions (ADRs) under docs/adr/, and assign a session persona. Maps to spec-kit's constitution phase.",
