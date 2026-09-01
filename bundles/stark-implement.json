@@ -2,13 +2,12 @@
   "schemaVersion": 1,
   "bundle": {
     "name": "stark-implement",
-    "version": "0.4.38",
-    "description": "Implement from an accepted spec. /stark-build runs one fresh headless session per task gated by checks the agent cannot edit, with a held-out e2e gate, one cross-vendor advisory review, and one bounded fix round for medium+ findings. /stark-copilot covers plan-file work via a paired lead/wing agent with a 1-round cap and a hard test gate.",
+    "version": "0.4.39",
+    "description": "Implement from an accepted spec. /stark-build runs one fresh headless session per task gated by checks the agent cannot edit, with a held-out e2e gate, one cross-vendor advisory review, and one bounded fix round for medium+ findings.",
     "category": "implementation",
     "tags": [
       "implementation",
       "automation",
-      "lead-wing",
       "autonomous"
     ],
     "owner": "21 Stark AI",
@@ -19,7 +18,7 @@
       "name": "stark-build",
       "type": "skill",
       "description": "Stage 2 — autonomous implementation from an accepted stark-author spec: one fresh headless session per task, gated by checks the agent cannot edit (PreToolUse path-deny + Stop-hook gate), evidence per task, commit per green task, held-out e2e gate, one cross-vendor advisory review, ONE bounded fix round for medium+ findings, draft PR. No LLM review loops. Use for build, implement a spec.",
-      "version": "0.4.38",
+      "version": "0.4.39",
       "runtimes": [
         "claude",
         "codex"
@@ -46,44 +45,6 @@
           },
           {
             "path": ".agents/skills/stark-build/agents/openai.yaml",
-            "kind": "file",
-            "emulated": false
-          }
-        ]
-      },
-      "fidelityNotes": {}
-    },
-    {
-      "name": "stark-copilot",
-      "type": "skill",
-      "description": "Autonomous lead/wing implementation: lead subagent implements, wing subagent reviews, fix-loop until wing approves. Use for copilot, paired build.",
-      "version": "0.4.38",
-      "runtimes": [
-        "claude",
-        "codex"
-      ],
-      "support": {
-        "claude": "native",
-        "codex": "native"
-      },
-      "requires": [],
-      "diverged": false,
-      "outputs": {
-        "claude": [
-          {
-            "path": "skills/stark-copilot/SKILL.md",
-            "kind": "file",
-            "emulated": false
-          }
-        ],
-        "codex": [
-          {
-            "path": ".agents/skills/stark-copilot/SKILL.md",
-            "kind": "file",
-            "emulated": false
-          },
-          {
-            "path": ".agents/skills/stark-copilot/agents/openai.yaml",
             "kind": "file",
             "emulated": false
           }
