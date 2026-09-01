@@ -2,7 +2,7 @@
 name: stark-story-edit
 type: skill
 description: Full-pass storytelling editor for long-form posts (blog, essays, site copy) in Aryeh's voice. Use when a draft has the facts but not the story - reads flat, buries its hook, over-explains, lands on a maxim, or needs humor and narrative pull - or when asked to "make this land / tell it as a story / punch this up / make it worth reading". Returns the whole post rewritten for the author to diff; every fact frozen. Pairs with stark-blog-sharpen (cut-only padding/AI-tell pass) and stark-voice (register source of truth).
-version: 0.5.22
+version: 0.5.23
 maturity: beta
 runtimes:
   - claude

@@ -1,5 +1,0 @@
-interface:
-  display_name: "Stark Copilot"
-  short_description: "Autonomous lead/wing implementation: lead subagent implements,"
-policy:
-  allow_implicit_invocation: false
