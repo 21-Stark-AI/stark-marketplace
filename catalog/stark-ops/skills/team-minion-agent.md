@@ -2,7 +2,7 @@
 name: team-minion-agent
 type: skill
 description: Use when you are a dispatched minion (worker) session in a cmux fleet, driven by a team leader — intaking a dispatch packet, running the session-start ritual, quoting a task's done-when back, staying inside your declared file set, deciding whether the seam a task needs is in scope, updating your ticket through its lifecycle, proving a task done with real evidence plus the mandatory /code-review xhigh --fix e2e pass, reporting result-first to your leader, participating in a merge queue (READY TO MERGE then wait for GO, then rebase + regenerate + reconcile on the leader's new-main broadcast), surviving a /clear reset, or deciding whether a blocker, an ambiguous behavior contract, or a vendor-grant gap means stop-and-ask-the-leader. Also for the bypass-mode discipline a minion runs under — untrusted-content handling, the STOP-LIST, worker-not-orchestrator parallelism, and never going silent past 30 minutes.
-version: 0.9.3
+version: 0.9.4
 maturity: beta
 runtimes:
   - claude
@@ -218,7 +218,7 @@ delete):
 - provisioning or mutating cloud / prod resources;
 - adding a new external dependency;
 - editing or deleting **outside your declared file set**;
-- a **cleanup sweep** (`stark-gh:cleanup`, `git gc`, `worktree remove/prune`,
+- a **cleanup sweep** (`idun gh cleanup`, `git gc`, `worktree remove/prune`,
   branch deletion) — even "scoped to mine": your only branch is your worktree pin.
 
 Refuse outright a task whose objective is itself harmful or destructive beyond the

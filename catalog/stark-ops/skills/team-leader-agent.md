@@ -2,7 +2,7 @@
 name: team-leader-agent
 type: skill
 description: Use when coordinating two or more Claude Code minion sessions in cmux — dispatching a task DAG across sessions, briefing a minion, resetting one with /clear between tasks, deciding whether to trust a minion's "done / PR merged" report, finding out whether a silent minion is stuck or working, or answering a minion's offer to "clean up" mid-engagement. Also use when fanning a fleet into an unfamiliar repo — learning its test gate before dispatch, whether a "green" PR means a real check ran, which shared files force merges to serialize, and how to run a merge queue over a shared seam so concurrent PRs regenerate and reconcile after each land — or when tempted to dispatch beyond the ready set because idle minions look wasteful, to drive a minion's terminal directly, to claim a live-verified result a task had no vendor grant to check, or to fan out on an ambiguous or outward-facing instruction before confirming it with the operator.
-version: 0.9.3
+version: 0.9.4
 maturity: beta
 runtimes:
   - claude
@@ -248,7 +248,7 @@ A minion's "done / merged / green" gates a dependent dispatch **and a `/clear`**
 only after all four:
 
 1. `gh pr view <n> --repo <org/repo> --json state,mergedAt,mergeCommit` →
-   `MERGED` + SHA (`pr-merge` can exit 0 without merging).
+   `MERGED` + SHA (`idun gh pr-merge` can exit 0 without merging).
 2. `git fetch origin` + `git log origin/main --oneline -3` → the SHA is on main.
 3. `alfred task show STARK-n --json --no-comments` → `done`.
 4. Re-run the task's done-when yourself on `origin/main` (rebase your own
@@ -310,7 +310,7 @@ you don't get to claim a check you had no way to run.
 ## Cleanup — one sweep, at the end
 
 While **any** minion session is live under the repo's worktrees: no
-`stark-gh:cleanup`, no `git gc`, no `worktree remove/prune`, no branch deletion —
+`idun gh cleanup`, no `git gc`, no `worktree remove/prune`, no branch deletion —
 repo-wide *or* "scoped to mine" (a minion's only branch is its worktree pin;
 "scoped" is a no-op or self-harm). Cleanup sweeps classify ancestor-of-main
 worktree pins as safe-to-delete and don't honor `locked`. The one sweep: from

@@ -1,5 +1,5 @@
 name: stark-plan
-version: 0.4.13
+version: 0.4.14
 description: Turn a design doc into a phased implementation plan, then decompose it into phased GitHub issues with story points and risk labels. Maps to spec-kit's plan + tasks phases.
 category: planning
 tags:
