@@ -1,6 +1,6 @@
 {
   "name": "stark-plan",
-  "version": "0.23.3",
+  "version": "0.24.0",
   "description": "Turn a design doc into a phased implementation plan, then decompose it into phased GitHub issues with story points and risk labels. Maps to spec-kit's plan + tasks phases.",
   "author": {
     "name": "21 Stark AI",

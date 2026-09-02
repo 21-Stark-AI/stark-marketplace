@@ -64,33 +64,37 @@ func TestRealAdapterRendersCommittedCatalog(t *testing.T) {
 		filepath.Join(root, "vendor", "stark-skills"), filepath.Join(root, "vendor", "plugins"))
 
 	t.Run("codex", func(t *testing.T) {
+		// stark-gh, the only bundle that shipped commands, was retired in STARK-2211,
+		// so the live command-rendering subject is gone. stark-housekeeping is a
+		// disable-model-invocation skill, which preserves the explicit-only
+		// (allow_implicit_invocation: false) assertion this test exists to guard.
 		dest := t.TempDir()
-		p, err := installplan.Compute(idx, bundles, ad, "stark-gh", "", model.TypeCommand, model.RuntimeCodex)
+		p, err := installplan.Compute(idx, bundles, ad, "stark-ops", "", model.TypeSkill, model.RuntimeCodex)
 		if err != nil {
 			t.Fatal(err)
 		}
 		if !p.Consent.Required {
-			t.Fatal("stark-gh ships executable vendored tools — consent must be required")
+			t.Fatal("stark-ops ships executable vendored tools — consent must be required")
 		}
 		res, err := install.Install(dest, p, install.Options{})
 		if err != nil {
 			t.Fatalf("install: %v", err)
 		}
-		// real command body (codex !claude runtime variant), not a fake placeholder
-		skill, _ := os.ReadFile(filepath.Join(dest, ".agents/skills/pr-open/SKILL.md"))
-		if !strings.Contains(string(skill), "Open or update a GitHub pull request") {
+		// real skill body (codex runtime variant), not a fake placeholder
+		skill, _ := os.ReadFile(filepath.Join(dest, ".agents/skills/stark-housekeeping/SKILL.md"))
+		if !strings.Contains(string(skill), "Usage: stark-housekeeping [--dry-run]") {
 			t.Fatalf("SKILL.md missing real body:\n%s", skill)
 		}
-		metadata, _ := os.ReadFile(filepath.Join(dest, ".agents/skills/pr-open/agents/openai.yaml"))
+		metadata, _ := os.ReadFile(filepath.Join(dest, ".agents/skills/stark-housekeeping/agents/openai.yaml"))
 		if !strings.Contains(string(metadata), "allow_implicit_invocation: false") {
-			t.Fatalf("command lost its explicit-only boundary:\n%s", metadata)
+			t.Fatalf("skill lost its explicit-only boundary:\n%s", metadata)
 		}
 		// idempotent
 		first := append([]byte(nil), skill...)
 		if _, err := install.Install(dest, p, install.Options{}); err != nil {
 			t.Fatalf("re-install: %v", err)
 		}
-		second, _ := os.ReadFile(filepath.Join(dest, ".agents/skills/pr-open/SKILL.md"))
+		second, _ := os.ReadFile(filepath.Join(dest, ".agents/skills/stark-housekeeping/SKILL.md"))
 		if string(first) != string(second) {
 			t.Fatalf("real install not idempotent")
 		}
@@ -101,7 +105,7 @@ func TestRealAdapterRendersCommittedCatalog(t *testing.T) {
 		if err := install.Remove(dest, res.ManifestPath); err != nil {
 			t.Fatal(err)
 		}
-		if _, err := os.Stat(filepath.Join(dest, ".agents/skills/pr-open/SKILL.md")); !os.IsNotExist(err) {
+		if _, err := os.Stat(filepath.Join(dest, ".agents/skills/stark-housekeeping/SKILL.md")); !os.IsNotExist(err) {
 			t.Fatalf("remove left the managed skill behind: %v", err)
 		}
 	})

@@ -70,7 +70,7 @@ func TestCheckReportsMissingAndExtra(t *testing.T) {
 	if err := os.WriteFile(filepath.Join(root, "index.json"), out.Files["index.json"], 0o644); err != nil {
 		t.Fatal(err)
 	}
-	stray := filepath.Join(root, "dist", "claude", "stark-gh", "extra.md")
+	stray := filepath.Join(root, "dist", "claude", "stark-analyze", "extra.md")
 	if err := os.WriteFile(stray, []byte("stray\n"), 0o644); err != nil {
 		t.Fatal(err)
 	}
