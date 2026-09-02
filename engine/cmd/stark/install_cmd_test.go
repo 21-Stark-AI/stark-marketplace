@@ -76,7 +76,7 @@ func TestInstallCmdConsentDeclinedExit6(t *testing.T) {
 		"--index", filepath.Join(root, "index.json"),
 		"--bundles", filepath.Join(root, "bundles"),
 		"--catalog", filepath.Join(root, "catalog"),
-		"stark-gh",
+		"stark-ops",
 	})
 	cmd.SetIn(strings.NewReader("n\n")) // decline consent
 	if err := cmd.Execute(); err != nil {
@@ -102,7 +102,7 @@ func TestInstallCmdConflictExit4(t *testing.T) {
 	defer func() { osExit = orig }()
 
 	dest := t.TempDir()
-	collision := filepath.Join(dest, ".agents", "skills", "pr-open", "SKILL.md")
+	collision := filepath.Join(dest, ".agents", "skills", "stark-session", "SKILL.md")
 	os.MkdirAll(filepath.Dir(collision), 0o755)
 	os.WriteFile(collision, []byte("unmanaged\n"), 0o644)
 	cmd := newInstallCmd(realAdapter)
@@ -111,7 +111,7 @@ func TestInstallCmdConflictExit4(t *testing.T) {
 		"--index", filepath.Join(root, "index.json"),
 		"--bundles", filepath.Join(root, "bundles"),
 		"--catalog", filepath.Join(root, "catalog"),
-		"stark-gh",
+		"stark-ops",
 	})
 	cmd.Execute()
 	if code != ExitConflict {

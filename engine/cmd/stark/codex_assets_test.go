@@ -57,7 +57,7 @@ var (
 // after `stark install --runtime codex`. Before the fix, all 29 artifacts referenced
 // files that were never written.
 func TestCodexInstallResolvesEveryAssetReference(t *testing.T) {
-	for _, bundle := range []string{"stark-gh", "stark-plan", "stark-ops"} {
+	for _, bundle := range []string{"stark-plan", "stark-ops"} {
 		t.Run(bundle, func(t *testing.T) {
 			dest := liveCodexInstall(t, bundle)
 			skills, err := filepath.Glob(filepath.Join(dest, ".agents/skills/*/SKILL.md"))
@@ -113,8 +113,8 @@ func TestCodexToolsResolveVendoredAssetRoot(t *testing.T) {
 	if err != nil {
 		t.Skip("node not on PATH — skipping tool-resolution exec check")
 	}
-	dest := liveCodexInstall(t, "stark-gh")
-	assetRoot := filepath.Join(dest, ".agents", "stark", "stark-gh")
+	dest := liveCodexInstall(t, "stark-ops")
+	assetRoot := filepath.Join(dest, ".agents", "stark", "stark-ops")
 	lib := filepath.Join(assetRoot, "tools", "asset_root_lib.ts")
 	if _, err := os.Stat(lib); err != nil {
 		t.Fatalf("vendored asset_root_lib.ts missing: %v", err)
@@ -143,17 +143,12 @@ if (!fs.existsSync(assetToolsDir())) { console.error('tools/ missing at ' + asse
 	}
 }
 
-// A bundle with its own plugin config.json must NOT clobber the shared snapshot's,
-// which is why assets are bundle-scoped rather than dumped into a flat .agents/.
+// Assets are bundle-scoped rather than dumped into a flat .agents/, so a bundle
+// gets the shared snapshot's config.json at its OWN scoped path. The plugin-config
+// override that once let stark-gh's own config.json win is covered at the build
+// level by TestPluginAssetsOverrideSharedSnapshot; stark-gh, the last genuinely
+// plugin-backed bundle, was retired in STARK-2211.
 func TestCodexPluginConfigDoesNotClobberShared(t *testing.T) {
-	dest := liveCodexInstall(t, "stark-gh")
-	ghCfg, err := os.ReadFile(filepath.Join(dest, ".agents/stark/stark-gh/config.json"))
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !strings.Contains(string(ghCfg), `"draft"`) {
-		t.Fatalf("stark-gh's own config.json did not win: %s", ghCfg)
-	}
 	opsDest := liveCodexInstall(t, "stark-ops")
 	opsCfg, err := os.ReadFile(filepath.Join(opsDest, ".agents/stark/stark-ops/config.json"))
 	if err != nil {
@@ -178,7 +173,7 @@ func TestCodexAssetsAreManagedAndRemovable(t *testing.T) {
 	}
 	ad := realAdapter(filepath.Join(root, "catalog"), vendor, filepath.Join(root, "vendor", "plugins"))
 	plan := func() *installplan.Plan {
-		p, err := installplan.Compute(idx, filepath.Join(root, "bundles"), ad, "stark-gh", "",
+		p, err := installplan.Compute(idx, filepath.Join(root, "bundles"), ad, "stark-ops", "",
 			model.TypeCommand, model.RuntimeCodex)
 		if err != nil {
 			t.Fatal(err)
@@ -189,9 +184,9 @@ func TestCodexAssetsAreManagedAndRemovable(t *testing.T) {
 	if _, err := install.Install(dest, plan(), install.Options{}); err != nil {
 		t.Fatal(err)
 	}
-	probe := filepath.Join(dest, ".agents/stark/stark-gh/tools/gh_cleanup.ts")
+	probe := filepath.Join(dest, ".agents/stark/stark-ops/tools/asset_root_lib.ts")
 	if _, err := os.Stat(probe); err != nil {
-		t.Fatalf("plugin tool not installed: %v", err)
+		t.Fatalf("vendored tool not installed: %v", err)
 	}
 	res, err := install.Install(dest, plan(), install.Options{})
 	if err != nil {

@@ -4,7 +4,7 @@ import { MemoryRouter, Routes, Route } from 'react-router-dom';
 // Import the ACTUAL files the engine emits + CI ships (repo root), NOT a hand-authored fixture.
 // This pins the SPA's types/guards/rendering to real engine output so contract drift fails CI.
 import realIndex from '../../index.json';
-import realDetail from '../../bundles/stark-gh.json';
+import realDetail from '../../bundles/stark-ops.json';
 import { isLeanIndex, isBundleDetail } from './types/registry';
 import { BundleDetailPage } from './pages/BundleDetailPage';
 
@@ -15,7 +15,7 @@ describe('engine-contract fidelity (real committed data)', () => {
     expect(isLeanIndex(realIndex)).toBe(true);
   });
 
-  it('isBundleDetail accepts the real committed bundles/stark-gh.json', () => {
+  it('isBundleDetail accepts the real committed bundles/stark-ops.json', () => {
     expect(isBundleDetail(realDetail)).toBe(true);
   });
 
@@ -27,20 +27,20 @@ describe('engine-contract fidelity (real committed data)', () => {
       ok: true, status: 200, json: async () => realDetail,
     } as Response));
     const { findByRole } = render(
-      <MemoryRouter initialEntries={['/bundle/stark-gh']}>
+      <MemoryRouter initialEntries={['/bundle/stark-ops']}>
         <Routes>
           <Route path="/bundle/:name" element={<BundleDetailPage />} />
         </Routes>
       </MemoryRouter>,
     );
-    await findByRole('heading', { name: 'stark-gh', level: 1 });
-    // The render reaches the derived dependency section (real stark-gh has requires:[] → empty
+    await findByRole('heading', { name: 'stark-ops', level: 1 });
+    // The render reaches the derived dependency section (real stark-ops has requires:[] → empty
     // state) — proving the dependencyClosure→requires migration handles real engine data, where
     // the old code crashed reading a non-existent dependencyClosure field.
     expect(screen.getByText(/no dependencies/i)).toBeInTheDocument();
     // and a real per-artifact derived output path renders (CC-3 outputs[rt][0].path).
-    // stark-gh intentionally no longer advertises the removed, nonexistent MCP server.
-    expect(screen.getByText('.agents/skills/cleanup/SKILL.md')).toBeInTheDocument();
+    // stark-ops ships no MCP server (stark-skills defines none), so no .mcp.json renders.
+    expect(screen.getByText('.agents/skills/stark-housekeeping/SKILL.md')).toBeInTheDocument();
     expect(screen.queryByText('.mcp.json')).not.toBeInTheDocument();
   });
 });

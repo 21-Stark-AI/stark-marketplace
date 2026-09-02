@@ -113,12 +113,12 @@ func TestInstallCmdEmptyFlagsDisableVendoring(t *testing.T) {
 		"--index", filepath.Join(root, "index.json"),
 		"--bundles", filepath.Join(root, "bundles"),
 		"--catalog", filepath.Join(root, "catalog"),
-		"stark-gh",
+		"stark-ops",
 	})
 	if err := cmd.Execute(); err != nil {
 		t.Fatalf("execute: %v", err)
 	}
-	if _, err := os.Stat(filepath.Join(dest, ".agents", "stark", "stark-gh")); err == nil {
-		t.Fatal("empty asset flags must disable vendoring — no .agents/stark/stark-gh tree")
+	if _, err := os.Stat(filepath.Join(dest, ".agents", "stark", "stark-ops")); err == nil {
+		t.Fatal("empty asset flags must disable vendoring — no .agents/stark/stark-ops tree")
 	}
 }

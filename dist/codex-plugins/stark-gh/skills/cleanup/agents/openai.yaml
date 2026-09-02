@@ -1,5 +1,0 @@
-interface:
-  display_name: "Cleanup"
-  short_description: "Sweep the local + remote repo for merged-PR branches, stale"
-policy:
-  allow_implicit_invocation: false

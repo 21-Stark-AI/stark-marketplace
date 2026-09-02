@@ -63,23 +63,6 @@
       "strict": true
     },
     {
-      "name": "stark-gh",
-      "source": "./dist/claude/stark-gh",
-      "description": "GitHub pull-request and repository-cleanup workflow commands for stark.",
-      "version": "0.2.36",
-      "author": {
-        "name": "21 Stark AI",
-        "email": "engineering@21stark.com"
-      },
-      "category": "productivity",
-      "tags": [
-        "github",
-        "pr",
-        "workflow"
-      ],
-      "strict": true
-    },
-    {
       "name": "stark-implement",
       "source": "./dist/claude/stark-implement",
       "description": "Implement from an accepted spec. /stark-build runs one fresh headless session per task gated by checks the agent cannot edit, with a held-out e2e gate, one cross-vendor advisory review, and one bounded fix round for medium+ findings.",
