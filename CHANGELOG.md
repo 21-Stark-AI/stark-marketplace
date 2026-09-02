@@ -5,6 +5,7 @@ All notable changes to `stark-marketplace`. The format follows [Keep a Changelog
 ## [Unreleased]
 
 ### Removed
+- Retired `stark-gh-user` from `stark-ops`; the human-only GitHub PAT swap now belongs to `idun user` / `idun user gh` (STARK-2215). `stark-ops` and root `VERSION` minor-bumped for the membership change.
 - Unpublish the `stark-brain` bundle (the Atlas `brain` MCP server), reversing its still-unreleased addition. Its only consumer was this plugin; the Atlas engine keeps vault reach over its CLI. Root `VERSION` minor-bumped for the membership change.
 
 ### Fixed

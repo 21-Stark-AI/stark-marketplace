@@ -2,7 +2,7 @@
 name: team-leader-agent
 type: skill
 description: Use when coordinating two or more Claude Code minion sessions in cmux — dispatching a task DAG across sessions, briefing a minion, resetting one with /clear between tasks, deciding whether to trust a minion's "done / PR merged" report, finding out whether a silent minion is stuck or working, or answering a minion's offer to "clean up" mid-engagement. Also use when fanning a fleet into an unfamiliar repo — learning its test gate before dispatch, whether a "green" PR means a real check ran, which shared files force merges to serialize, and how to run a merge queue over a shared seam so concurrent PRs regenerate and reconcile after each land — or when tempted to dispatch beyond the ready set because idle minions look wasteful, to drive a minion's terminal directly, to claim a live-verified result a task had no vendor grant to check, or to fan out on an ambiguous or outward-facing instruction before confirming it with the operator.
-version: 0.9.4
+version: 0.10.0
 maturity: beta
 runtimes:
   - claude
