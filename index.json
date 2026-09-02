@@ -314,12 +314,11 @@
         "housekeeping",
         "session",
         "handover",
-        "git",
-        "rate-limits"
+        "git"
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.9.4",
+      "version": "0.10.0",
       "runtimes": [
         "claude",
         "codex"
@@ -331,32 +330,6 @@
       "digest": "sha256:26a58dde7ec79238033f6754c50915ed9e775faf5cf5dd038313e2dc72cf8f88"
     },
     {
-      "name": "stark-gh-user",
-      "type": "skill",
-      "bundle": "stark-ops",
-      "description": "Switch the active GitHub user identity (primary ↔ secondary) for `gh` invocations to dodge per-user GraphQL/REST rate limits. Tokens live in macOS Keychain (service `stark-gh-token`).",
-      "tags": [
-        "release",
-        "housekeeping",
-        "session",
-        "handover",
-        "git",
-        "rate-limits"
-      ],
-      "category": "ops",
-      "maturity": "beta",
-      "version": "0.9.4",
-      "runtimes": [
-        "claude",
-        "codex"
-      ],
-      "support": {
-        "claude": "native",
-        "codex": "native"
-      },
-      "digest": "sha256:9c5fe7f88b2cbacea5e835c30a862efa0cb03d70e2a9f73eb1024da28635b11a"
-    },
-    {
       "name": "stark-gha-cost",
       "type": "skill",
       "bundle": "stark-ops",
@@ -366,12 +339,11 @@
         "housekeeping",
         "session",
         "handover",
-        "git",
-        "rate-limits"
+        "git"
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.9.4",
+      "version": "0.10.0",
       "runtimes": [
         "claude",
         "codex"
@@ -392,12 +364,11 @@
         "housekeeping",
         "session",
         "handover",
-        "git",
-        "rate-limits"
+        "git"
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.9.4",
+      "version": "0.10.0",
       "runtimes": [
         "claude",
         "codex"
@@ -418,12 +389,11 @@
         "housekeeping",
         "session",
         "handover",
-        "git",
-        "rate-limits"
+        "git"
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.9.4",
+      "version": "0.10.0",
       "runtimes": [
         "claude",
         "codex"
@@ -444,12 +414,11 @@
         "housekeeping",
         "session",
         "handover",
-        "git",
-        "rate-limits"
+        "git"
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.9.4",
+      "version": "0.10.0",
       "runtimes": [
         "claude",
         "codex"
@@ -470,12 +439,11 @@
         "housekeeping",
         "session",
         "handover",
-        "git",
-        "rate-limits"
+        "git"
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.9.4",
+      "version": "0.10.0",
       "runtimes": [
         "claude",
         "codex"
@@ -496,12 +464,11 @@
         "housekeeping",
         "session",
         "handover",
-        "git",
-        "rate-limits"
+        "git"
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.9.4",
+      "version": "0.10.0",
       "runtimes": [
         "claude"
       ],
@@ -520,12 +487,11 @@
         "housekeeping",
         "session",
         "handover",
-        "git",
-        "rate-limits"
+        "git"
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.9.4",
+      "version": "0.10.0",
       "runtimes": [
         "claude"
       ],
@@ -726,7 +692,7 @@
     },
     {
       "bundle": "stark-ops",
-      "version": "0.9.4",
+      "version": "0.10.0",
       "digest": "sha256:8903642d997f754220bb39976c8a111bc29b5cae5ebfc264810e9d3a2cf8da01"
     },
     {

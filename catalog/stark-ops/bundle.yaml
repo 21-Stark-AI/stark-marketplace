@@ -1,6 +1,6 @@
 name: stark-ops
-version: 0.9.4
-description: Repository operations beyond the spec-driven pipeline — cut releases, housekeep stale issues/branches/worktrees, run session start/end, hand off work across sessions, and switch GitHub identities when a rate limit runs out.
+version: 0.10.0
+description: Repository operations beyond the spec-driven pipeline — cut releases, housekeep stale issues/branches/worktrees, run session start/end, and hand off work across sessions.
 category: ops
 tags:
   - release
@@ -8,7 +8,6 @@ tags:
   - session
   - handover
   - git
-  - rate-limits
 owner:
   name: 21 Stark AI
   email: engineering@21stark.com
@@ -18,7 +17,6 @@ runtimes:
   - codex
 # Membership manifest consumed by the generator (`stark sync`).
 skills:
-  - stark-gh-user
   - stark-handover
   - stark-housekeeping
   - stark-release
