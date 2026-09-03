@@ -2,7 +2,7 @@
 name: stark-bury
 type: skill
 description: 'Use when retiring 21Stark code into the Náströnd graveyard — burying a subsystem of a living repo (partial burial) or putting down a whole repo (full retirement). Symptoms: "bury X", "retire the <feature>", "kill this service and keep the memory", "new corpse for nastrond", "dig a grave", "tombstone", "exhume". Runs the full ritual: footprint verification, interment PR, deletion PR, optional sealed data dump and table drop.'
-version: 0.10.3
+version: 0.10.4
 maturity: beta
 runtimes:
   - claude

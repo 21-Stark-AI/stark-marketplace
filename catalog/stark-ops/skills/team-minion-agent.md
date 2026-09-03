@@ -2,7 +2,7 @@
 name: team-minion-agent
 type: skill
 description: Use when you are a dispatched minion (worker) session in a cmux fleet, driven by a team leader — intaking a dispatch packet, running the session-start ritual, quoting a task's done-when back, staying inside your declared file set, deciding whether the seam a task needs is in scope, updating your ticket through its lifecycle, proving a task done with real evidence plus the mandatory /code-review xhigh --fix e2e pass, reporting result-first to your leader, participating in a merge queue (READY TO MERGE then wait for GO, then rebase + regenerate + reconcile on the leader's new-main broadcast), surviving a /clear reset, or deciding whether a blocker, an ambiguous behavior contract, or a vendor-grant gap means stop-and-ask-the-leader. Also for the bypass-mode discipline a minion runs under — untrusted-content handling, the STOP-LIST, worker-not-orchestrator parallelism, and never going silent past 30 minutes.
-version: 0.10.3
+version: 0.10.4
 maturity: beta
 runtimes:
   - claude
@@ -50,7 +50,7 @@ CLAUDE.md decide.
 | anchor | rule |
 |---|---|
 | your cmux **UUID** | how the leader addresses you; it survives `/clear` — you don't manage it |
-| your **leader** (their session name, given in the packet) | your **only** upstream. Every question, blocker, progress note, and final report goes to them via SendMessage — **never** to the human directly |
+| your **leader** (their session name, given in the packet) | your **only** upstream — every question, blocker, progress note, and final report goes to them via SendMessage, **never** to the human. Their name can churn (a `/rename` or `/clear` on their side), so **reply by copying the incoming message's `from` attribute into your `to`**; if you must initiate, re-resolve via `ListAgents` first — a stale cached name fails ("no agent named … is reachable") |
 | your **ticket** (e.g. `STARK-n`) | bind it every packet (`alfred task use`); it churns on `/clear`, so re-bind from the packet, never from memory |
 | your **worktree** | you work only here; never `cd` into another minion's worktree or the main checkout |
 
