@@ -318,7 +318,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.10.4",
+      "version": "0.11.0",
       "runtimes": [
         "claude",
         "codex"
@@ -343,7 +343,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.10.4",
+      "version": "0.11.0",
       "runtimes": [
         "claude",
         "codex"
@@ -368,7 +368,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.10.4",
+      "version": "0.11.0",
       "runtimes": [
         "claude",
         "codex"
@@ -393,7 +393,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.10.4",
+      "version": "0.11.0",
       "runtimes": [
         "claude",
         "codex"
@@ -403,6 +403,29 @@
         "codex": "native"
       },
       "digest": "sha256:415cead6c41f1e13de7c7edb2c57c15fba1f9f142104b42054077f55a8d94eee"
+    },
+    {
+      "name": "stark-memory",
+      "type": "skill",
+      "bundle": "stark-ops",
+      "description": "Audit and tidy Claude Code auto-memory so it stays under the load and recall caps. Use for memory tidy, memory audit, MEMORY.md too big, shrink the memory index, split over-cap memory files, move cross-repo facts.",
+      "tags": [
+        "release",
+        "housekeeping",
+        "session",
+        "handover",
+        "git"
+      ],
+      "category": "ops",
+      "maturity": "beta",
+      "version": "0.11.0",
+      "runtimes": [
+        "claude"
+      ],
+      "support": {
+        "claude": "native"
+      },
+      "digest": "sha256:47029b718a3894a201debb283fccf03fd64db173bce79b7c8182422404e6fcbe"
     },
     {
       "name": "stark-release",
@@ -418,7 +441,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.10.4",
+      "version": "0.11.0",
       "runtimes": [
         "claude",
         "codex"
@@ -443,7 +466,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.10.4",
+      "version": "0.11.0",
       "runtimes": [
         "claude",
         "codex"
@@ -468,7 +491,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.10.4",
+      "version": "0.11.0",
       "runtimes": [
         "claude"
       ],
@@ -491,7 +514,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.10.4",
+      "version": "0.11.0",
       "runtimes": [
         "claude"
       ],
@@ -692,7 +715,7 @@
     },
     {
       "bundle": "stark-ops",
-      "version": "0.10.4",
+      "version": "0.11.0",
       "digest": "sha256:8903642d997f754220bb39976c8a111bc29b5cae5ebfc264810e9d3a2cf8da01"
     },
     {

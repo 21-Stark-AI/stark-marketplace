@@ -15,6 +15,8 @@ All notable changes to `stark-marketplace`. The format follows [Keep a Changelog
 - Unblocked native marketplace publication and packaged `stark-brain` as an Atlas MCP integration without restoring the retired `remember` skill.
 
 ### Added
+<!-- stark-gh:pr-merge pr=227 runId=227 -->
+- Publish `stark-memory` skill in the `stark-ops` bundle (0.10.4 → 0.11.0) for auditing and tidying Claude Code auto-memory files.
 <!-- stark-gh:pr-merge pr=207 runId=044dacbb-5bef-42dd-8e7d-16e9e1c14290 -->
 - Add the beta `stark-design` bundle with reusable design-token architecture, theming, accessibility, distribution, and versioning guidance.
 <!-- stark-gh:pr-merge pr=205 runId=abe5b9b1-1c62-43bc-85af-205fd049fd75 -->
