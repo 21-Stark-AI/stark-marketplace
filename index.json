@@ -318,7 +318,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.10.0",
+      "version": "0.10.1",
       "runtimes": [
         "claude",
         "codex"
@@ -343,7 +343,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.10.0",
+      "version": "0.10.1",
       "runtimes": [
         "claude",
         "codex"
@@ -368,7 +368,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.10.0",
+      "version": "0.10.1",
       "runtimes": [
         "claude",
         "codex"
@@ -393,7 +393,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.10.0",
+      "version": "0.10.1",
       "runtimes": [
         "claude",
         "codex"
@@ -418,7 +418,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.10.0",
+      "version": "0.10.1",
       "runtimes": [
         "claude",
         "codex"
@@ -443,7 +443,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.10.0",
+      "version": "0.10.1",
       "runtimes": [
         "claude",
         "codex"
@@ -468,14 +468,14 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.10.0",
+      "version": "0.10.1",
       "runtimes": [
         "claude"
       ],
       "support": {
         "claude": "native"
       },
-      "digest": "sha256:1332abca651a9f5ef884b85fc72e7baa471eeafbb7335f9f886317be21e11a5a"
+      "digest": "sha256:5bed4cd005240c00c4efe58dc7f092382233eed2bd4c3c1905fddd3236afe61d"
     },
     {
       "name": "team-minion-agent",
@@ -491,7 +491,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.10.0",
+      "version": "0.10.1",
       "runtimes": [
         "claude"
       ],
@@ -692,7 +692,7 @@
     },
     {
       "bundle": "stark-ops",
-      "version": "0.10.0",
+      "version": "0.10.1",
       "digest": "sha256:8903642d997f754220bb39976c8a111bc29b5cae5ebfc264810e9d3a2cf8da01"
     },
     {
