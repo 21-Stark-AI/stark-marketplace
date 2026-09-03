@@ -58,38 +58,6 @@ func TestIndexLoadExitDiscriminates(t *testing.T) {
 	}
 }
 
-// Command-level: consent-required + declined drives RunE to exit 6 and writes nothing (§9.8).
-func TestInstallCmdConsentDeclinedExit6(t *testing.T) {
-	root := repoRoot(t)
-	if _, err := os.Stat(filepath.Join(root, "index.json")); err != nil {
-		t.Skipf("committed index.json absent (%v)", err)
-	}
-	var code int
-	orig := osExit
-	osExit = func(c int) { code = c }
-	defer func() { osExit = orig }()
-
-	dest := t.TempDir()
-	cmd := newInstallCmd(realAdapter)
-	cmd.SetArgs([]string{
-		"--runtime", "codex", "--dest", dest,
-		"--index", filepath.Join(root, "index.json"),
-		"--bundles", filepath.Join(root, "bundles"),
-		"--catalog", filepath.Join(root, "catalog"),
-		"stark-gh",
-	})
-	cmd.SetIn(strings.NewReader("n\n")) // decline consent
-	if err := cmd.Execute(); err != nil {
-		t.Fatalf("execute: %v", err)
-	}
-	if code != ExitConsentDeclined {
-		t.Fatalf("declined consent → exit %d, want %d", code, ExitConsentDeclined)
-	}
-	if _, err := os.Stat(filepath.Join(dest, ".stark", "manifest-codex.json")); !os.IsNotExist(err) {
-		t.Fatal("declined consent must not write a manifest")
-	}
-}
-
 // Command-level: an unmanaged collision (no --force) drives RunE to exit 4.
 func TestInstallCmdConflictExit4(t *testing.T) {
 	root := repoRoot(t)
@@ -102,7 +70,7 @@ func TestInstallCmdConflictExit4(t *testing.T) {
 	defer func() { osExit = orig }()
 
 	dest := t.TempDir()
-	collision := filepath.Join(dest, ".agents", "skills", "pr-open", "SKILL.md")
+	collision := filepath.Join(dest, ".agents", "skills", "stark-release", "SKILL.md")
 	os.MkdirAll(filepath.Dir(collision), 0o755)
 	os.WriteFile(collision, []byte("unmanaged\n"), 0o644)
 	cmd := newInstallCmd(realAdapter)
@@ -111,7 +79,7 @@ func TestInstallCmdConflictExit4(t *testing.T) {
 		"--index", filepath.Join(root, "index.json"),
 		"--bundles", filepath.Join(root, "bundles"),
 		"--catalog", filepath.Join(root, "catalog"),
-		"stark-gh",
+		"stark-ops",
 	})
 	cmd.Execute()
 	if code != ExitConflict {

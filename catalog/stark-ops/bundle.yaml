@@ -18,7 +18,6 @@ runtimes:
   - codex
 # Membership manifest consumed by the generator (`stark sync`).
 skills:
-  - stark-gh-user
   - stark-handover
   - stark-housekeeping
   - stark-release

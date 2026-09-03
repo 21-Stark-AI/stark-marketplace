@@ -17,4 +17,3 @@ runtimes:
 # Membership manifest consumed by the generator (`stark sync`).
 skills:
   - stark-build
-  - stark-copilot

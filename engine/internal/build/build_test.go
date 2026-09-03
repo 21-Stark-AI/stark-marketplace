@@ -20,12 +20,12 @@ func TestBuildProducesClaudeTreeAndIndex(t *testing.T) {
 	if _, ok := out.Files["index.json"]; !ok {
 		t.Fatal("index.json not produced")
 	}
-	if _, ok := out.Files["bundles/stark-gh.json"]; !ok {
+	if _, ok := out.Files["bundles/stark-ops.json"]; !ok {
 		t.Fatal("bundle detail not produced")
 	}
 	foundClaude := false
 	for p := range out.Files {
-		if strings.HasPrefix(p, "dist/claude/stark-gh/") {
+		if strings.HasPrefix(p, "dist/claude/stark-ops/") {
 			foundClaude = true
 		}
 	}
@@ -64,7 +64,7 @@ func TestBuildEmitsMarketplaceManifest(t *testing.T) {
 	if !strings.Contains(s, `"owner"`) || !strings.Contains(s, `"author"`) {
 		t.Fatalf("manifest shape wrong: %s", s)
 	}
-	if !strings.Contains(s, `"stark-gh"`) || !strings.Contains(s, `"./dist/claude/stark-gh"`) {
+	if !strings.Contains(s, `"stark-ops"`) || !strings.Contains(s, `"./dist/claude/stark-ops"`) {
 		t.Fatalf("manifest missing seed bundle / source: %s", s)
 	}
 }

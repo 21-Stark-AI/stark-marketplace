@@ -56,44 +56,6 @@
       "fidelityNotes": {}
     },
     {
-      "name": "stark-gh-user",
-      "type": "skill",
-      "description": "Switch the active GitHub user identity (primary ↔ secondary) for `gh` invocations to dodge per-user GraphQL/REST rate limits. Tokens live in macOS Keychain (service `stark-gh-token`).",
-      "version": "0.9.2",
-      "runtimes": [
-        "claude",
-        "codex"
-      ],
-      "support": {
-        "claude": "native",
-        "codex": "native"
-      },
-      "requires": [],
-      "diverged": false,
-      "outputs": {
-        "claude": [
-          {
-            "path": "skills/stark-gh-user/SKILL.md",
-            "kind": "file",
-            "emulated": false
-          }
-        ],
-        "codex": [
-          {
-            "path": ".agents/skills/stark-gh-user/SKILL.md",
-            "kind": "file",
-            "emulated": false
-          },
-          {
-            "path": ".agents/skills/stark-gh-user/agents/openai.yaml",
-            "kind": "file",
-            "emulated": false
-          }
-        ]
-      },
-      "fidelityNotes": {}
-    },
-    {
       "name": "stark-gha-cost",
       "type": "skill",
       "description": "Diagnose and cut GitHub Actions + GHAS (Advanced Security) billing costs for an org or enterprise. Use whenever the user is surprised by or wants to reduce a GitHub bill, mentions Actions minutes / runner cost / CI spend, asks \"why is my GitHub bill so high\", \"are we paying for GHAS/secret scanning/code scanning\", \"should I self-host runners\", \"which repo is burning Actions minutes\", or wants to right-size GitHub security seats (Secret Protection vs Code Security). Also triggers on a mystery Actions charge, a runaway workflow, or a billing number that looks wrong. Also use for making CI cheaper/faster the right way — slow or expensive pipelines, build/dependency caching that isn't hitting, wide test matrices, merge queues, flaky-test cost, artifact/registry storage, or measuring CI spend (cost-per-PR, budgets, usage APIs). Diagnoses where the money goes (product → repo → workflow → run), applies the highest-value levers via PR, and escalates genuine mis-billing to Support. Reach for it even when the user only says \"GitHub is expensive this month\" or \"our CI is too slow\" without naming Actions.",
@@ -286,7 +248,7 @@
     {
       "name": "team-leader-agent",
       "type": "skill",
-      "description": "Use when coordinating two or more Claude Code minion sessions in cmux — dispatching a task DAG across sessions, briefing a minion, resetting one with /clear between tasks, deciding whether to trust a minion's \"done / PR merged\" report, finding out whether a silent minion is stuck or working, or answering a minion's offer to \"clean up\" mid-engagement. Also use when fanning a fleet into an unfamiliar repo — learning its test gate before dispatch, whether a \"green\" PR means a real check ran, which shared files force merges to serialize, and how to run a merge queue over a shared seam so concurrent PRs regenerate and reconcile after each land — or when tempted to dispatch beyond the ready set because idle minions look wasteful, to drive a minion's terminal directly, to claim a live-verified result a task had no vendor grant to check, or to fan out on an ambiguous or outward-facing instruction before confirming it with the operator.",
+      "description": "Use when coordinating two or more Claude Code minion sessions in cmux — dispatching a task DAG, briefing a minion, resetting one with /clear between tasks, closing a minion that is out of DAG work, keeping the fleet progress bar current on a fixed cadence, trusting or doubting a minion's \"done / PR merged\" report, telling whether a silent minion is stuck or working, or answering its offer to \"clean up\" mid-engagement. Also use when fanning a fleet into an unfamiliar repo — its test gate, whether a \"green\" PR ran a real check, which shared files force merges to serialize, and how to run a merge queue so concurrent PRs regenerate and reconcile after each land — or tempted to dispatch beyond the ready set because idle minions look wasteful, to drive a minion's terminal directly, to claim a live-verified result with no grant to check, or to fan out on an ambiguous or outward-facing instruction before confirming with the operator.",
       "version": "0.9.2",
       "runtimes": [
         "claude"

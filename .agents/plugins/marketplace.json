@@ -29,18 +29,6 @@
       "category": "Setup"
     },
     {
-      "name": "stark-gh",
-      "source": {
-        "source": "local",
-        "path": "./dist/codex-plugins/stark-gh"
-      },
-      "policy": {
-        "installation": "AVAILABLE",
-        "authentication": "ON_INSTALL"
-      },
-      "category": "Productivity"
-    },
-    {
       "name": "stark-implement",
       "source": {
         "source": "local",

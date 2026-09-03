@@ -282,81 +282,6 @@
       "digest": "sha256:a8b783f5b771878f9dce6d7f60ee6af4f5f5c8a8a41c408233eccb45dadc4dcb"
     },
     {
-      "name": "cleanup",
-      "type": "command",
-      "bundle": "stark-gh",
-      "description": "Sweep the local + remote repo for merged-PR branches, stale tracking refs, worktree leftovers (including detached-HEAD review worktrees), merged-PR watcher state, stale stashes, and loose objects. Rebases the current branch onto upstream and applies linear-tree git config so the history stays sharp.",
-      "tags": [
-        "github",
-        "pr",
-        "workflow"
-      ],
-      "category": "productivity",
-      "maturity": "beta",
-      "version": "0.2.35",
-      "runtimes": [
-        "claude",
-        "codex",
-        "gemini"
-      ],
-      "support": {
-        "claude": "native",
-        "codex": "native",
-        "gemini": "native"
-      },
-      "digest": "sha256:0147fc1b67efb6da5f7d38cdcf382bf6cc8587df71ab9695ac800decbfaee7af"
-    },
-    {
-      "name": "pr-merge",
-      "type": "command",
-      "bundle": "stark-gh",
-      "description": "Rebase a PR, draft squash-commit prose + CHANGELOG bullet via Codex (changelog step skipped when the repo keeps no root CHANGELOG.md), force-push, mark a draft PR ready-for-review, and squash-merge once CI is green.",
-      "tags": [
-        "github",
-        "pr",
-        "workflow"
-      ],
-      "category": "productivity",
-      "maturity": "beta",
-      "version": "0.2.35",
-      "runtimes": [
-        "claude",
-        "codex",
-        "gemini"
-      ],
-      "support": {
-        "claude": "native",
-        "codex": "native",
-        "gemini": "native"
-      },
-      "digest": "sha256:b47480bd99f7194494e495d0977273edfb43cc8bab16441c018ed1e2f9edc64c"
-    },
-    {
-      "name": "pr-open",
-      "type": "command",
-      "bundle": "stark-gh",
-      "description": "Open or update a PR with Codex-drafted prose, stage-all commit (default), push, and CI watcher. New PRs open as DRAFT by default (override --ready).",
-      "tags": [
-        "github",
-        "pr",
-        "workflow"
-      ],
-      "category": "productivity",
-      "maturity": "beta",
-      "version": "0.2.35",
-      "runtimes": [
-        "claude",
-        "codex",
-        "gemini"
-      ],
-      "support": {
-        "claude": "native",
-        "codex": "native",
-        "gemini": "native"
-      },
-      "digest": "sha256:4487db9510884965b7e609f31bd01b674cf6863399e5fce144b0b5b3ccc5d2f2"
-    },
-    {
       "name": "stark-build",
       "type": "skill",
       "bundle": "stark-implement",
@@ -379,30 +304,6 @@
         "codex": "native"
       },
       "digest": "sha256:1517875696874089d048d55fb47b993a9d544be32cc594b25afd822f7c64d642"
-    },
-    {
-      "name": "stark-copilot",
-      "type": "skill",
-      "bundle": "stark-implement",
-      "description": "Autonomous lead/wing implementation: lead subagent implements, wing subagent reviews, fix-loop until wing approves. Use for copilot, paired build.",
-      "tags": [
-        "implementation",
-        "automation",
-        "lead-wing",
-        "autonomous"
-      ],
-      "category": "implementation",
-      "maturity": "beta",
-      "version": "0.4.38",
-      "runtimes": [
-        "claude",
-        "codex"
-      ],
-      "support": {
-        "claude": "native",
-        "codex": "native"
-      },
-      "digest": "sha256:861cf584f91a83eaf62a6b24b7a86560ccf2c0c5ef68f0d48eb76db2c89cf25b"
     },
     {
       "name": "stark-bury",
@@ -428,33 +329,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:1e78193d4ad862a1fb771e68495e821965ae3488f3763da91766ef6aece12050"
-    },
-    {
-      "name": "stark-gh-user",
-      "type": "skill",
-      "bundle": "stark-ops",
-      "description": "Switch the active GitHub user identity (primary ↔ secondary) for `gh` invocations to dodge per-user GraphQL/REST rate limits. Tokens live in macOS Keychain (service `stark-gh-token`).",
-      "tags": [
-        "release",
-        "housekeeping",
-        "session",
-        "handover",
-        "git",
-        "rate-limits"
-      ],
-      "category": "ops",
-      "maturity": "beta",
-      "version": "0.9.2",
-      "runtimes": [
-        "claude",
-        "codex"
-      ],
-      "support": {
-        "claude": "native",
-        "codex": "native"
-      },
-      "digest": "sha256:9c5fe7f88b2cbacea5e835c30a862efa0cb03d70e2a9f73eb1024da28635b11a"
+      "digest": "sha256:26a58dde7ec79238033f6754c50915ed9e775faf5cf5dd038313e2dc72cf8f88"
     },
     {
       "name": "stark-gha-cost",
@@ -590,7 +465,7 @@
       "name": "team-leader-agent",
       "type": "skill",
       "bundle": "stark-ops",
-      "description": "Use when coordinating two or more Claude Code minion sessions in cmux — dispatching a task DAG across sessions, briefing a minion, resetting one with /clear between tasks, deciding whether to trust a minion's \"done / PR merged\" report, finding out whether a silent minion is stuck or working, or answering a minion's offer to \"clean up\" mid-engagement. Also use when fanning a fleet into an unfamiliar repo — learning its test gate before dispatch, whether a \"green\" PR means a real check ran, which shared files force merges to serialize, and how to run a merge queue over a shared seam so concurrent PRs regenerate and reconcile after each land — or when tempted to dispatch beyond the ready set because idle minions look wasteful, to drive a minion's terminal directly, to claim a live-verified result a task had no vendor grant to check, or to fan out on an ambiguous or outward-facing instruction before confirming it with the operator.",
+      "description": "Use when coordinating two or more Claude Code minion sessions in cmux — dispatching a task DAG, briefing a minion, resetting one with /clear between tasks, closing a minion that is out of DAG work, keeping the fleet progress bar current on a fixed cadence, trusting or doubting a minion's \"done / PR merged\" report, telling whether a silent minion is stuck or working, or answering its offer to \"clean up\" mid-engagement. Also use when fanning a fleet into an unfamiliar repo — its test gate, whether a \"green\" PR ran a real check, which shared files force merges to serialize, and how to run a merge queue so concurrent PRs regenerate and reconcile after each land — or tempted to dispatch beyond the ready set because idle minions look wasteful, to drive a minion's terminal directly, to claim a live-verified result with no grant to check, or to fan out on an ambiguous or outward-facing instruction before confirming with the operator.",
       "tags": [
         "release",
         "housekeeping",
@@ -608,7 +483,7 @@
       "support": {
         "claude": "native"
       },
-      "digest": "sha256:acba96678f373cb351ea0c51a39ce44ac7ce0a12b84ad62b2caed1da48e509e5"
+      "digest": "sha256:887a8280c94b49ca7b73d78a522d3928f1b3d38721216d4171643344ebbc68f3"
     },
     {
       "name": "team-minion-agent",
@@ -632,7 +507,7 @@
       "support": {
         "claude": "native"
       },
-      "digest": "sha256:33e13d1aa3f15bcd0c1679d55b75b4539c0c14627f5dabf6ca43b482fea88c31"
+      "digest": "sha256:487de86941a1b5b8fc226052beecb517e7dfeca9b0dc53fb267c22b19c47b038"
     },
     {
       "name": "simple-gate",
@@ -820,14 +695,9 @@
       "digest": "sha256:7b200484db2256c8e3edc1ee46dd680b894043f5b07ce03b6d8fe486feb2418a"
     },
     {
-      "bundle": "stark-gh",
-      "version": "0.2.35",
-      "digest": "sha256:3c8c04423669ac4ff0d3e3ff9f75804a714a57d6524b83c5c1924f26b3805dd9"
-    },
-    {
       "bundle": "stark-implement",
       "version": "0.4.38",
-      "digest": "sha256:97bb51e6f1232509168e6931e8605ef7ddef94ebeb6ede02dd72e5692cb0c9bc"
+      "digest": "sha256:536627a388f6518c15374d29bd11640ee5d24501261aaae7474891883428956f"
     },
     {
       "bundle": "stark-ops",

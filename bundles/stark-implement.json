@@ -52,44 +52,6 @@
         ]
       },
       "fidelityNotes": {}
-    },
-    {
-      "name": "stark-copilot",
-      "type": "skill",
-      "description": "Autonomous lead/wing implementation: lead subagent implements, wing subagent reviews, fix-loop until wing approves. Use for copilot, paired build.",
-      "version": "0.4.38",
-      "runtimes": [
-        "claude",
-        "codex"
-      ],
-      "support": {
-        "claude": "native",
-        "codex": "native"
-      },
-      "requires": [],
-      "diverged": false,
-      "outputs": {
-        "claude": [
-          {
-            "path": "skills/stark-copilot/SKILL.md",
-            "kind": "file",
-            "emulated": false
-          }
-        ],
-        "codex": [
-          {
-            "path": ".agents/skills/stark-copilot/SKILL.md",
-            "kind": "file",
-            "emulated": false
-          },
-          {
-            "path": ".agents/skills/stark-copilot/agents/openai.yaml",
-            "kind": "file",
-            "emulated": false
-          }
-        ]
-      },
-      "fidelityNotes": {}
     }
   ]
 }

@@ -2,8 +2,6 @@ package main
 
 import (
 	"bytes"
-	"os"
-	"path/filepath"
 	"strings"
 	"testing"
 
@@ -91,34 +89,5 @@ func TestWarnProjectLocalCodex(t *testing.T) {
 	warnProjectLocalCodex(&buf, home, model.RuntimeCodex, withAssets)
 	if buf.Len() != 0 {
 		t.Fatalf("global (dest==$HOME) install must not warn: %q", buf.String())
-	}
-}
-
-// F6 end-to-end: --assets-source ” --plugin-assets ” installs artifacts only — no
-// vendored asset tree under .agents/stark/<bundle>/.
-func TestInstallCmdEmptyFlagsDisableVendoring(t *testing.T) {
-	root := repoRoot(t)
-	if _, err := os.Stat(filepath.Join(root, "index.json")); err != nil {
-		t.Skipf("committed index.json absent (%v)", err)
-	}
-	orig := osExit
-	osExit = func(int) {}
-	defer func() { osExit = orig }()
-
-	dest := t.TempDir()
-	cmd := newInstallCmd(realAdapter)
-	cmd.SetArgs([]string{
-		"--runtime", "codex", "--dest", dest, "--yes",
-		"--assets-source", "", "--plugin-assets", "",
-		"--index", filepath.Join(root, "index.json"),
-		"--bundles", filepath.Join(root, "bundles"),
-		"--catalog", filepath.Join(root, "catalog"),
-		"stark-gh",
-	})
-	if err := cmd.Execute(); err != nil {
-		t.Fatalf("execute: %v", err)
-	}
-	if _, err := os.Stat(filepath.Join(dest, ".agents", "stark", "stark-gh")); err == nil {
-		t.Fatal("empty asset flags must disable vendoring — no .agents/stark/stark-gh tree")
 	}
 }

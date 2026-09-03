@@ -1,16 +1,11 @@
 package main
 
 import (
-	"os"
-	"path/filepath"
 	"strings"
 	"testing"
 
 	"github.com/21StarkCom/bifrost/engine/internal/aggregate"
-	"github.com/21StarkCom/bifrost/engine/internal/indexio"
 	"github.com/21StarkCom/bifrost/engine/internal/install"
-	"github.com/21StarkCom/bifrost/engine/internal/installplan"
-	"github.com/21StarkCom/bifrost/engine/internal/model"
 )
 
 // The real adapter renders sentinel emulation blocks with digest-bearing markers
@@ -47,62 +42,4 @@ func TestSentinelBodyStripsRenderMarkersNoDoubleWrap(t *testing.T) {
 	if _, err := sentinelBody(rendered, "multi/missing"); err == nil {
 		t.Fatal("sentinelBody must error when the section id is absent")
 	}
-}
-
-// TestRealAdapterRendersCommittedCatalog exercises the PRODUCTION adapter (catalogAdapter):
-// it renders slice-03's runtime targets in-memory from the committed catalog and applies them.
-// This is the live-surface proof that `stark install` writes real Codex payloads
-// (not fakes) for the artifacts the marketplace actually ships.
-func TestRealAdapterRendersCommittedCatalog(t *testing.T) {
-	root := repoRoot(t)
-	idx, err := indexio.LoadIndex(filepath.Join(root, "index.json"))
-	if err != nil {
-		t.Skipf("committed index.json not present (%v) — skipping live-catalog test", err)
-	}
-	bundles := filepath.Join(root, "bundles")
-	ad := realAdapter(filepath.Join(root, "catalog"),
-		filepath.Join(root, "vendor", "stark-skills"), filepath.Join(root, "vendor", "plugins"))
-
-	t.Run("codex", func(t *testing.T) {
-		dest := t.TempDir()
-		p, err := installplan.Compute(idx, bundles, ad, "stark-gh", "", model.TypeCommand, model.RuntimeCodex)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if !p.Consent.Required {
-			t.Fatal("stark-gh ships executable vendored tools — consent must be required")
-		}
-		res, err := install.Install(dest, p, install.Options{})
-		if err != nil {
-			t.Fatalf("install: %v", err)
-		}
-		// real command body (codex !claude runtime variant), not a fake placeholder
-		skill, _ := os.ReadFile(filepath.Join(dest, ".agents/skills/pr-open/SKILL.md"))
-		if !strings.Contains(string(skill), "Open or update a GitHub pull request") {
-			t.Fatalf("SKILL.md missing real body:\n%s", skill)
-		}
-		metadata, _ := os.ReadFile(filepath.Join(dest, ".agents/skills/pr-open/agents/openai.yaml"))
-		if !strings.Contains(string(metadata), "allow_implicit_invocation: false") {
-			t.Fatalf("command lost its explicit-only boundary:\n%s", metadata)
-		}
-		// idempotent
-		first := append([]byte(nil), skill...)
-		if _, err := install.Install(dest, p, install.Options{}); err != nil {
-			t.Fatalf("re-install: %v", err)
-		}
-		second, _ := os.ReadFile(filepath.Join(dest, ".agents/skills/pr-open/SKILL.md"))
-		if string(first) != string(second) {
-			t.Fatalf("real install not idempotent")
-		}
-		// doctor clean, then precise removal
-		if rep, _ := install.Doctor(dest, res.ManifestPath); len(rep.Broken) != 0 {
-			t.Fatalf("doctor broken: %+v", rep.Broken)
-		}
-		if err := install.Remove(dest, res.ManifestPath); err != nil {
-			t.Fatal(err)
-		}
-		if _, err := os.Stat(filepath.Join(dest, ".agents/skills/pr-open/SKILL.md")); !os.IsNotExist(err) {
-			t.Fatalf("remove left the managed skill behind: %v", err)
-		}
-	})
 }
