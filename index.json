@@ -318,7 +318,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.10.1",
+      "version": "0.10.2",
       "runtimes": [
         "claude",
         "codex"
@@ -343,7 +343,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.10.1",
+      "version": "0.10.2",
       "runtimes": [
         "claude",
         "codex"
@@ -368,7 +368,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.10.1",
+      "version": "0.10.2",
       "runtimes": [
         "claude",
         "codex"
@@ -393,7 +393,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.10.1",
+      "version": "0.10.2",
       "runtimes": [
         "claude",
         "codex"
@@ -418,7 +418,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.10.1",
+      "version": "0.10.2",
       "runtimes": [
         "claude",
         "codex"
@@ -443,7 +443,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.10.1",
+      "version": "0.10.2",
       "runtimes": [
         "claude",
         "codex"
@@ -458,7 +458,7 @@
       "name": "team-leader-agent",
       "type": "skill",
       "bundle": "stark-ops",
-      "description": "Use when coordinating two or more Claude Code minion sessions in cmux — dispatching a task DAG across sessions, briefing a minion, resetting one with /clear between tasks, deciding whether to trust a minion's \"done / PR merged\" report, finding out whether a silent minion is stuck or working, or answering a minion's offer to \"clean up\" mid-engagement. Also use when fanning a fleet into an unfamiliar repo — learning its test gate before dispatch, whether a \"green\" PR means a real check ran, which shared files force merges to serialize, and how to run a merge queue over a shared seam so concurrent PRs regenerate and reconcile after each land — or when tempted to dispatch beyond the ready set because idle minions look wasteful, to drive a minion's terminal directly, to claim a live-verified result a task had no vendor grant to check, or to fan out on an ambiguous or outward-facing instruction before confirming it with the operator.",
+      "description": "Use when coordinating two or more Claude Code minion sessions in cmux — dispatching a task DAG, briefing a minion, resetting one with /clear between tasks, closing a minion that is out of DAG work, keeping the fleet progress bar current on a fixed cadence, trusting or doubting a minion's \"done / PR merged\" report, telling whether a silent minion is stuck or working, or answering its offer to \"clean up\" mid-engagement. Also use when fanning a fleet into an unfamiliar repo — its test gate, whether a \"green\" PR ran a real check, which shared files force merges to serialize, and how to run a merge queue so concurrent PRs regenerate and reconcile after each land — or tempted to dispatch beyond the ready set because idle minions look wasteful, to drive a minion's terminal directly, to claim a live-verified result with no grant to check, or to fan out on an ambiguous or outward-facing instruction before confirming with the operator.",
       "tags": [
         "release",
         "housekeeping",
@@ -468,14 +468,14 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.10.1",
+      "version": "0.10.2",
       "runtimes": [
         "claude"
       ],
       "support": {
         "claude": "native"
       },
-      "digest": "sha256:5bed4cd005240c00c4efe58dc7f092382233eed2bd4c3c1905fddd3236afe61d"
+      "digest": "sha256:887a8280c94b49ca7b73d78a522d3928f1b3d38721216d4171643344ebbc68f3"
     },
     {
       "name": "team-minion-agent",
@@ -491,7 +491,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.10.1",
+      "version": "0.10.2",
       "runtimes": [
         "claude"
       ],
@@ -692,7 +692,7 @@
     },
     {
       "bundle": "stark-ops",
-      "version": "0.10.1",
+      "version": "0.10.2",
       "digest": "sha256:8903642d997f754220bb39976c8a111bc29b5cae5ebfc264810e9d3a2cf8da01"
     },
     {

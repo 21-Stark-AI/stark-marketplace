@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "bundle": {
     "name": "stark-ops",
-    "version": "0.10.1",
+    "version": "0.10.2",
     "description": "Repository operations beyond the spec-driven pipeline — cut releases, housekeep stale issues/branches/worktrees, run session start/end, and hand off work across sessions.",
     "category": "ops",
     "tags": [
@@ -20,7 +20,7 @@
       "name": "stark-bury",
       "type": "skill",
       "description": "Use when retiring 21Stark code into the Náströnd graveyard — burying a subsystem of a living repo (partial burial) or putting down a whole repo (full retirement). Symptoms: \"bury X\", \"retire the <feature>\", \"kill this service and keep the memory\", \"new corpse for nastrond\", \"dig a grave\", \"tombstone\", \"exhume\". Runs the full ritual: footprint verification, interment PR, deletion PR, optional sealed data dump and table drop.",
-      "version": "0.10.1",
+      "version": "0.10.2",
       "runtimes": [
         "claude",
         "codex"
@@ -58,7 +58,7 @@
       "name": "stark-gha-cost",
       "type": "skill",
       "description": "Diagnose and cut GitHub Actions + GHAS (Advanced Security) billing costs for an org or enterprise. Use whenever the user is surprised by or wants to reduce a GitHub bill, mentions Actions minutes / runner cost / CI spend, asks \"why is my GitHub bill so high\", \"are we paying for GHAS/secret scanning/code scanning\", \"should I self-host runners\", \"which repo is burning Actions minutes\", or wants to right-size GitHub security seats (Secret Protection vs Code Security). Also triggers on a mystery Actions charge, a runaway workflow, or a billing number that looks wrong. Also use for making CI cheaper/faster the right way — slow or expensive pipelines, build/dependency caching that isn't hitting, wide test matrices, merge queues, flaky-test cost, artifact/registry storage, or measuring CI spend (cost-per-PR, budgets, usage APIs). Diagnoses where the money goes (product → repo → workflow → run), applies the highest-value levers via PR, and escalates genuine mis-billing to Support. Reach for it even when the user only says \"GitHub is expensive this month\" or \"our CI is too slow\" without naming Actions.",
-      "version": "0.10.1",
+      "version": "0.10.2",
       "runtimes": [
         "claude",
         "codex"
@@ -96,7 +96,7 @@
       "name": "stark-handover",
       "type": "skill",
       "description": "Use when pausing or splitting work across sessions — before /clear, when context runs low, end of day, switching tasks — or when resuming after one. Triggers: \"handover\", \"save context\", \"save progress\", \"resume\", \"continue where we left off\", \"what was I doing\". Persists a numbered handover chain + PROGRESS.md tracker per task; resume needs no recap.",
-      "version": "0.10.1",
+      "version": "0.10.2",
       "runtimes": [
         "claude",
         "codex"
@@ -134,7 +134,7 @@
       "name": "stark-housekeeping",
       "type": "skill",
       "description": "Audit and clean up stale issues, dead branches, and worktree remnants. Use for cleanup, housekeeping, close stale issues.",
-      "version": "0.10.1",
+      "version": "0.10.2",
       "runtimes": [
         "claude",
         "codex"
@@ -172,7 +172,7 @@
       "name": "stark-release",
       "type": "skill",
       "description": "Cut a release: changelog review (auto-generating from git log if [Unreleased] is empty), version bump, git tag, GitHub Release. Use for release, tag, bump version.",
-      "version": "0.10.1",
+      "version": "0.10.2",
       "runtimes": [
         "claude",
         "codex"
@@ -210,7 +210,7 @@
       "name": "stark-session",
       "type": "skill",
       "description": "Session start (context, git state, briefing) and end (tests, merge, push). Use for session start/end, catch me up.",
-      "version": "0.10.1",
+      "version": "0.10.2",
       "runtimes": [
         "claude",
         "codex"
@@ -247,8 +247,8 @@
     {
       "name": "team-leader-agent",
       "type": "skill",
-      "description": "Use when coordinating two or more Claude Code minion sessions in cmux — dispatching a task DAG across sessions, briefing a minion, resetting one with /clear between tasks, deciding whether to trust a minion's \"done / PR merged\" report, finding out whether a silent minion is stuck or working, or answering a minion's offer to \"clean up\" mid-engagement. Also use when fanning a fleet into an unfamiliar repo — learning its test gate before dispatch, whether a \"green\" PR means a real check ran, which shared files force merges to serialize, and how to run a merge queue over a shared seam so concurrent PRs regenerate and reconcile after each land — or when tempted to dispatch beyond the ready set because idle minions look wasteful, to drive a minion's terminal directly, to claim a live-verified result a task had no vendor grant to check, or to fan out on an ambiguous or outward-facing instruction before confirming it with the operator.",
-      "version": "0.10.1",
+      "description": "Use when coordinating two or more Claude Code minion sessions in cmux — dispatching a task DAG, briefing a minion, resetting one with /clear between tasks, closing a minion that is out of DAG work, keeping the fleet progress bar current on a fixed cadence, trusting or doubting a minion's \"done / PR merged\" report, telling whether a silent minion is stuck or working, or answering its offer to \"clean up\" mid-engagement. Also use when fanning a fleet into an unfamiliar repo — its test gate, whether a \"green\" PR ran a real check, which shared files force merges to serialize, and how to run a merge queue so concurrent PRs regenerate and reconcile after each land — or tempted to dispatch beyond the ready set because idle minions look wasteful, to drive a minion's terminal directly, to claim a live-verified result with no grant to check, or to fan out on an ambiguous or outward-facing instruction before confirming with the operator.",
+      "version": "0.10.2",
       "runtimes": [
         "claude"
       ],
@@ -272,7 +272,7 @@
       "name": "team-minion-agent",
       "type": "skill",
       "description": "Use when you are a dispatched minion (worker) session in a cmux fleet, driven by a team leader — intaking a dispatch packet, running the session-start ritual, quoting a task's done-when back, staying inside your declared file set, deciding whether the seam a task needs is in scope, updating your ticket through its lifecycle, proving a task done with real evidence plus the mandatory /code-review xhigh --fix e2e pass, reporting result-first to your leader, participating in a merge queue (READY TO MERGE then wait for GO, then rebase + regenerate + reconcile on the leader's new-main broadcast), surviving a /clear reset, or deciding whether a blocker, an ambiguous behavior contract, or a vendor-grant gap means stop-and-ask-the-leader. Also for the bypass-mode discipline a minion runs under — untrusted-content handling, the STOP-LIST, worker-not-orchestrator parallelism, and never going silent past 30 minutes.",
-      "version": "0.10.1",
+      "version": "0.10.2",
       "runtimes": [
         "claude"
       ],
