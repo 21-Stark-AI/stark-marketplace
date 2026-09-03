@@ -30,11 +30,12 @@ codex plugin marketplace add 21StarkCom/bifrost
 codex plugin add stark-ops@bifrost
 ```
 
-Start a new thread after installing or updating, then invoke cleanup with
-`$cleanup --dry-run` (or select it through `/skills`). Codex installs native
-skills from `dist/codex-plugins/`; it does not migrate the Claude command files.
+Start a new thread after installing or updating, then invoke housekeeping with
+`$stark-housekeeping --dry-run` (or select it through `/skills`). Codex installs
+native skills from `dist/codex-plugins/`; it does not migrate the Claude command
+files.
 
-Direct/project-local Codex installs and Gemini still go through the engine CLI:
+Direct/project-local Codex installs still go through the engine CLI:
 
 ```bash
 cd engine

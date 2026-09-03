@@ -46,8 +46,9 @@ Layout under `--dest`:
 | `.agents/skills/<name>/{references,scripts,assets}/**` | that skill's own supporting files |
 | `.agents/stark/<bundle>/**` | the bundle's assets root — `tools/`, `standards/`, `prompts/`, `scripts/`, `data/persona/`, `config.json` |
 
-The assets root is **per bundle, never shared**: `stark-ops` ships its own
-`config.json`, which would clobber the shared snapshot's in a flat namespace.
+The assets root is **per bundle, never shared**: `stark-gh` (now retired)
+shipped its own `config.json`, which would have clobbered the shared snapshot's
+in a flat namespace.
 
 Because the tree differs from a Claude plugin's, the codex target (`codex@3`)
 retargets the reference shapes in each rendered body:
