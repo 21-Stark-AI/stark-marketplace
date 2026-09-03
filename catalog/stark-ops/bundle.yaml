@@ -1,5 +1,5 @@
 name: stark-ops
-version: 0.10.4
+version: 0.11.0
 description: Repository operations beyond the spec-driven pipeline — cut releases, housekeep stale issues/branches/worktrees, run session start/end, and hand off work across sessions.
 category: ops
 tags:
@@ -25,3 +25,4 @@ skills:
   - stark-bury
   - team-leader-agent
   - team-minion-agent
+  - stark-memory

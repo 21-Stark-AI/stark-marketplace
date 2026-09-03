@@ -1,6 +1,6 @@
 {
   "name": "stark-ops",
-  "version": "0.25.1",
+  "version": "0.26.0",
   "description": "Repository operations beyond the spec-driven pipeline — cut releases, housekeep stale issues/branches/worktrees, run session start/end, and hand off work across sessions.",
   "author": {
     "name": "21 Stark AI",
