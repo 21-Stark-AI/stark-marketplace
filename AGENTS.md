@@ -12,7 +12,7 @@ The **stark-skills** repo is the source of truth. Here, `catalog/<bundle>/bundle
 - `cd engine && go run ./cmd/stark build --check ../catalog`: drift check.
 - `cd engine && go run ./cmd/stark build --fix ../catalog`: regenerate artifacts.
 - `cd engine && go run ./cmd/stark check-bumps ../catalog`: version immutability.
-- `cd engine && go run ./cmd/stark install stark-gh/pr-open --runtime codex --dest /tmp/stark-codex --plan --index ../index.json --bundles ../bundles --catalog ../catalog`: preview Codex output.
+- `cd engine && go run ./cmd/stark install stark-ops/stark-session --runtime codex --dest /tmp/stark-codex --plan --index ../index.json --bundles ../bundles --catalog ../catalog`: preview Codex output.
 - `cd server && go test ./... -count=1 && go vet ./...`: server test/vet.
 - `cd web && npm ci && npm run dev`: install dependencies and start Vite.
 - `cd web && npm test && npm run lint && npm run build`: Vitest, ESLint, build.

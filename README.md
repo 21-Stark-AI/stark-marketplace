@@ -12,14 +12,13 @@ The repo is also a native marketplace for both hosts. Claude Code reads `.claude
 | `stark-plan` | Plan-time guidance (spec-kit `plan` phase). |
 | `stark-analyze` | Multi-domain review + adversarial red-team of designs/plans/PRs. |
 | `stark-implement` | Implementation-time guidance (spec-kit `implement` phase). |
-| `stark-gh` | GitHub pull-request and repository-cleanup workflow commands. |
 | `stark-ops` | Ops/runtime utilities. |
 
 ## Install (Claude Code)
 
 ```
 /plugin marketplace add 21StarkCom/bifrost
-/plugin install stark-gh@bifrost
+/plugin install stark-ops@bifrost
 ```
 
 Each plugin is **self-contained** — its supporting tool scripts, prompts, config, and standard per-skill `references/`, `scripts/`, and `assets/` are vendored into the bundle, so `/plugin install` works with **no `install.sh`** and no stark-skills checkout on your machine. Only prerequisite: **Node ≥ 22.6** (skills run `node --experimental-strip-types`; `stark doctor` checks it).
@@ -28,18 +27,19 @@ Each plugin is **self-contained** — its supporting tool scripts, prompts, conf
 
 ```bash
 codex plugin marketplace add 21StarkCom/bifrost
-codex plugin add stark-gh@bifrost
+codex plugin add stark-ops@bifrost
 ```
 
-Start a new thread after installing or updating, then invoke cleanup with
-`$cleanup --dry-run` (or select it through `/skills`). Codex installs native
-skills from `dist/codex-plugins/`; it does not migrate the Claude command files.
+Start a new thread after installing or updating, then invoke housekeeping with
+`$stark-housekeeping --dry-run` (or select it through `/skills`). Codex installs
+native skills from `dist/codex-plugins/`; it does not migrate the Claude command
+files.
 
-Direct/project-local Codex installs and Gemini still go through the engine CLI:
+Direct/project-local Codex installs still go through the engine CLI:
 
 ```bash
 cd engine
-go run ./cmd/stark install stark-gh --runtime codex   # standalone Codex, or use gemini
+go run ./cmd/stark install stark-ops --runtime codex   # standalone Codex
 ```
 
 See [`docs/native-install-loop.md`](docs/native-install-loop.md) for the full install loop.

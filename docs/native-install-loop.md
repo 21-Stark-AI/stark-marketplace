@@ -3,7 +3,7 @@
 `stark-marketplace` installs into Claude Code with **no custom client**. The
 committed repo-root `.claude-plugin/marketplace.json` IS the marketplace manifest;
 CC reads it directly and resolves each plugin's `source` (e.g.
-`./dist/claude/stark-gh`) relative to the marketplace root (the repo root).
+`./dist/claude/stark-ops`) relative to the marketplace root (the repo root).
 
 > **Why the manifest is at the repo root, not under `dist/claude/`:** CC's
 > `/plugin marketplace add owner/repo` shorthand looks for
@@ -46,8 +46,9 @@ Layout under `--dest`:
 | `.agents/skills/<name>/{references,scripts,assets}/**` | that skill's own supporting files |
 | `.agents/stark/<bundle>/**` | the bundle's assets root — `tools/`, `standards/`, `prompts/`, `scripts/`, `data/persona/`, `config.json` |
 
-The assets root is **per bundle, never shared**: `stark-gh` ships its own
-`config.json`, which would clobber the shared snapshot's in a flat namespace.
+The assets root is **per bundle, never shared**: `stark-gh` (now retired)
+shipped its own `config.json`, which would have clobbered the shared snapshot's
+in a flat namespace.
 
 Because the tree differs from a Claude plugin's, the codex target (`codex@3`)
 retargets the reference shapes in each rendered body:
@@ -107,7 +108,8 @@ stdio `env_vars`; Codex HTTP authentication requires an explicit native
 
 **Still open:** `stark install --runtime claude` does not vendor assets — the
 Claude distribution path is the committed `dist/claude/` plugin tree, which
-already carries them. `--runtime gemini` covers `stark-gh` only.
+already carries them. No bundle currently targets the `gemini` runtime — the
+gemini adapter exists, but no bundle ships a gemini artifact today.
 
 ## What is committed (spec §5.1)
 
@@ -153,15 +155,15 @@ here automatically.
 
 2. Install a bundle (one `plugins[]` entry == one bundle):
    ```
-   /plugin install stark-gh
+   /plugin install stark-ops
    ```
-   CC fetches the plugin from the entry's `source` (`./dist/claude/stark-gh`)
+   CC fetches the plugin from the entry's `source` (`./dist/claude/stark-ops`)
    and installs its skills/commands/agents/mcp.
 
 3. Update after a marketplace change:
    ```
    /plugin marketplace update 21StarkCom/bifrost
-   /plugin install stark-gh
+   /plugin install stark-ops
    ```
 
 ## Manifest contract (why installs resolve)
