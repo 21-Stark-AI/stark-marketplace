@@ -83,7 +83,7 @@
       "name": "stark-ops",
       "source": "./dist/claude/stark-ops",
       "description": "Repository operations beyond the spec-driven pipeline — cut releases, housekeep stale issues/branches/worktrees, run session start/end, and hand off work across sessions.",
-      "version": "0.10.3",
+      "version": "0.10.4",
       "author": {
         "name": "21 Stark AI",
         "email": "engineering@21stark.com"

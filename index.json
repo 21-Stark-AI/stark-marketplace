@@ -318,7 +318,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.10.3",
+      "version": "0.10.4",
       "runtimes": [
         "claude",
         "codex"
@@ -343,7 +343,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.10.3",
+      "version": "0.10.4",
       "runtimes": [
         "claude",
         "codex"
@@ -368,7 +368,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.10.3",
+      "version": "0.10.4",
       "runtimes": [
         "claude",
         "codex"
@@ -393,7 +393,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.10.3",
+      "version": "0.10.4",
       "runtimes": [
         "claude",
         "codex"
@@ -418,7 +418,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.10.3",
+      "version": "0.10.4",
       "runtimes": [
         "claude",
         "codex"
@@ -443,7 +443,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.10.3",
+      "version": "0.10.4",
       "runtimes": [
         "claude",
         "codex"
@@ -468,14 +468,14 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.10.3",
+      "version": "0.10.4",
       "runtimes": [
         "claude"
       ],
       "support": {
         "claude": "native"
       },
-      "digest": "sha256:887a8280c94b49ca7b73d78a522d3928f1b3d38721216d4171643344ebbc68f3"
+      "digest": "sha256:ea681392021744967619c00696f78474205266a94c1274deba70ee7bdba318e0"
     },
     {
       "name": "team-minion-agent",
@@ -491,14 +491,14 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.10.3",
+      "version": "0.10.4",
       "runtimes": [
         "claude"
       ],
       "support": {
         "claude": "native"
       },
-      "digest": "sha256:487de86941a1b5b8fc226052beecb517e7dfeca9b0dc53fb267c22b19c47b038"
+      "digest": "sha256:24fb12a81b87f3fc4bec58332db5239a4ce397acd97f5034b419a3355b1abaa3"
     },
     {
       "name": "simple-gate",
@@ -692,7 +692,7 @@
     },
     {
       "bundle": "stark-ops",
-      "version": "0.10.3",
+      "version": "0.10.4",
       "digest": "sha256:8903642d997f754220bb39976c8a111bc29b5cae5ebfc264810e9d3a2cf8da01"
     },
     {
