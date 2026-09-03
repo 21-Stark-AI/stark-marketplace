@@ -2,7 +2,7 @@
 name: team-leader-agent
 type: skill
 description: Use when coordinating two or more Claude Code minion sessions in cmux — dispatching a task DAG across sessions, briefing a minion, resetting one with /clear between tasks, deciding whether to trust a minion's "done / PR merged" report, finding out whether a silent minion is stuck or working, or answering a minion's offer to "clean up" mid-engagement. Also use when fanning a fleet into an unfamiliar repo — learning its test gate before dispatch, whether a "green" PR means a real check ran, which shared files force merges to serialize, and how to run a merge queue over a shared seam so concurrent PRs regenerate and reconcile after each land — or when tempted to dispatch beyond the ready set because idle minions look wasteful, to drive a minion's terminal directly, to claim a live-verified result a task had no vendor grant to check, or to fan out on an ambiguous or outward-facing instruction before confirming it with the operator.
-version: 0.10.0
+version: 0.10.1
 maturity: beta
 runtimes:
   - claude
@@ -361,20 +361,25 @@ same failure: acting past the point you should have asked.
 
 ## Quick reference
 
-The control client is **hermod**. Prefer the repo checkout; a brew binary can
-lag, check `version` first.
+The control client is **hermod**, invoked by its literal repo-checkout path
+`bun /Users/aryeh/Code/21Stark/hermod/ts/bin/hermod.ts` (a brew binary can lag —
+check `version` first). **Type that literal path on every call; never stash it in
+a `$CC`-style shell variable.** Every minion is a worktree-isolated session, and
+the Claude Code harness worktree-guard refuses a command whose name is computed
+at runtime — it cannot prove the computed name is not `git` leaving the worktree.
+The same guard refuses `$(...)` substitution in an argument, so pass a large or
+multiline body from a file (`alfred task comment --body-file <path>`), never
+`"$(cat file)"`.
 
 ```
-CC="bun /Users/aryeh/Code/21Stark/hermod/ts/bin/hermod.ts"
-
-$CC tabs --workspace <ws> --json          # UUID ↔ ref ↔ title
-$CC sessions --workspace <ws> --json      # agent_lifecycle, updatedAt, pid, cwd, transcriptPath
-$CC read-screen <uuid> --lines 40         # one look; --follow --interval 3000 only while babysitting
-$CC send --enter <uuid> "/clear"          # LEADING flag; then: $CC send-key <uuid> enter
-$CC status set <key> "<value>" --workspace <ws>   ·   status list   ·   log add "<msg>"
-$CC notify send "<title>" --body "<b>" --workspace <ws>   # attention to the human
-$CC minions <x> --workspace <ws>          # spawn dick tabs primed with /effort ultracode
-cmux workspace status                     # lane todo|working|needs-attention|review|done — per WORKSPACE, not per tab
+bun /Users/aryeh/Code/21Stark/hermod/ts/bin/hermod.ts tabs --workspace <ws> --json      # UUID ↔ ref ↔ title
+bun /Users/aryeh/Code/21Stark/hermod/ts/bin/hermod.ts sessions --workspace <ws> --json  # agent_lifecycle, updatedAt, pid, cwd, transcriptPath
+bun /Users/aryeh/Code/21Stark/hermod/ts/bin/hermod.ts read-screen <uuid> --lines 40     # one look; --follow --interval 3000 only while babysitting
+bun /Users/aryeh/Code/21Stark/hermod/ts/bin/hermod.ts send --enter <uuid> "/clear"      # LEADING flag; then a discrete `… send-key <uuid> enter`
+bun /Users/aryeh/Code/21Stark/hermod/ts/bin/hermod.ts status set <key> "<value>" --workspace <ws>   ·   status list   ·   log add "<msg>"
+bun /Users/aryeh/Code/21Stark/hermod/ts/bin/hermod.ts notify send "<title>" --body "<b>" --workspace <ws>   # attention to the human
+bun /Users/aryeh/Code/21Stark/hermod/ts/bin/hermod.ts minions <x> --workspace <ws>      # spawn dick tabs primed with /effort ultracode
+cmux workspace status                                                                    # lane todo|working|needs-attention|review|done — per WORKSPACE, not per tab
 ```
 
 ## Common mistakes
