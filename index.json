@@ -318,7 +318,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.11.0",
+      "version": "0.11.1",
       "runtimes": [
         "claude",
         "codex"
@@ -343,7 +343,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.11.0",
+      "version": "0.11.1",
       "runtimes": [
         "claude",
         "codex"
@@ -368,7 +368,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.11.0",
+      "version": "0.11.1",
       "runtimes": [
         "claude",
         "codex"
@@ -393,7 +393,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.11.0",
+      "version": "0.11.1",
       "runtimes": [
         "claude",
         "codex"
@@ -418,7 +418,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.11.0",
+      "version": "0.11.1",
       "runtimes": [
         "claude"
       ],
@@ -441,7 +441,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.11.0",
+      "version": "0.11.1",
       "runtimes": [
         "claude",
         "codex"
@@ -466,7 +466,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.11.0",
+      "version": "0.11.1",
       "runtimes": [
         "claude",
         "codex"
@@ -491,14 +491,14 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.11.0",
+      "version": "0.11.1",
       "runtimes": [
         "claude"
       ],
       "support": {
         "claude": "native"
       },
-      "digest": "sha256:ea681392021744967619c00696f78474205266a94c1274deba70ee7bdba318e0"
+      "digest": "sha256:2e386ca785a01be33900cc2cd2e0b25a0b54336a45f6c633d655f0d134b3cd82"
     },
     {
       "name": "team-minion-agent",
@@ -514,7 +514,7 @@
       ],
       "category": "ops",
       "maturity": "beta",
-      "version": "0.11.0",
+      "version": "0.11.1",
       "runtimes": [
         "claude"
       ],
@@ -715,7 +715,7 @@
     },
     {
       "bundle": "stark-ops",
-      "version": "0.11.0",
+      "version": "0.11.1",
       "digest": "sha256:8903642d997f754220bb39976c8a111bc29b5cae5ebfc264810e9d3a2cf8da01"
     },
     {
