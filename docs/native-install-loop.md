@@ -146,11 +146,11 @@ here automatically.
 
 ## End-to-end loop
 
-1. Add the marketplace (private repo; you must have 21 Stark AI repo access):
+1. Add the marketplace (public repo):
    ```
    /plugin marketplace add 21StarkCom/bifrost
    ```
-   CC resolves `dist/claude/.claude-plugin/marketplace.json` and lists every
+   CC resolves the repo-root `.claude-plugin/marketplace.json` and lists every
    bundle as an installable plugin.
 
 2. Install a bundle (one `plugins[]` entry == one bundle):

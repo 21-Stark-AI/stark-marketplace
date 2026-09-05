@@ -3,10 +3,9 @@ set -euo pipefail
 
 # ci-local.sh — run the full CI gate locally.
 #
-# Replaces the disabled `.github/workflows/ci.yml`. bifrost's GitHub Actions
-# were disabled to guarantee $0 GitHub spend (see docs/web-hosting.md and
-# git log). Since main's branch protection no longer has required status
-# checks, YOU are the gate now — run this before every push/merge.
+# A local mirror of `.github/workflows/ci.yml`. GitHub Actions ARE enabled and
+# `ci` gates every PR — run this before pushing when you want the gate without
+# waiting on CI (a fast local pre-flight), not because CI is off.
 #
 # Mirrors ci.yml exactly: engine (fmt/vet/test/validate/drift/bumps/lint/
 # allowlist), web (typecheck/lint/test/build), server (fmt/vet/test),

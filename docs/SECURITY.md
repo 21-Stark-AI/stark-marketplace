@@ -29,7 +29,7 @@ creates when `VERSION` changes (tag `v<VERSION>`).
 End-to-end client verify:
 
 ```bash
-# 1. Pull the signed bundle for a specific release (private repo → gh auth)
+# 1. Pull the signed bundle for a specific release (gh release download)
 gh release download v0.1.0 \
   --repo 21StarkCom/bifrost \
   --pattern 'build-manifest.json*'

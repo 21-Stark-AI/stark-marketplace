@@ -5,15 +5,15 @@
 > (SAs/IAM/GAR/NEG/host-rule/DNS) live in Terraform
 > (`ev-infra-group/infra/stark-marketplace.tf`) — no ad-hoc `gcloud`.
 >
-> **Deploy is manual/local (cost control).** `web-deploy.yml` is **disabled**
-> (`gh workflow disable web-deploy`) — it rebuilt a Docker image + redeployed
-> Cloud Run on every push to main, which was the only real dollar cost on this
-> otherwise-free public repo (GAR image storage + Cloud Run churn). Publish site
-> changes on-demand with **`docs/scripts/deploy-web.sh`** (local gcloud/docker
-> ADC, not WIF). Re-enable CI deploys any time with `gh workflow enable
-> web-deploy`. The **native CC marketplace reads the public repo directly and
-> does not need this site** — so a stale-but-up site costs nothing (Cloud Run
-> scales to zero).
+> **Deploy is automatic on push to main.** `web-deploy.yml` is **active** — a
+> push to main touching `web/**`, `server/**`, `Dockerfile`, `index.json`, or
+> `bundles/**` rebuilds the Docker image and redeploys Cloud Run. This is the only real dollar
+> cost on this otherwise-free public repo (GAR image storage + Cloud Run churn),
+> accepted as worth it. For an out-of-band publish, run
+> **`docs/scripts/deploy-web.sh`** (local gcloud/docker ADC, not WIF). Pause CI
+> deploys with `gh workflow disable web-deploy`. The **native CC marketplace
+> reads the public repo directly and does not need this site** — so even a stale
+> site costs nothing (Cloud Run scales to zero).
 
 ## Pattern: public static origin behind the platform LB
 
@@ -30,7 +30,7 @@
 
 The SPA uses **hash routing** (`HashRouter`): every route lives under `/#/…` on the single root
 `index.html`, with assets referenced by a relative base. A deep link like
-`…/#/bundle/stark-gh` therefore loads the root document and its hashed assets directly — the
+`…/#/bundle/stark-ops` therefore loads the root document and its hashed assets directly — the
 dumb static origin needs **no SPA-fallback rewrite rule**, and a shared/refreshed deep link
 never 404s its assets. (If you ever switch to history routing, the origin MUST rewrite unknown
 paths to `/index.html` and serve a root-anchored asset base — call that out here first.)
@@ -95,8 +95,8 @@ runtime SA are fixed in the workflow `env:` block.
 4. `marketplace_lb_enabled=true` was applied in `ev-infra-group`, wiring DNS/LB/alerts.
 5. `https://marketplace.21stark.com/` returns `HTTP/2 200`; `/healthz` returns `ok`.
 
-Future deploys are **manual/local** via `docs/scripts/deploy-web.sh` (the
-`web-deploy.yml` workflow is disabled for cost — see the note at the top of this
-doc). Run the script only when you want to publish site changes; prune old GAR
-images afterwards to keep storage near-zero. To restore push-to-main CI deploys,
-`gh workflow enable web-deploy`.
+Deploys are **automatic on push to main** via the `web-deploy.yml` workflow (see
+the note at the top of this doc); `docs/scripts/deploy-web.sh` is the manual/local
+fallback for an out-of-band deploy. Prune old GAR images periodically to keep
+storage near-zero. To pause push-to-main CI deploys, `gh workflow disable
+web-deploy`.

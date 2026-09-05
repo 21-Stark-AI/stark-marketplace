@@ -3,11 +3,11 @@ set -euo pipefail
 
 # deploy-web.sh — manual, local deploy of the web registry origin.
 #
-# Replaces the disabled `.github/workflows/web-deploy.yml` (disabled to keep
-# bifrost zero-cost: it rebuilt a Docker image + redeployed Cloud Run on every
-# push to main, growing GAR storage). Run this ONLY when you actually want to
-# publish site changes — the native CC marketplace reads the public repo
-# directly and does NOT need this site.
+# The `.github/workflows/web-deploy.yml` workflow AUTO-deploys on every push to
+# main that touches web/server/Dockerfile/index.json/bundles. Use this script for a
+# MANUAL/local deploy (local gcloud ADC + docker, not WIF) — an out-of-band
+# publish, or when you can't wait for CI. The native CC marketplace reads the
+# public repo directly and does NOT need this site.
 #
 # Auth: uses your LOCAL gcloud ADC + docker (not WIF). You must be
 # authenticated to the ev-infra-group project with rights to push to GAR and

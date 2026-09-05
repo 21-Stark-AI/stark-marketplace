@@ -2,7 +2,7 @@
 // (engine/internal/index/index.go). Consumers IGNORE unknown fields; conversely, fields the
 // engine emits with `omitempty` are modeled OPTIONAL here so a missing key never crashes the
 // SPA (forward/back compat). These shapes were reconciled against the committed index.json +
-// bundles/stark-gh.json — the contract test (registry.contract.test.ts) pins them to real data.
+// bundles/stark-ops.json — the contract test (registry.contract.test.tsx) pins them to real data.
 
 export type Runtime = 'claude' | 'codex' | 'gemini';
 export type ArtifactType = 'skill' | 'prompt' | 'command' | 'agent' | 'mcp';

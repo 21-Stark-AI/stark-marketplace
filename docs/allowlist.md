@@ -13,8 +13,6 @@ MCP `command` values must be a basename present here. Every entry widens the set
 | `brain` |
 | `node` |
 | `npx` |
-| `stark-bq-mcp` |
-| `stark-gh-mcp` |
 | `uvx` |
 
 ## `agent.tools` allowlist

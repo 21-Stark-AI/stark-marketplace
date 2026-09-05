@@ -4,7 +4,6 @@ package validate
 // Governance for additions is tracked in spec §15.4. Keep minimal.
 var commandAllowlist = map[string]bool{
 	"brain": true, "node": true, "npx": true, "uvx": true,
-	"stark-bq-mcp": true, "stark-gh-mcp": true,
 }
 
 // inlineEvalFlags are forbidden in MCP args (arbitrary code on start).
