@@ -6,8 +6,8 @@
 > (`ev-infra-group/infra/stark-marketplace.tf`) — no ad-hoc `gcloud`.
 >
 > **Deploy is automatic on push to main.** `web-deploy.yml` is **active** — a
-> push to main touching `web/**`, `server/**`, `index.json`, or `bundles/**`
-> rebuilds the Docker image and redeploys Cloud Run. This is the only real dollar
+> push to main touching `web/**`, `server/**`, `Dockerfile`, `index.json`, or
+> `bundles/**` rebuilds the Docker image and redeploys Cloud Run. This is the only real dollar
 > cost on this otherwise-free public repo (GAR image storage + Cloud Run churn),
 > accepted as worth it. For an out-of-band publish, run
 > **`docs/scripts/deploy-web.sh`** (local gcloud/docker ADC, not WIF). Pause CI

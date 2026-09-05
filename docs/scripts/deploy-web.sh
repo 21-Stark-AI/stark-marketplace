@@ -4,7 +4,7 @@ set -euo pipefail
 # deploy-web.sh — manual, local deploy of the web registry origin.
 #
 # The `.github/workflows/web-deploy.yml` workflow AUTO-deploys on every push to
-# main that touches web/server/index.json/bundles. Use this script for a
+# main that touches web/server/Dockerfile/index.json/bundles. Use this script for a
 # MANUAL/local deploy (local gcloud ADC + docker, not WIF) — an out-of-band
 # publish, or when you can't wait for CI. The native CC marketplace reads the
 # public repo directly and does NOT need this site.
