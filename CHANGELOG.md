@@ -207,7 +207,8 @@ _Note: `0.2.x`–`0.3.0` shipped as script-based publishes after GitHub Actions 
 
 ## [0.1.4] — 2026-06-07
 
-First release covering all items in `docs/plans/prod-ready-followup-2026-06-07.md`.
+First release covering all items in the prod-ready follow-up plan (2026-06-07),
+since archived to STARK-2563 and removed from the repo.
 
 ### Added
 - `server/`: baseline security headers (HSTS, CSP, Permissions-Policy,
