@@ -13,6 +13,8 @@ The repo is also a native marketplace for both hosts. Claude Code reads `.claude
 | `stark-analyze` | Multi-domain review + adversarial red-team of designs/plans/PRs. |
 | `stark-implement` | Implementation-time guidance (spec-kit `implement` phase). |
 | `stark-ops` | Ops/runtime utilities. |
+| `stark-design` | Design-token architecture — three-tier tokens, OKLCH scales, DTCG/Style Dictionary, theming, WCAG gates. |
+| `stark-write` | Long-form writing craft — voice profile, story editing, adversarial sharpening, multi-model jury. |
 
 ## Install (Claude Code)
 

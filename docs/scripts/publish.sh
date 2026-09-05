@@ -3,9 +3,11 @@ set -euo pipefail
 
 # publish.sh — regenerate the marketplace from stark-skills, the RIGHT way.
 #
-# Since bifrost's GitHub Actions are disabled for $0 spend, the old auto-publish
-# `marketplace-sync` PR no longer fires — regeneration is manual. This chains the
-# error-prone two-step regen (sync -> golden -> build --fix -> build --check) that
+# GitHub Actions are ENABLED: a push to stark-skills `main` auto-opens a
+# `marketplace-sync` PR here that runs this same regen. Use this script for a
+# MANUAL regen — a membership edit made directly in bifrost, or a local dry-run
+# before pushing. It chains the error-prone two-step regen (sync -> golden ->
+# build --fix -> build --check) that
 # the CLAUDE.md gotcha warns about, so you can't commit a `sync` without a `build`
 # and trip the drift gate.
 #
