@@ -536,7 +536,7 @@
       ],
       "category": "planning",
       "maturity": "beta",
-      "version": "0.4.15",
+      "version": "0.4.16",
       "runtimes": [
         "claude",
         "codex"
@@ -545,13 +545,13 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:93baa387192fa11ef865423f356b843e39569183d19133a2c722caa11b2d7ebc"
+      "digest": "sha256:b980b1b07c68be34e09bb494e36e440ed6e15f8145dffa65734b18e07ddbcd36"
     },
     {
       "name": "stark-author",
       "type": "skill",
       "bundle": "stark-plan",
-      "description": "Stage 1 — human-gated spec+plan authoring in one session: tier check, time-boxed recon, structured interview, one self-contained doc, one zero-context advisory pass, human gate, commit-pinned handoff. No LLM review loops. Use for author, spec, plan a change.",
+      "description": "Stage 1 — spec+plan authoring in one session, the operator decides: tier check, time-boxed recon, plain-language interview (only what only they know), one self-contained doc, one zero-context advisory pass, plain-language sign-off, commit-pinned handoff. No LLM review loops. Use for author, spec, plan a change.",
       "tags": [
         "planning",
         "plan",
@@ -560,7 +560,7 @@
       ],
       "category": "planning",
       "maturity": "beta",
-      "version": "0.4.15",
+      "version": "0.4.16",
       "runtimes": [
         "claude",
         "codex"
@@ -569,7 +569,7 @@
         "claude": "native",
         "codex": "native"
       },
-      "digest": "sha256:747d9eccaa739d0bff866b0380d39db04cf9bbfcfe896f3259df97e6bca240a9"
+      "digest": "sha256:b111bd3da357ac63f0e27461ca11dfc6c4810a177c8a8686313ac112e2c9b89f"
     },
     {
       "name": "stark-blog-sharpen",
@@ -720,7 +720,7 @@
     },
     {
       "bundle": "stark-plan",
-      "version": "0.4.15",
+      "version": "0.4.16",
       "digest": "sha256:00968d1cde917236a59e96ec8d661edda1e3bd23b60a0892c43c889ea7439719"
     }
   ]
