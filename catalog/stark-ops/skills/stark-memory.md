@@ -2,7 +2,7 @@
 name: stark-memory
 type: skill
 description: Audit and tidy Claude Code auto-memory so it stays under the load and recall caps. Use for memory tidy, memory audit, MEMORY.md too big, shrink the memory index, split over-cap memory files, move cross-repo facts.
-version: 0.11.0
+version: 0.11.1
 maturity: beta
 runtimes:
   - claude
