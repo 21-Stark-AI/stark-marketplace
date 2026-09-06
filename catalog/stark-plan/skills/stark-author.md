@@ -2,7 +2,7 @@
 name: stark-author
 type: skill
 description: 'Stage 1 — spec+plan authoring in one session, the operator decides: tier check, time-boxed recon, plain-language interview (only what only they know), one self-contained doc, one zero-context advisory pass, plain-language sign-off, commit-pinned handoff. No LLM review loops. Use for author, spec, plan a change.'
-version: 0.4.16
+version: 0.4.17
 maturity: beta
 runtimes:
   - claude
