@@ -2,7 +2,7 @@
 name: stark-gha-cost
 type: skill
 description: Diagnose and cut GitHub Actions + GHAS (Advanced Security) billing costs for an org or enterprise. Use whenever the user is surprised by or wants to reduce a GitHub bill, mentions Actions minutes / runner cost / CI spend, asks "why is my GitHub bill so high", "are we paying for GHAS/secret scanning/code scanning", "should I self-host runners", "which repo is burning Actions minutes", or wants to right-size GitHub security seats (Secret Protection vs Code Security). Also triggers on a mystery Actions charge, a runaway workflow, or a billing number that looks wrong. Also use for making CI cheaper/faster the right way — slow or expensive pipelines, build/dependency caching that isn't hitting, wide test matrices, merge queues, flaky-test cost, artifact/registry storage, or measuring CI spend (cost-per-PR, budgets, usage APIs). Diagnoses where the money goes (product → repo → workflow → run), applies the highest-value levers via PR, and escalates genuine mis-billing to Support. Reach for it even when the user only says "GitHub is expensive this month" or "our CI is too slow" without naming Actions.
-version: 0.11.1
+version: 0.11.2
 maturity: beta
 runtimes:
   - claude

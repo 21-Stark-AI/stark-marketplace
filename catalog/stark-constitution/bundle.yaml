@@ -1,5 +1,5 @@
 name: stark-constitution
-version: 0.2.47
+version: 0.2.48
 description: Project setup, decision records, and session priming — scaffold a dev-docs/standards structure (template/backfill/upgrade modes), record architecture decisions (ADRs) under docs/adr/, and assign a session persona. Maps to spec-kit's constitution phase.
 category: setup
 tags:
